@@ -2,6 +2,8 @@
 class IiifItemsPlugin extends Omeka_plugin_AbstractPlugin
 {
 	protected $_hooks = array(
+            'install',
+            'uninstall',
 	);
 	
 	protected $_filters = array(
@@ -35,7 +37,68 @@ class IiifItemsPlugin extends Omeka_plugin_AbstractPlugin
             'inputForCollectionJson' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'JSON Data'),
 	);
         
+        public function hookInstall() {
+            // Add Item Metadata element set
+            $item_metadata = insert_element_set(array(
+                'name' => 'IIIF Item Metadata',
+                'description' => '',
+                'record_type' => 'Item'
+            ), array(
+                array('name' => 'Display as IIIF?', 'description' => ''),
+                array('name' => 'Original @id', 'description' => ''),
+                array('name' => 'Parent Collection', 'description' => ''),
+                array('name' => 'JSON Data', 'description' => ''),
+            ));
+            set_option('iiifitems_item_element_set', $item_metadata->id);
+            // Add Collection Metadata element set
+            $collection_metadata = insert_element_set(array(
+                'name' => 'IIIF Collection Metadata',
+                'description' => '',
+                'record_type' => 'Collection'
+            ), array(
+                array('name' => 'Original @id', 'description' => ''),
+                array('name' => 'IIIF Type', 'description' => ''),
+                array('name' => 'Parent Collection', 'description' => ''),
+                array('name' => 'JSON Data', 'description' => ''),
+            ));
+            set_option('iiifitems_collection_element_set', $collection_metadata->id);
+            // Add Annotation item type elements
+            $annotation_metadata = insert_item_type(array(
+                'name' => 'Annotation',
+                'description' => 'An OA-compliant annotation',
+            ), array(
+                array('name' => 'On Canvas', 'description' => 'URI of the attached canvas'),
+                array('name' => 'Selector', 'description' => 'The SVG boundary area of the annotation'),
+            ));
+            set_option('iiifitems_annotation_item_type', $annotation_metadata->id);
+            $annotation_metadata_elements = array();
+            foreach (get_db()->getTable('Element')->findByItemType($annotation_metadata->id) as $element) {
+                $annotation_metadata_elements[] = $element->id;
+            }
+            set_option('iiifitems_annotation_elements', json_encode($annotation_metadata_elements));
+        }
+        
+        public function hookUninstall() {
+            $elementSetTable = get_db()->getTable('ElementSet');
+            $itemTypeTable = get_db()->getTable('ItemType');
+            // Remove Item Metadata element set
+            $elementSetTable->find(get_option('iiifitems_item_element_set'))->delete();
+            delete_option('iiifitems_item_element_set');
+            // Remove Collection Metadata element set
+            $elementSetTable->find(get_option('iiifitems_collection_element_set'))->delete();
+            delete_option('iiifitems_collection_element_set');
+            // Remove Annotation item type elements
+            $annotationItemType = $itemTypeTable->find(get_option('iiifitems_annotation_item_type'));
+            foreach (json_decode(get_option('iiifitems_annotation_elements')) as $_ => $element_id) {
+                get_db()->getTable('Element')->find($element_id)->delete();
+            }
+            $annotationItemType->delete();
+            delete_option('iiifitems_annotation_item_type');
+        }
+        
         public function filterDisplayElements($elementsBySet) {
+            unset($elementsBySet['Annotation Item Type Metadata']['Selector']);
+            unset($elementsBySet['IIIF Item Metadata']['JSON Data']);
             unset($elementsBySet['IIIF Collection Metadata']['JSON Data']);
             return $elementsBySet;
         }
@@ -65,7 +128,7 @@ class IiifItemsPlugin extends Omeka_plugin_AbstractPlugin
             return $comps;
         }
         
-        /* */
+        /* Item Metadata */
         
         public function formForItemDisplay($comps, $args) {
             $comps['add_input'] = false;
