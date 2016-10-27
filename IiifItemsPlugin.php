@@ -1,9 +1,20 @@
 <?php
-class IiifItemsPlugin extends Omeka_plugin_AbstractPlugin
-{
+defined('IIIF_ITEMS_DIRECTORY') or define('IIIF_ITEMS_DIRECTORY', dirname(__FILE__));
+require_once dirname(__FILE__) . '/helpers/IiifItemsFunctions.php';
+
+class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
+{   
 	protected $_hooks = array(
             'install',
             'uninstall',
+            'define_routes',
+            'config_form',
+            'config',
+            'public_items_show',
+            'admin_items_show',
+            'public_collections_show',
+            'admin_collections_show',
+            'admin_files_show',
 	);
 	
 	protected $_filters = array(
@@ -76,6 +87,10 @@ class IiifItemsPlugin extends Omeka_plugin_AbstractPlugin
                 $annotation_metadata_elements[] = $element->id;
             }
             set_option('iiifitems_annotation_elements', json_encode($annotation_metadata_elements));
+            // Add IIIF server options
+            set_option('iiifitems_bridge_prefix', '');
+            $serverUrlHelper = new Zend_View_Helper_ServerUrl;
+            set_option('iiifitems_mirador_path', $serverUrlHelper->serverUrl() . public_url('plugins') . '/IiifItems/views/shared/js/mirador');
         }
         
         public function hookUninstall() {
@@ -94,6 +109,80 @@ class IiifItemsPlugin extends Omeka_plugin_AbstractPlugin
             }
             $annotationItemType->delete();
             delete_option('iiifitems_annotation_item_type');
+            // Remove IIIF server options
+            delete_option('iiifitems_bridge_prefix');
+            delete_option('iiifitems_mirador_path');
+        }
+        
+        public function hookDefineRoutes($args) {
+            $args['router']->addConfig(new Zend_Config_Ini(dirname(__FILE__) . '/routes.ini', 'routes'));
+        }
+        
+        public function hookConfigForm() {
+            require dirname(__FILE__) . '/config_form.php';
+        }
+        
+        public function hookConfig($args) {
+            $csrfValidator = new Omeka_Form_SessionCsrf;
+            if (!$csrfValidator->isValid($args['post'])) {
+                throw Omeka_Validate_Exception(__("Invalid CSRF token."));
+            }
+            $data = $args['post'];
+            set_option('iiifitems_bridge_prefix', $data['iiifitems_bridge_prefix']);
+            set_option('iiifitems_mirador_path', $data['iiifitems_mirador_path']);
+        }
+        
+        public function hookAdminFilesShow($args) {
+            if (!isset($args['view'])) {
+                $args['view'] = get_view();
+            }
+            $iiifUrl = public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_manifest');
+            echo '<div class="element-set">';
+            echo '<h2>IIIF File Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '</div>';
+        }
+        
+        public function hookPublicItemsShow($args) {
+            if (!isset($args['view'])) {
+                $args['view'] = get_view();
+            }
+            $iiifUrl = absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_manifest');
+            echo '<h2>IIIF Manifest</h2><p><a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
+        }
+        
+        public function hookAdminItemsShow($args) {
+            if (!isset($args['view'])) {
+                $args['view'] = get_view();
+            }
+            $iiifUrl = public_full_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_manifest');
+            echo '<div class="element-set">';
+            echo '<h2>IIIF Item Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '</div>';
+        }
+        
+        public function hookPublicCollectionsShow($args) {
+            if (!isset($args['view'])) {
+                $args['view'] = get_view();
+            }
+            $iiifUrl = absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_manifest');
+            echo '<div class="element-set">';
+            echo '<h2>IIIF Manifest</h2><p><a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '</div>';    
+        }
+        
+        public function hookAdminCollectionsShow($args) {
+            if (!isset($args['view'])) {
+                $args['view'] = get_view();
+            }
+            $iiifUrl = public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_manifest');
+            echo '<div class="element-set">';
+            echo '<h2>IIIF Collection Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '</div>';
         }
         
         public function filterDisplayElements($elementsBySet) {
