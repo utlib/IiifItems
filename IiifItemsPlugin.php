@@ -18,6 +18,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
 	);
 	
 	protected $_filters = array(
+            'admin_navigation_main',
             'display_elements',
             // Annotation Type Metadata
             'formForAnnotationOnCanvas' => array('ElementForm', 'Item', 'Item Type Metadata', 'On Canvas'),
@@ -91,6 +92,20 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             set_option('iiifitems_bridge_prefix', '');
             $serverUrlHelper = new Zend_View_Helper_ServerUrl;
             set_option('iiifitems_mirador_path', $serverUrlHelper->serverUrl() . public_url('plugins') . '/IiifItems/views/shared/js/mirador');
+            // Add tables
+            $db = $this->_db;
+            $db->query("CREATE TABLE IF NOT EXISTS `{$db->prefix}iiif_items_job_statuses` (
+                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `source` varchar(255) NOT NULL,
+                `dones` int(11) NOT NULL,
+                `skips` int(11) NOT NULL,
+                `fails` int(11) NOT NULL,
+                `status` varchar(32) NOT NULL,
+                `progress` int(11) NOT NULL DEFAULT 0,
+                `total` int(11) NOT NULL DEFAULT 100,
+                `created` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+                `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
         }
         
         public function hookUninstall() {
@@ -112,6 +127,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             // Remove IIIF server options
             delete_option('iiifitems_bridge_prefix');
             delete_option('iiifitems_mirador_path');
+            // Drop tables
+            $db = $this->_db;
+            $db->query("DROP TABLE IF EXISTS `{$db->prefix}iiif_items_job_statuses`;");
         }
         
         public function hookDefineRoutes($args) {
@@ -183,6 +201,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             echo '<h2>IIIF Collection Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
+        }
+        
+        public function filterAdminNavigationMain($nav) {
+            $nav[] = array(
+                'label' => __('IIIF Import'),
+                'uri' => url('iiif-items/import'),
+            );
+            return $nav;
         }
         
         public function filterDisplayElements($elementsBySet) {
