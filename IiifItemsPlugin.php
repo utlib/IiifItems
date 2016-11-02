@@ -146,8 +146,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 throw Omeka_Validate_Exception(__("Invalid CSRF token."));
             }
             $data = $args['post'];
-            set_option('iiifitems_bridge_prefix', $data['iiifitems_bridge_prefix']);
-            set_option('iiifitems_mirador_path', $data['iiifitems_mirador_path']);
+            set_option('iiifitems_bridge_prefix', rtrim($data['iiifitems_bridge_prefix'], '/'));
+            set_option('iiifitems_mirador_path', rtrim($data['iiifitems_mirador_path'], '/'));
         }
         
         public function hookAdminFilesShow($args) {
