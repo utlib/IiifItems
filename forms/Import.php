@@ -20,7 +20,7 @@ class IiifItems_Form_Import extends Omeka_Form {
         // Type (Collection/Manifest/Image-Canvas)
         $this->addElement('radio', 'items_import_type', array(
             'label' => __('Type'),
-            'multiOptions' => array('Collection', 'Manifest', 'Image/Canvas'),
+            'multiOptions' => array('Collection', 'Manifest', 'Canvas'),
         ));
         // Source
         $this->addElement('radio', 'items_import_source', array(
