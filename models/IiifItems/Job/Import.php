@@ -19,7 +19,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             // Get import task ready
             switch ($this->_importSource) {
                 case 'File': $importSourceLabel = 'Upload: ' . $this->_importSourceBody; break;
-                case 'Url': $importSourceLabel = $this->_importSourceBody;
+                case 'Url': $importSourceLabel = $this->_importSourceBody; break;
                 case 'Paste': $importSourceLabel = 'Pasted JSON'; break; 
                 default: $importSourceLabel = 'Unknown'; break;
             }
@@ -331,7 +331,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
                 } else {
                     $theSize = ($image['resource']['width'] >= $image['resource']['height']) ? (','.$trySize) : ($trySize.',');
                 }
-                $imageUrl = $image['resource']['service']['@id'] . '/full/' . $theSize . '/0/' . $this->_getIiifImageSuffix($image);
+                $imageUrl = rtrim($image['resource']['service']['@id'], '/') . '/full/' . $theSize . '/0/' . $this->_getIiifImageSuffix($image);
                 debug("Downloading image " . $imageUrl);
                 insert_files_for_item($item, 'Url', $imageUrl);
                 debug("Download OK: " . $imageUrl);
