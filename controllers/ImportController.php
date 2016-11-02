@@ -64,10 +64,10 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             }
             switch ($form->getValue('items_preview_size')) {
                 case 0:
-                    $importPreviewSize = '96,';
+                    $importPreviewSize = 96;
                 break;
                 case 1:
-                    $importPreviewSize = '512,';
+                    $importPreviewSize = 512;
                 break;
                 case 2:
                     $importPreviewSize = 'full';
@@ -77,8 +77,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 break;
             }
             Zend_Registry::get('bootstrap')->getResource('jobs')->sendLongRunning('IiifItems_Job_Import', array(
-                'isPublic' => $form->getValue('items_are_public'),
-                'isFeatured' => $form->getValue('items_are_featured'),
+                'isPublic' => $form->getValue('items_are_public') ? 1 : 0,
+                'isFeatured' => $form->getValue('items_are_featured') ? 1 : 0,
                 'importType' => $importType,
                 'importSource' => $importSource,
                 'importSourceBody' => $importSourceBody,
