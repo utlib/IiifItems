@@ -169,7 +169,7 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
                 $newFile = array(
                     '@id' => $webPath . '/canvas',
                     '@type' => 'sc:Canvas',
-                    'label' => metadata($item, 'display_title'),
+                    'label' => metadata($item, array('Dublin Core', 'Title')),
                     'width' => $fileWidth,
                     'height' => $fileHeight,
                     'images' => array(array(
