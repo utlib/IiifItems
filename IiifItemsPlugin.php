@@ -95,7 +95,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             // Add tables
             $db = $this->_db;
             $db->query("CREATE TABLE IF NOT EXISTS `{$db->prefix}iiif_items_job_statuses` (
-                `id` int(11) NOT NULL AUTO_INCREMENT,
+                `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
                 `source` varchar(255) NOT NULL,
                 `dones` int(11) NOT NULL,
                 `skips` int(11) NOT NULL,
@@ -103,8 +103,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 `status` varchar(32) NOT NULL,
                 `progress` int(11) NOT NULL DEFAULT 0,
                 `total` int(11) NOT NULL DEFAULT 100,
-                `created` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-                `updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+                `added` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+                `modified` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
         }
         
