@@ -85,13 +85,49 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
     }
         
     private function __itemsManifestJson($item) {
+        //Create IIIF Presentation 2.0 top-level template
+        $absoluteUrl = absolute_url(array('id' => $item->id));
+        $json = array(
+            '@context' => 'http://www.shared-canvas.org/ns/context.json',
+            '@id' => $absoluteUrl,
+            '@type' => 'sc:Manifest',
+            'label' => metadata($item, array('Dublin Core', 'Title')),
+            'sequences' => array(array(
+                '@id' => $absoluteUrl . '/sequence',
+                '@type' => 'sc:Canvas',
+                'label' => '',
+            )),
+        );
+        
+        //Backdoor the JSON Data if found
+        //TOOD: Make this more localization-proof
+        try {
+            $iiifItemMetadataSet = get_record_by_id('ElementSet', get_option('iiifitems_item_element_set'));
+            $iiifJsonDataElement = get_db()->getTable('Element')->findBy(array(
+                'element_set_id' => $iiifItemMetadataSet->id,
+                'name' => 'JSON Data',
+            ), 1)[0];
+            $iiifJsonDataText = get_db()->getTable('ElementText')->findBy(array(
+                'element_id' => $iiifJsonDataElement->id,
+                'record_type' => 'Item',
+                'record_id' => $item->id,
+            ), 1);
+            if ($iiifJsonDataText) {
+                $iiifJsonDataText = $iiifJsonDataText[0]->text;
+                $iiifJsonData = json_decode($iiifJsonDataText, true);
+                $json['sequences'][0]['canvases'] = array($iiifJsonData);
+                return $json;
+            }
+        }
+        catch (Exception $e) {
+        }
+        
         //Get metadata and current URL
         $elements = all_element_texts($item, array(
             'return_type' => 'array', 
             'show_empty_elements' => true,
             'show_element_set_headings' => true,
         ));
-        $absoluteUrl = absolute_url(array('id' => $item->id));
         $iiifRoot = get_option('iiifitems_bridge_prefix');
 
         //Fill sequence with information from files
@@ -126,19 +162,7 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
             );
             $files[] = $newFile;
         }
-
-        //Create IIIF Presentation 2.0 top-level template
-        $json = array(
-            '@context' => 'http://www.shared-canvas.org/ns/context.json',
-            '@id' => $absoluteUrl,
-            '@type' => 'sc:Manifest',
-            'sequences' => array(array(
-                '@id' => $absoluteUrl . '/sequence',
-                '@type' => 'sc:Canvas',
-                'label' => '',
-                'canvases' => $files,
-            )),
-        );
+        $json['sequences'][0]['canvases'] = $files;
 
         //Add title and description if found
         if ($elements['Dublin Core']['Title']) {
@@ -151,13 +175,47 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
     }
 
     private function __collectionsManifestJson($collection) {
+        //Backdoor the JSON Data if found
+        //TOOD: Make this more localization-proof
+        try {
+            $iiifCollectionMetadataSet = get_record_by_id('ElementSet', get_option('iiifitems_collection_element_set'));
+            $iiifJsonDataElement = get_db()->getTable('Element')->findBySql('elements.name = ? AND element_set_id = ?', array(
+                'JSON Data',
+                $iiifCollectionMetadataSet->id,
+            ), true);
+            $iiifJsonDataText = get_db()->getTable('ElementText')->findBySql('element_id = ? AND record_type = ? AND record_id = ?', array(
+                $iiifJsonDataElement->id,
+                'Collection',
+                $collection->id,
+            ), true);
+            if ($iiifJsonDataText) {
+                $iiifJsonData = json_decode($iiifJsonDataText->text, true);
+                return $iiifJsonData;
+            }
+        }
+        catch (Exception $e) {
+        }
+        
+        //Create IIIF Presentation 2.0 top-level template
+        $absoluteUrl = absolute_url(array('id' => $collection->id));
+        $json = array(
+            '@context' => 'http://www.shared-canvas.org/ns/context.json',
+            '@id' => $absoluteUrl,
+            '@type' => 'sc:Manifest',
+            'label' => metadata($collection, array('Dublin Core', 'Title')),
+            'sequences' => array(array(
+                '@id' => $absoluteUrl . '/sequence',
+                '@type' => 'sc:Canvas',
+                'label' => '',
+            )),
+        );
+        
         //Get metadata and current URL
         $elements = all_element_texts($collection, array(
             'return_type' => 'array', 
             'show_empty_elements' => true,
             'show_element_set_headings' => true,
         ));
-        $absoluteUrl = absolute_url(array('id' => $collection->id));
         $iiifRoot = get_option('iiifitems_bridge_prefix');
 
         //Fill sequence with information from the files attached
@@ -194,19 +252,7 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
                 $files[] = $newFile;
             }
         }
-
-        //Create IIIF Presentation API 2.0 template
-        $json = array(
-            '@context' => 'http://www.shared-canvas.org/ns/context.json',
-            '@id' => $absoluteUrl,
-            '@type' => 'sc:Manifest',
-            'sequences' => array(array(
-                '@id' => $absoluteUrl . '/sequence',
-                '@type' => 'sc:Canvas',
-                'label' => '',
-                'canvases' => $files,
-            )),
-        );
+        $json['sequences'][0]['canvases'] = $files;
 
         //Add title and description if found
         if ($elements['Dublin Core']['Title']) {
