@@ -104,8 +104,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 `status` varchar(32) NOT NULL,
                 `progress` int(11) NOT NULL DEFAULT 0,
                 `total` int(11) NOT NULL DEFAULT 100,
-                `added` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-                `modified` timestamp NOT NULL ON UPDATE CURRENT_TIMESTAMP
+                `added` timestamp DEFAULT '2016-11-01 00:00:00',
+                `modified` timestamp DEFAULT NOW() ON UPDATE NOW()
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
         }
         
