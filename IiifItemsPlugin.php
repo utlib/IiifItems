@@ -7,6 +7,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
 	protected $_hooks = array(
             'install',
             'uninstall',
+            'upgrade',
             'define_routes',
             'config_form',
             'config',
@@ -130,6 +131,32 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             // Drop tables
             $db = $this->_db;
             $db->query("DROP TABLE IF EXISTS `{$db->prefix}iiif_items_job_statuses`;");
+        }
+        
+        public function hookUpgrade($args) {
+            $oldVersion = $args['old_version'];
+            $newVersion = $args['new_version'];
+            $doMigrate = false;
+            
+            $versions = array();
+            foreach (glob(dirname(__FILE__) . '/migrations/*.php') as $migrationFile) {
+                $className = 'IiifItems_Migration_' . basename($migrationFile, '.php');
+                include $migrationFile;
+                $versions[$className::$version] = new $className();
+            }
+            uksort($versions, 'version_compare');
+            
+            foreach ($versions as $version => $migration) {
+                if (version_compare($version, $oldVersion, '>')) {
+                    $doMigrate = true;
+                }
+                if ($doMigrate) {
+                    $migration->up();
+                    if (version_compare($version, $newVersion, '>')) {
+                        break;
+                    }
+                }
+            }
         }
         
         public function hookDefineRoutes($args) {
