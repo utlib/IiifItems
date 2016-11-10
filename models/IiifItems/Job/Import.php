@@ -91,6 +91,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             debug($e->getMessage());
             debug($e->getTraceAsString());
             $js->status = 'Failed';
+            $js->modified = date('Y-m-d H:i:s');
             $js->save();
         }
     }
@@ -185,7 +186,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         debug("Scanning subcollections for " . $collectionData['@id']);
         if (isset($collectionData['collections'])) {
             foreach ($collectionData['collections'] as $subcollectionSource) {
-                $subcollectionRaw = file_get_contents($subcollectionSource);
+                $subcollectionRaw = file_get_contents($subcollectionSource['@id']);
                 $subcollection = json_decode($subcollectionRaw, true);
                 $this->_processCollection($subcollection, $jobStatus, $collection);
             }
@@ -194,7 +195,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         debug("Scanning submanifests for " . $collectionData['@id']);
         if (isset($collectionData['manifests'])) {
             foreach ($collectionData['manifests'] as $submanifestSource) {
-                $submanifestRaw = file_get_contents($submanifestSource);
+                $submanifestRaw = file_get_contents($submanifestSource['@id']);
                 $submanifest = json_decode($submanifestRaw, true);
                 $this->_processManifest($submanifest, $jobStatus, $collection);
             }
