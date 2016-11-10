@@ -174,7 +174,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             ),
         );
         if ($parentCollection !== null) {
-            $collectionMetadata['IIIF Collection Metadata']['Parent Collection'] = $parentCollection->id;
+            $collectionMetadata['IIIF Collection Metadata']['Parent Collection'] = array(array('text' => $parentCollection->id, 'html' => false));
         }
         // Create collection
         debug("Creating collection for collection " . $collectionData['@id']);
@@ -246,7 +246,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             ),
         );
         if ($parentCollection !== null) {
-            $manifestMetadata['IIIF Collection Metadata']['Parent Collection'] = $parentCollection->id;
+            $manifestMetadata['IIIF Collection Metadata']['Parent Collection'] = array(array('text' => $parentCollection->id, 'html' => false));
         }
         // Create collection
         debug("Creating collection for manifest " . $manifestData['@id']);
@@ -292,7 +292,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         );
         if ($parentCollection !== null) {
             $canvasImportOptions['collection_id'] = $parentCollection->id;
-            $canvasMetadata['IIIF Item Metadata']['Parent Collection'] = $parentCollection->id;
+            $canvasMetadata['IIIF Item Metadata']['Parent Collection'] = array(array('text' => $parentCollection->id, 'html' => false));
         }
         // Process canvases
         debug("Processing canvas " . $canvasData['@id']);
