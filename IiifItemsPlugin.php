@@ -26,6 +26,12 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'inputForAnnotationOnCanvas' => array('ElementInput', 'Item', 'Item Type Metadata', 'On Canvas'),
             'formForAnnotationSelector' => array('ElementForm', 'Item', 'Item Type Metadata', 'Selector'),
             'inputForAnnotationSelector' => array('ElementInput', 'Item', 'Item Type Metadata', 'Selector'),
+            // File Metadata
+            'formForFileOriginalId' => array('ElementForm', 'File', 'IIIF File Metadata', 'Original @id'),
+            'inputForFileOriginalId' => array('ElementInput', 'File', 'IIIF File Metadata', 'Original @id'),
+            'displayForFileJson' => array('Display', 'File', 'IIIF File Metadata', 'JSON Data'),
+            'formForFileJson' => array('ElementForm', 'File', 'IIIF File Metadata', 'JSON Data'),
+            'inputForFileJson' => array('ElementInput', 'File', 'IIIF File Metadata', 'JSON Data'),
             // Item Metadata
             'formForItemDisplay' => array('ElementForm', 'Item', 'IIIF Item Metadata', 'Display as IIIF?'),
             'inputForItemDisplay' => array('ElementInput', 'Item', 'IIIF Item Metadata', 'Display as IIIF?'),
@@ -51,6 +57,16 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
 	);
         
         public function hookInstall() {
+            // Add IIIF Metadata for Files
+            $file_metadata = insert_element_set(array(
+                'name' => 'IIIF File Metadata',
+                'description' => '',
+                'record_type' => 'File'
+            ), array(
+                array('name' => 'Original @id', 'description' => ''),
+                array('name' => 'JSON Data', 'description' => ''),
+            ));
+            set_option('iiifitems_file_element_set', $file_metadata->id);
             // Add Item Metadata element set
             $item_metadata = insert_element_set(array(
                 'name' => 'IIIF Item Metadata',
@@ -240,6 +256,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function filterDisplayElements($elementsBySet) {
             unset($elementsBySet['Annotation Item Type Metadata']['Selector']);
+            unset($elementsBySet['IIIF File Metadata']['JSON Data']);
             unset($elementsBySet['IIIF Item Metadata']['JSON Data']);
             unset($elementsBySet['IIIF Collection Metadata']['JSON Data']);
             return $elementsBySet;
@@ -265,6 +282,35 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function inputForAnnotationSelector($comps, $args) {
+            $comps['form_controls'] = '';
+            $comps['html_checkbox'] = false;
+            return $comps;
+        }
+        
+        /* File Metadata */
+        
+        public function formForFileOriginalId($comps, $args) {
+            $comps['add_input'] = false;
+            return $comps;
+        }
+        
+        public function inputForFileOriginalId($comps, $args) {
+            $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
+            $comps['form_controls'] = '';
+            $comps['html_checkbox'] = false;
+            return $comps;
+        }
+        
+        public function displayForFileJson($text, $args) {
+            return '';
+        }
+        
+        public function formForFileJson($comps, $args) {
+            $comps['add_input'] = false;
+            return $comps;
+        }
+        
+        public function inputForFileJson($comps, $args) {
             $comps['form_controls'] = '';
             $comps['html_checkbox'] = false;
             return $comps;
