@@ -162,20 +162,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             throw new Exception(__('Not a valid collection.'));
         }
         // Set up metadata
-        $collectionMetadata = array(
-            'Dublin Core' => array(
-                'Title' => array(array('text' => $collectionData['label'], 'html' => false)),
-                'Description' => array(array('text' => $collectionData['description'], 'html' => false)),
-            ),
-            'IIIF Collection Metadata' => array(
-                'Original @id' => array(array('text' => $collectionData['@id'], 'html' => false)),
-                'IIIF Type' => array(array('text' => 'Collection', 'html' => false)),
-                'JSON Data' => array(array('text' => json_encode($collectionData, JSON_UNESCAPED_SLASHES), 'html' => false)),
-            ),
-        );
-        if ($parentCollection !== null) {
-            $collectionMetadata['IIIF Collection Metadata']['Parent Collection'] = array(array('text' => $parentCollection->id, 'html' => false));
-        }
+        $collectionMetadata = $this->_buildMetadata('Collection', $collectionData, $parentCollection);
         // Create collection
         debug("Creating collection for collection " . $collectionData['@id']);
         $collection = insert_collection(array(
@@ -222,6 +209,8 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $collection->featured = $this->_isFeatured;
         $collection->save();
         debug("Collection OK.");
+        // Return the created Collection
+        return $collection;
     }
     
     protected function _processManifest($manifestData, $jobStatus, $parentCollection=null) {
@@ -234,20 +223,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             'public' => false,
             'featured' => false,
         );
-        $manifestMetadata = array(
-            'Dublin Core' => array(
-                'Title' => array(array('text' => $manifestData['label'], 'html' => false)),
-                'Description' => array(array('text' => $manifestData['description'], 'html' => false)),
-            ),
-            'IIIF Collection Metadata' => array(
-                'Original @id' => array(array('text' => $manifestData['@id'], 'html' => false)),
-                'IIIF Type' => array(array('text' => 'Manifest', 'html' => false)),
-                'JSON Data' => array(array('text' => json_encode($manifestData, JSON_UNESCAPED_SLASHES), 'html' => false)),
-            ),
-        );
-        if ($parentCollection !== null) {
-            $manifestMetadata['IIIF Collection Metadata']['Parent Collection'] = array(array('text' => $parentCollection->id, 'html' => false));
-        }
+        $manifestMetadata = $this->_buildMetadata('Manifest', $manifestData, $parentCollection);
         // Create collection
         debug("Creating collection for manifest " . $manifestData['@id']);
         $manifest = insert_collection($manifestImportOptions, $manifestMetadata);
@@ -268,6 +244,8 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         }
         $manifest->save();
         debug("Manifest OK.");
+        // Return the created Collection
+        return $manifest;
     }
     
     protected function _processCanvas($canvasData, $jobStatus, $parentCollection=null) {
@@ -280,27 +258,25 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             'public' => false,
             'featured' => false,
         );
-        $canvasMetadata = array(
-            'Dublin Core' => array(
-                'Title' => array(array('text' => $canvasData['label'], 'html' => false)),
-            ),
-            'IIIF Item Metadata' => array(
-                'Display as IIIF?' => array(array('text' => 'Yes', 'html' => false)),
-                'Original @id' => array(array('text' => $canvasData['@id'], 'html' => false)),
-                'JSON Data' => array(array('text' => json_encode($canvasData, JSON_UNESCAPED_SLASHES), 'html' => false)),
-            ),
-        );
+        $canvasMetadata = $this->_buildMetadata('Item', $canvasData, $parentCollection);
         if ($parentCollection !== null) {
             $canvasImportOptions['collection_id'] = $parentCollection->id;
-            $canvasMetadata['IIIF Item Metadata']['Parent Collection'] = array(array('text' => $parentCollection->id, 'html' => false));
         }
         // Process canvases
         debug("Processing canvas " . $canvasData['@id']);
         $newItem = insert_item($canvasImportOptions, $canvasMetadata);
         foreach ($canvasData['images'] as $image) {
-            switch ($this->_downloadIiifImageToItem($newItem, $image, $this->_importPreviewSize)) {
+            $downloadResult = $this->_downloadIiifImageToItem($newItem, $image, $this->_importPreviewSize);
+            switch ($downloadResult['status']) {
                 case 1:
                     $jobStatus->dones++;
+                    $downloadResult['file']->addElementTextsByArray(array(
+                        'IIIF File Metadata' => array(
+                            'Original @id' => array(array('text' => $image['@id'], 'html' => false)),
+                            'JSON Data' => array(array('text' => json_encode($image, JSON_UNESCAPED_SLASHES), 'html' => false)),
+                        ),
+                    ));
+                    $downloadResult['file']->saveElementTexts();
                 break;
                 case 0:
                     $jobStatus->skips++;
@@ -317,13 +293,15 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $jobStatus->modified = date('Y-m-d H:i:s');
         $jobStatus->save();
         debug("Canvas OK.");
+        // Return the created Item
+        return $newItem;
     }
     
     protected function _downloadIiifImageToItem($item, $image, $preferredSize='full') {
         $trySizes = array($preferredSize, 512, 96);
         if (!isset($image['resource']) || !isset($image['resource']['service']) || !isset($image['resource']['height']) || !isset($image['resource']['width'])) {
             debug("Missing stuff?");
-            return 0;
+            return array('status' => 0);
         }
         foreach ($trySizes as $trySize) {
             try {
@@ -334,14 +312,14 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
                 }
                 $imageUrl = rtrim($image['resource']['service']['@id'], '/') . '/full/' . $theSize . '/0/' . $this->_getIiifImageSuffix($image);
                 debug("Downloading image " . $imageUrl);
-                insert_files_for_item($item, 'Url', $imageUrl);
+                $downloadedFile = insert_files_for_item($item, 'Url', $imageUrl)[0];
                 debug("Download OK: " . $imageUrl);
-                return 1;
+                return array('status' => 1, 'file' => $downloadedFile);
             } catch (Exception $e) {
                 debug("Download with size " . $trySize . " failed, trying next...");
             }
         }
-        return -1;
+        return array('status' => -1);
     }
     
     protected function _getIiifImageSuffix($image) {
@@ -361,5 +339,49 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         catch (Exception $e) {
             return 'native.jpg';
         }
+    }
+    
+    protected function _buildMetadata($type, $jsonData, $parentCollection=null) {
+        switch ($type) {
+            case 'Collection':
+                $metadataPrefix = 'IIIF Collection Metadata';
+            break;
+            case 'Manifest':
+                $metadataPrefix = 'IIIF Collection Metadata';
+            break;
+            case 'Item':
+                $metadataPrefix = 'IIIF Item Metadata';
+            break;
+        }
+        $metadata = array(
+            'Dublin Core' => array(
+                'Title' => array(array('text' => $jsonData['label'], 'html' => false)),
+            ),
+            $metadataPrefix => array(
+                'Original @id' => array(array('text' => $jsonData['@id'], 'html' => false)),
+                'JSON Data' => array(array('text' => json_encode($jsonData, JSON_UNESCAPED_SLASHES), 'html' => false)),
+            ),
+        );
+        switch ($type) {
+            case 'Collection': case 'Manifest':
+                $metadata['IIIF Collection Metadata']['IIIF Type'] = $type;
+            break;
+            case 'Item':
+                $metadata['IIIF Item Metadata']['Display as IIIF?'] = 'Yes';
+            break;
+        }
+        if (isset($jsonData['description'])) {
+            $metadata['Dublin Core']['Description'] = array(array('text' => $jsonData['description'], 'html' => false));
+        }
+        if (isset($jsonData['attribution'])) {
+            $metadata['Dublin Core']['Publisher'] = array(array('text' => $jsonData['attribution'], 'html' => false));
+        }
+        if (isset($jsonData['license'])) {
+            $metadata['Dublin Core']['Rights'] = array(array('text' => $jsonData['license'], 'html' => false));
+        }
+        if ($parentCollection !== null) {
+            $metadata[$metadataPrefix]['Parent Collection'] = array(array('text' => $parentCollection->id, 'html' => false));
+        }
+        return $metadata;
     }
 }
