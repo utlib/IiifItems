@@ -79,7 +79,7 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
                 $json = $this->__manifestTemplate($atId, $seqId, $label);
             }
             $json['sequences'][0]['canvases'] = array();
-            foreach ($this->_helper->db->getTable('Item')->findBy(array('collection_id' => $collection->id)) as $item) {
+            foreach ($this->_helper->db->getTable('Item')->findBy(array('collection' => $collection)) as $item) {
                 $json['sequences'][0]['canvases'][] = $this->__itemCanvasJson($item);
             }
             $this->__addDublinCoreMetadata($json, $collection);
