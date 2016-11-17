@@ -175,7 +175,7 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
         return $fileJson;
     }
     
-    private function __itemCanvasJson($item, $canvasId=null, $applyDublin=false) {
+    private function __itemCanvasJson($item, $canvasId=null, $applyDublin=true) {
         // Fetch the canvas for the given item from IIIF metadata
         try {
             if ($iiifJsonData = $this->__fetchJsonData($item)) {
