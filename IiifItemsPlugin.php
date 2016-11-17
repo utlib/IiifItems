@@ -344,7 +344,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function displayForItemParent($text, $args) {
             $collection = get_db()->getTable('Collection')->find($args['element_text']->text);
-            return '<a href="' . url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . metadata($collection, 'display_title') . '</a>';
+            return '<a href="' . url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . metadata($collection, array('Dublin Core', 'Title')) . '</a>';
 
         }
         
@@ -403,7 +403,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function displayForCollectionParent($text, $args) {
             $collection = get_db()->getTable('Collection')->find($args['element_text']->text);
-            return '<a href="' . url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . metadata($collection, 'display_title') . '</a>';
+            return '<a href="' . url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . metadata($collection, array('Dublin Core', 'Title')) . '</a>';
 
         }
         
