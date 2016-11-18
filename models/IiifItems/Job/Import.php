@@ -356,6 +356,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $metadata = array(
             'Dublin Core' => array(
                 'Title' => array(array('text' => $jsonData['label'], 'html' => false)),
+                'Source' => array(),
             ),
             $metadataPrefix => array(
                 'Original @id' => array(array('text' => $jsonData['@id'], 'html' => false)),
@@ -364,10 +365,14 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         );
         switch ($type) {
             case 'Collection': case 'Manifest':
-                $metadata['IIIF Collection Metadata']['IIIF Type'] = $type;
+                $metadata['Dublin Core']['Source'][] = array('text' => $jsonData['@id'], 'html' => false);
+                $metadata['IIIF Collection Metadata']['IIIF Type'] = array(array('text' => $type, 'html' => false));
             break;
             case 'Item':
-                $metadata['IIIF Item Metadata']['Display as IIIF?'] = 'Yes';
+                if ($parentCollection) {
+                    $metadata['Dublin Core']['Source'][] = array('text' => metadata($parentCollection, array('IIIF Collection Metadata', 'Original @id'), array('no_escape' => true)), 'html' => false);
+                }
+                $metadata['IIIF Item Metadata']['Display as IIIF?'] = array(array('text' => 'Yes', 'html' => false));
             break;
         }
         if (isset($jsonData['description'])) {
@@ -379,7 +384,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         if (isset($jsonData['license'])) {
             $metadata['Dublin Core']['Rights'] = array(array('text' => $jsonData['license'], 'html' => false));
         }
-        if ($parentCollection !== null) {
+        if ($parentCollection !== null && $type != 'Item') {
             $metadata[$metadataPrefix]['Parent Collection'] = array(array('text' => $parentCollection->id, 'html' => false));
         }
         return $metadata;
