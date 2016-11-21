@@ -55,6 +55,14 @@ class IiifItems_Form_Import extends Omeka_Form {
                 'use_hidden_element' => false,
             ),
         ));
+        // Import backwards?
+        $this->addElement('checkbox', 'items_are_reversed', array(
+            'label' => __('Import in Reverse?'),
+            'description' => __('Select this if you have enabled any plugins or configurations that cause items to be listed latest-first.'),
+            'options' => array(
+                'use_hidden_element' => false,
+            ),
+        ));
         // Local Preview Size 
         $this->addElement('radio', 'items_preview_size', array(
             'label' => __('Local Preview Size'),

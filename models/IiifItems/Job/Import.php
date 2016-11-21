@@ -1,7 +1,7 @@
 <?php
 
 class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
-    private $_importType, $_importSource, $_importSourceBody, $_importPreviewSize, $_isPublic, $_isFeatured;
+    private $_importType, $_importSource, $_importSourceBody, $_importPreviewSize, $_isPublic, $_isFeatured, $_isReversed;
     private $_statusId;
     
     public function __construct(array $options) {
@@ -12,6 +12,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $this->_importPreviewSize = $options['importPreviewSize'];
         $this->_isPublic = $options['isPublic'];
         $this->_isFeatured = $options['isFeatured'];
+        $this->_isReversed = $options['isReversed'];
     }
     
     public function perform() {
@@ -229,7 +230,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $manifest = insert_collection($manifestImportOptions, $manifestMetadata);
         // Look for canvases and import them too
         if (isset($manifestData['sequences']) && isset($manifestData['sequences'][0]) && isset($manifestData['sequences'][0]['canvases'])) {
-            foreach ($manifestData['sequences'][0]['canvases'] as $canvas) {
+            foreach ($this->_inOrder($manifestData['sequences'][0]['canvases']) as $canvas) {
                 $this->_processCanvas($canvas, $jobStatus, $manifest);
             }
         }
@@ -389,4 +390,9 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         }
         return $metadata;
     }
+
+    protected function _inOrder($array) {
+        return ($this->_isReversed) ? array_reverse($array) : $array;
+    }
+    
 }
