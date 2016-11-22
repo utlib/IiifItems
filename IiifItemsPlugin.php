@@ -37,6 +37,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
 	);
         
         public function hookInstall() {
+            // Init
+            $elementTable = get_db()->getTable('Element');
             // Add IIIF Metadata for Files
             $file_metadata = insert_element_set(array(
                 'name' => 'IIIF File Metadata',
@@ -47,6 +49,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 array('name' => 'JSON Data', 'description' => ''),
             ));
             set_option('iiifitems_file_element_set', $file_metadata->id);
+            set_option('iiifitems_file_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF File Metadata', 'Original @id')->id);
+            set_option('iiifitems_file_json_element', $elementTable->findByElementSetNameAndElementName('IIIF File Metadata', 'JSON Data')->id);
             // Add Item Metadata element set
             $item_metadata = insert_element_set(array(
                 'name' => 'IIIF Item Metadata',
@@ -59,6 +63,10 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 array('name' => 'JSON Data', 'description' => ''),
             ));
             set_option('iiifitems_item_element_set', $item_metadata->id);
+            set_option('iiifitems_item_display_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Display as IIIF?')->id);
+            set_option('iiifitems_item_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Original @id')->id);
+            set_option('iiifitems_item_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Parent Collection')->id);
+            set_option('iiifitems_item_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'JSON Data')->id);
             // Add Collection Metadata element set
             $collection_metadata = insert_element_set(array(
                 'name' => 'IIIF Collection Metadata',
@@ -71,6 +79,10 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 array('name' => 'JSON Data', 'description' => ''),
             ));
             set_option('iiifitems_collection_element_set', $collection_metadata->id);
+            set_option('iiifitems_collection_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Original @id')->id);
+            set_option('iiifitems_collection_type_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'IIIF Type')->id);
+            set_option('iiifitems_collection_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Parent Collection')->id);
+            set_option('iiifitems_collection_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
             // Add Annotation item type elements
             $annotation_metadata = insert_item_type(array(
                 'name' => 'Annotation',
@@ -80,6 +92,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 array('name' => 'Selector', 'description' => 'The SVG boundary area of the annotation'),
             ));
             set_option('iiifitems_annotation_item_type', $annotation_metadata->id);
+            set_option('iiifitems_annotation_on_element', $elementTable->findByElementSetNameAndElementName('Item Type Metadata', 'On Canvas')->id);
+            set_option('iiifitems_annotation_selector_element', $elementTable->findByElementSetNameAndElementName('Item Type Metadata', 'Selector')->id);
             $annotation_metadata_elements = array();
             foreach (get_db()->getTable('Element')->findByItemType($annotation_metadata->id) as $element) {
                 $annotation_metadata_elements[] = $element->id;
@@ -108,12 +122,24 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         public function hookUninstall() {
             $elementSetTable = get_db()->getTable('ElementSet');
             $itemTypeTable = get_db()->getTable('ItemType');
+            // Remove File Metadata element set
+            $elementSetTable->find(get_option('iiifitems_file_element_set'))->delete();
+            delete_option('iiifitems_file_atid_element');
+            delete_option('iiifitems_file_json_element');
             // Remove Item Metadata element set
             $elementSetTable->find(get_option('iiifitems_item_element_set'))->delete();
             delete_option('iiifitems_item_element_set');
+            delete_option('iiifitems_item_display_element');
+            delete_option('iiifitems_item_atid_element');
+            delete_option('iiifitems_item_parent_element');
+            delete_option('iiifitems_item_json_element');
             // Remove Collection Metadata element set
             $elementSetTable->find(get_option('iiifitems_collection_element_set'))->delete();
             delete_option('iiifitems_collection_element_set');
+            delete_option('iiifitems_collection_atid_element');
+            delete_option('iiifitems_collection_type_element');
+            delete_option('iiifitems_collection_parent_element');
+            delete_option('iiifitems_collection_json_element');
             // Remove Annotation item type elements
             $annotationItemType = $itemTypeTable->find(get_option('iiifitems_annotation_item_type'));
             foreach (json_decode(get_option('iiifitems_annotation_elements')) as $_ => $element_id) {
@@ -121,6 +147,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             }
             $annotationItemType->delete();
             delete_option('iiifitems_annotation_item_type');
+            delete_option('iiifitems_annotation_on_element');
+            delete_option('iiifitems_annotation_selector_element');
             // Remove IIIF server options
             delete_option('iiifitems_bridge_prefix');
             delete_option('iiifitems_mirador_path');
