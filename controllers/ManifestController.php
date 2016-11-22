@@ -75,6 +75,9 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
         ), 'iiifitems_oa_uri');
         $label = metadata($collection, array('Dublin Core', 'Title'));
         if ($this->__getCollectionIiifType($collection) == 'Manifest') {
+            if ($json = get_cached_iiifitems_value_for($collection)) {
+                return $json;
+            }
             if (!($json = $this->__fetchJsonData($collection))) {
                 $json = $this->__manifestTemplate($atId, $seqId, $label);
             }
@@ -83,6 +86,7 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
                 $json['sequences'][0]['canvases'][] = $this->__itemCanvasJson($item);
             }
             $this->__addDublinCoreMetadata($json, $collection);
+            cache_iiifitems_value_for($collection, $json);
             return $json;
         }
         return $this->__manifestTemplate($atId, $seqId, $label);
