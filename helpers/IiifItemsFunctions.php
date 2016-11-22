@@ -20,3 +20,11 @@ function filter_minimal_input($comps, $args) {
     $comps['html_checkbox'] = false;
     return $comps;
 }
+
+function raw_iiif_metadata($record, $optionSlug) {
+    if ($elementText = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.record_type = ? AND element_texts.record_id = ?', array(get_option($optionSlug), get_class($record), $record->id))) {
+        return $elementText[0]->text;
+    } else {
+        return '';
+    }
+}

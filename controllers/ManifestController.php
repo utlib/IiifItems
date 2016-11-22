@@ -259,30 +259,24 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
     
     private function __fetchJsonData($record) {
         try {
-            $db = get_db();
             $recordClass = get_class($record);
             switch ($recordClass) {
                 case 'Collection':
-                    $iiifMetadataSet = get_record_by_id('ElementSet', get_option('iiifitems_collection_element_set'));
+                    $iiifMetadataSlug = 'iiifitems_collection_json_element';
                 break;
                 case 'Item':
-                    $iiifMetadataSet = get_record_by_id('ElementSet', get_option('iiifitems_item_element_set'));
+                    $iiifMetadataSlug = 'iiifitems_item_json_element';
                 break;
                 case 'File':
-                    $iiifMetadataSet = get_record_by_id('ElementSet', get_option('iiifitems_file_element_set'));
+                    $iiifMetadataSlug = 'iiifitems_file_json_element';
                 break;
                 default:
                     return null;
                 break;
             }
-            $iiifJsonDataElement = $db->getTable('Element')->findBySql('elements.element_set_id = ? AND elements.name = ?', array($iiifMetadataSet->id, 'JSON Data'))[0];
-            $iiifJsonDataText = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.record_type = ? AND element_texts.record_id = ?', array(
-                $iiifJsonDataElement->id,
-                $recordClass,
-                $record->id,
-            ));
+            $iiifJsonDataText = raw_iiif_metadata($record, $iiifMetadataSlug);
             if ($iiifJsonDataText) {
-                return json_decode($iiifJsonDataText[0]->text, true);
+                return json_decode($iiifJsonDataText, true);
             }
         } catch (Exception $ex) {
         }
@@ -291,16 +285,10 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
 
     private function __getCollectionIiifType($collection) {
         try {
-            $db = get_db();
-            $iiifMetadataSet = get_record_by_id('ElementSet', get_option('iiifitems_collection_element_set'));
-            $iiifTypeElement = $db->getTable('Element')->findBySql('elements.element_set_id = ? AND elements.name = ?', array($iiifMetadataSet->id, 'IIIF Type'))[0];
-            $iiifTypeText = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.record_type = ? AND element_texts.record_id = ?', array(
-                $iiifTypeElement->id,
-                'Collection',
-                $collection->id,
-            ));
+            $iiifMetadataSlug = 'iiifitems_collection_type_element';
+            $iiifTypeText = raw_iiif_metadata($collection, $iiifMetadataSlug);
             if ($iiifTypeText) {
-                return $iiifTypeText[0]->text;
+                return $iiifTypeText;
             }
         } catch (Exception $ex) {
         }
