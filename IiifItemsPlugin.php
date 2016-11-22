@@ -184,6 +184,13 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function hookInitialize() {
+            add_plugin_hook('after_save_file', 'hook_expire_cache');
+            add_plugin_hook('after_save_item', 'hook_expire_cache');
+            add_plugin_hook('after_save_collection', 'hook_expire_cache');
+            add_plugin_hook('after_delete_file', 'hook_expire_cache');
+            add_plugin_hook('after_delete_item', 'hook_expire_cache');
+            add_plugin_hook('after_delete_collection', 'hook_expire_cache');
+            
             add_filter(array('Display', 'File', 'IIIF File Metadata', 'JSON Data'), 'filter_hide_element_display');
             add_filter(array('Display', 'Item', 'IIIF Item Metadata', 'Parent Collection'), 'filter_hide_element_display');
             add_filter(array('Display', 'Collection', 'IIIF Collection Metadata', 'Parent Collection'), 'filter_hide_element_display');
@@ -203,7 +210,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             add_filter(array('ElementInput', 'File', 'IIIF File Metadata', 'JSON Data'), 'filter_minimal_input');
             add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'JSON Data'), 'filter_minimal_input');
             add_filter(array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'JSON Data'), 'filter_minimal_input');
-            
         }
         
         public function hookDefineRoutes($args) {
