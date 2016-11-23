@@ -37,7 +37,7 @@ function raw_iiif_metadata($record, $optionSlug) {
 
 function clear_iiifitems_cache_values_for($record, $bubble=true) {
     $db = get_db();
-    $db->query("DELETE FROM `{$db->prefix}iiif_items_cached_json_data` WHERE record_id = ? AND record_type = ?");
+    $db->query("DELETE FROM `{$db->prefix}iiif_items_cached_json_data` WHERE record_id = ? AND record_type = ?", array($record->id, get_class($record)));
     if ($bubble) {
         switch (get_class($record)) {
             case 'File':
