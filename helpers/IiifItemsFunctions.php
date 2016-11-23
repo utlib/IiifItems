@@ -42,18 +42,18 @@ function clear_iiifitems_cache_values_for($record, $bubble=true) {
         switch (get_class($record)) {
             case 'File':
                 if ($item = $record->getItem()) {
-                    clear_iiifitems_cache_for($item);
+                    clear_iiifitems_cache_values_for($item);
                 }
             break;
             case 'Item':
                 if ($collection = $record->getCollection()) {
-                    clear_iiifitems_cache_for($collection);
+                    clear_iiifitems_cache_values_for($collection);
                 }
             break;
             case 'Collection':
                 if ($parentCollectionId = raw_iiif_metadata($record, 'iiifitems_collection_parent_element')) {
                     if ($parentCollection = $db->getTable('Collection')->find($parentCollectionId)) {
-                        clear_iiifitems_cache_for($parentCollection, false);
+                        clear_iiifitems_cache_values_for($parentCollection, false);
                     }
                 }
             break;
