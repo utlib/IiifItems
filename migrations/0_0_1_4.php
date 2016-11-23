@@ -4,7 +4,7 @@ class IiifItems_Migration_0_0_1_4 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.4';
     
     public function up() {
-        $this->_createTable('omeka_iiif_items_cached_json_data', "
+        $this->_createTable('iiif_items_cached_json_data', "
             `id` int(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
             `record_id` int(11) NOT NULL,
             `record_type` varchar(50) NOT NULL,
