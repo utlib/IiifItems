@@ -62,7 +62,7 @@ function clear_iiifitems_cache_values_for($record, $bubble=true) {
 }
 
 function get_cached_iiifitems_value_for($record, $url='') {
-    if ($entry = (get_db()->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array(get_class($record), $record->id, $url)))) {
+    if ($entry = (get_db()->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url)))) {
         return json_decode($entry[0]->data, true);
     } else {
         return null;
@@ -72,9 +72,9 @@ function get_cached_iiifitems_value_for($record, $url='') {
 function cache_iiifitems_value_for($record, $jsonData, $url='') {
     $db = get_db();
     $jsonStr = json_encode($jsonData, JSON_UNESCAPED_SLASHES);
-    if ($cacheRecord = $db->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array(get_class($record), $record->id, $url))) {
-        $cacheRecord->data = $jsonStr;
-        $cacheRecord->save();
+    if ($cacheRecord = $db->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url))) {
+        $cacheRecord[0]->data = $jsonStr;
+        $cacheRecord[0]->save();
     } else {
         $cacheRecordId = $db->insert('IiifItems_CachedJsonData', array(
             'record_id' => $record->id,
