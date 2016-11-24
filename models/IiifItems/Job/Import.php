@@ -149,8 +149,28 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
                 try {
                     $subImages = count($jsonData['images']);
                     $taskCount += $subImages;
+                    if (isset($jsonData['otherContent'])) {
+                        foreach ($jsonData['otherContent'] as $otherContent) {
+                            if (is_array($otherContent)) {
+                                $downloadedData = file_get_contents($otherContent['@id']);
+                                $subJsonData = json_decode($downloadedData, true);
+                                $taskCount += $this->_generateTasks($subJsonData);
+                            } elseif (is_string($otherContent)) {
+                                $downloadedData = file_get_contents($otherContent);
+                                $subJsonData = json_decode($downloadedData, true);
+                                $taskCount += $this->_generateTasks($subJsonData);
+                            }
+                        }
+                    }
                 }
                 catch (Exception $e) {
+                }
+            break;
+            case 'sc:AnnotationList':
+                try {
+                    $previews = count($jsonData['resources']);
+                    $taskCount += $previews;
+                } catch (Exception $e) {
                 }
             break;
         }
@@ -287,18 +307,73 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
                 break;
             }
         }
-        
         // Up progress
         $jobStatus->progress++;
         $jobStatus->status = 'In Progress';
         $jobStatus->modified = date('Y-m-d H:i:s');
         $jobStatus->save();
         debug("Canvas OK.");
+        // Process annotations
+        if (isset($canvasData['otherContent'])) {
+            foreach ($canvasData['otherContent'] as $otherContent) {
+                if (is_array($otherContent)) {
+                    $downloadedData = file_get_contents($otherContent['@id']);
+                    $subJsonData = json_decode($downloadedData, true);
+                    foreach ($subJsonData['resources'] as $annotationJson) {
+                        $this->_processAnnotation($annotationJson, $jobStatus, $canvasData['images'][0], $otherContent['@id'], $parentCollection);
+                    }
+                } elseif (is_string($otherContent)) {
+                    $downloadedData = file_get_contents($otherContent);
+                    $subJsonData = json_decode($downloadedData, true);
+                    foreach ($subJsonData['resources'] as $annotationJson) {
+                        $this->_processAnnotation($annotationJson, $jobStatus, $canvasData['images'][0], $otherContent, $parentCollection);
+                    }
+                }
+            }
+        }
         // Return the created Item
         return $newItem;
     }
     
-    protected function _downloadIiifImageToItem($item, $image, $preferredSize='full') {
+    protected function _processAnnotation($annotationData, $jobStatus, $image, $source, $parentCollection=null) {
+        // Set up import options
+        $annotationImportOptions = $this->_buildAnnotationImportOptions($annotationData, $parentCollection);
+        $annotationMetadata = $this->_buildAnnotationMetadata($annotationData, $source, $parentCollection);
+      
+        // Process annotation
+        debug("Processing annotation " . $annotationData['@id']);
+        $newItem = insert_item($annotationImportOptions, $annotationMetadata);
+        
+        // Add preview image if xywh selector is available
+        if (is_string($annotationData['on'])) {
+            $xywhPosition = strstr($annotationData['on'], '#xywh=');
+            if ($xywhPosition !== false) {
+                $xywhPosition = substr($xywhPosition, 6);
+                debug($xywhPosition);
+                $downloadResult = $this->_downloadIiifImageToItem($newItem, $image, $this->_importPreviewSize, $xywhPosition);
+                switch ($downloadResult['status']) {
+                    case 1:
+                        $jobStatus->dones++;
+                    break;
+                    case 0:
+                        $jobStatus->skips++;
+                    break;
+                    default:
+                        $jobStatus->fails++;
+                    break;
+                }
+            }
+        }
+        // Up progress
+        $jobStatus->progress++;
+        $jobStatus->modified = date('Y-m-d H:i:s');
+        $jobStatus->save();
+        debug("Annotation OK.");
+        // Return the created Item
+        return $newItem;
+    }
+    
+    protected function _downloadIiifImageToItem($item, $image, $preferredSize='full', $region='full') {
         $trySizes = array($preferredSize, 512, 96);
         if (!isset($image['resource']) || !isset($image['resource']['service']) || !isset($image['resource']['height']) || !isset($image['resource']['width'])) {
             debug("Missing stuff?");
@@ -309,9 +384,14 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
                 if ($trySize === 'full') {
                     $theSize = 'full';
                 } else {
-                    $theSize = ($image['resource']['width'] >= $image['resource']['height']) ? (','.$trySize) : ($trySize.',');
+                    if ($region == 'full') {
+                        $theSize = ($image['resource']['width'] >= $image['resource']['height']) ? (','.$trySize) : ($trySize.',');
+                    } else {
+                        $regionComps = split(',', $region);
+                        $theSize = ($regionComps[2] >= $regionComps[3]) ? (','.$trySize) : ($trySize.',');
+                    }
                 }
-                $imageUrl = rtrim($image['resource']['service']['@id'], '/') . '/full/' . $theSize . '/0/' . $this->_getIiifImageSuffix($image);
+                $imageUrl = rtrim($image['resource']['service']['@id'], '/') . '/' . $region . '/' . $theSize . '/0/' . $this->_getIiifImageSuffix($image);
                 debug("Downloading image " . $imageUrl);
                 $downloadedFile = insert_files_for_item($item, 'Url', $imageUrl)[0];
                 debug("Download OK: " . $imageUrl);
@@ -391,6 +471,97 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $metadata;
     }
 
+    protected function _buildAnnotationImportOptions($annotationData, $parentCollection=null) {
+        $importOptions = array(
+            'public' => $this->_isPublic,
+            'featured' => false,
+            'item_type_id' => get_option('iiifitems_annotation_item_type'),
+        );
+        $tags = array();
+        if (isset($annotationData[0])) {
+            $resources = $annotationData;
+        } elseif (isset($annotationData['@type'])) {
+            $resources = array($annotationData);
+        }
+        if (isset($resources)) {
+            foreach ($resources as $resource) {
+                switch ($resource['@type']) {
+                    case 'oa:Tag':
+                        $tags[] = $resource['chars'];
+                    break;
+                }
+            }
+        }
+        if (!empty($tags)) {
+            $importOptions['tags'] = join(',', $tags);
+        }
+        return $importOptions;
+    }
+    
+    protected function _buildAnnotationMetadata($annotationData, $source, $parentCollection=null) {
+        // Set up metadata
+        $metadata = array(
+            'Dublin Core' => array(
+                'Title' => array(),
+                'Source' => array(array('text' => $source, 'html' => false)),
+                'Relation' => array(),
+            ),
+            'Item Type Metadata' => array(
+                'Text' => array(),
+                'On Canvas' => array(),
+                'Selector' => array(),
+            ),
+            'IIIF Item Metadata' => array(
+                'Display as IIIF?' => array(array('text' => 0, 'html' => false)),
+                'Original @id' => array(array('text' => $annotationData['@id'], 'html' => false)),
+                'JSON Data' => array(array('text' => json_encode($annotationData, JSON_UNESCAPED_SLASHES), 'html' => false)),
+            ),
+        );
+        // Determine type in 'on'
+        if (is_string($annotationData['on'])) {
+            $metadata['Item Type Metadata']['On Canvas'][] = array('text' => $annotationData['on'], 'html' => false);
+        } elseif (is_array($annotationData['on'])) {
+            if (isset($annotationData['full'])) {
+                $metadata['Item Type Metadata']['On Canvas'][] = array('text' => $annotationData['on']['full'], 'html' => false);
+            }
+            if (isset($annotationData['selector'])) {
+                $metadata['Item Type Metadata']['Selector'][] = array('text' => json_encode($annotationData['selector'], JSON_UNESCAPED_SLASHES) , 'html' => false);
+            }
+        }
+        // Grab resources
+        if (isset($annotationData['resource'][0])) {
+            $resources = $annotationData['resource'];
+        } elseif (isset($annotationData['resource']['@type'])) {
+            $resources = array($annotationData['resource']);
+        }
+        if (isset($resources)) {
+            foreach ($resources as $resource) {
+                switch ($resource['@type']) {
+                    case 'dctypes:Dataset':
+                        $metadata['Dublin Core']['Relation'][] = array('text' => 'Data Set: <a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>', 'html' => true);
+                    break;
+                    case 'dctypes:Image':
+                        $metadata['Dublin Core']['Relation'][] = array('text' => 'Image: <a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>', 'html' => true);
+                    break;
+                    case 'dctypes:MovingImage':
+                        $metadata['Dublin Core']['Relation'][] = array('text' => 'Moving Image: <a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>', 'html' => true);
+                    break;
+                    case 'dctypes:Sound':
+                        $metadata['Dublin Core']['Relation'][] = array('text' => 'Sound: <a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>', 'html' => true);
+                    break;
+                    case 'cnt:ContentAsText': case 'dctypes:Text': default:
+                        $metadata['Item Type Metadata']['Text'][] = array('text' => $resource['chars'], 'html' => isset($resource['@type']) && $resource['@type'] == 'text/html');
+                    break;
+                }
+            }
+        }
+        // Set title based on snippet of first available text
+        if (!empty($metadata['Item Type Metadata']['Text'])) {
+            $metadata['Dublin Core']['Title'][] = array('text' => 'Annotation: "' . snippet_by_word_count($metadata['Item Type Metadata']['Text'][0]['text']) . '"', 'html' => false);
+        }
+        return $metadata;
+    }
+    
     protected function _inOrder($array) {
         return ($this->_isReversed) ? array_reverse($array) : $array;
     }
