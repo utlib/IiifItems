@@ -55,10 +55,33 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
             'typeext' => 'sequence.json',
         ), 'iiifitems_oa_uri');
         $label = metadata($item, array('Dublin Core', 'Title'));
+        if ("{$item->item_type_id}" === get_option('iiifitems_annotation_item_type')) {
+            $canvasId = raw_iiif_metadata($item, 'iiifitems_annotation_on_element');
+            if (strpos($canvasId, '#xywh=') !== false) {
+                $canvasId = strstr($canvasId, '#xywh=', true);
+            }
+            $theItemCanvasIdText = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.text = ?", array(
+                get_option('iiifitems_item_atid_element'),
+                $canvasId,
+            ))[0];
+            $theItem = get_record_by_id('Item', $theItemCanvasIdText->record_id);
+            $itemCanvas = $this->__itemCanvasJson($theItem);
+            $itemCanvas['otherContent'] = array(array(
+                '@id' => public_full_url(array(
+                    'things' => 'items',
+                    'id' => $item->id,
+                    'typeext' => 'annolist.json',
+                ), 'iiifitems_oa_uri'),
+                '@type' => 'sc:AnnotationList',
+            ));
+        } else {
+            $theItem = $item;
+            $itemCanvas = $this->__itemCanvasJson($item);
+        }
         $json = $this->__manifestTemplate($atId, $seqId, $label, array(
-            $this->__itemCanvasJson($item)
+            $itemCanvas,
         ));
-        $this->__addDublinCoreMetadata($json, $item);
+        $this->__addDublinCoreMetadata($json, $theItem);
         return $json;
     }
 

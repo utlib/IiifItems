@@ -5,12 +5,44 @@ class IiifItems_AnnotationController extends IiifItems_BaseController {
         // Check if the item exists and isn't itself an annotation
         $id = $this->getParam('id');
         $item = get_record_by_id('Item', $id);
-        if (!$item || $item->item_type_id == get_option('iiifitems_annotation_item_type')) {
+        if (!$item) {
             throw new Omeka_Controller_Exception_404;
         }
         // Respond with JSON
         try {
-            $jsonData = $this->__itemAnnotationList($item);
+            if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
+                // Annotation (TODO: Clean this up)
+                $jsonData = $this->__annotationListTemplate(public_full_url(array(
+                    'things' => 'items',
+                    'id' => $item->id,
+                    'typeext' => 'annolist.json',
+                ), 'iiifitems_oa_uri'));
+                $currentAnnotationJson = json_decode(get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
+                    get_option('iiifitems_item_json_element'),
+                    $item->id,
+                ))[0], true);
+                $currentText = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
+                    get_option('iiifitems_annotation_text_element'),
+                    $item->id,
+                ))[0];
+                $currentAnnotationJson['resource'] = array(
+                    array(
+                        '@type' => 'dctypes:Text',
+                        'format' => $currentText->html ? 'text/html' : 'text/plain',
+                        'chars' => $currentText->text,
+                    ),
+                );
+                foreach (get_record_by_id('Item', $item->id)->getTags() as $tag) {
+                    $currentAnnotationJson['resource'][] = array(
+                        '@type' => 'oa:Tag',
+                        'chars' => $tag->name,
+                    );
+                }
+                $jsonData['resources'][] = $currentAnnotationJson;
+            } else {
+                // Regular item
+                $jsonData = $this->__itemAnnotationList($item);
+            }
             $this->__respondWithJson($jsonData);
         } catch (Exception $e) {
             $this->__respondWithJson(array(
