@@ -221,6 +221,15 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
         if ($applyDublin) {
             $this->__addDublinCoreMetadata($iiifJsonData, $item);
         }
+        // Plug otherContent for annotation lists
+        $iiifJsonData['otherContent'] = array(array(
+            '@id' => public_full_url(array(
+                'things' => 'items',
+                'id' => $item->id,
+                'typeext' => 'annolist.json',
+            ), 'iiifitems_oa_uri'),
+            '@type' => 'sc:AnnotationList',
+        ));
         // Done
         return $iiifJsonData;
     }
