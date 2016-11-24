@@ -99,6 +99,10 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 $annotation_metadata_elements[] = $element->id;
             }
             set_option('iiifitems_annotation_elements', json_encode($annotation_metadata_elements));
+            // Add Annotation item type Text element
+            include_once(dirname(__FILE__) . '/migrations/0_0_1_5.php');
+            $addTextElementMigration = new IiifItems_Migration_0_0_1_5();
+            $addTextElementMigration->up();
             // Add IIIF server options
             set_option('iiifitems_bridge_prefix', '');
             $serverUrlHelper = new Zend_View_Helper_ServerUrl;
