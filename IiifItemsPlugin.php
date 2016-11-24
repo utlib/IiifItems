@@ -17,6 +17,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'public_collections_show',
             'admin_collections_show',
             'admin_files_show',
+            'items_browse_sql',
 	);
 	
 	protected $_filters = array(
@@ -294,6 +295,17 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             echo '<h2>IIIF Collection Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
+        }
+        
+        public function hookItemsBrowseSql($args) {
+            $params = $args['params'];
+            if (isset($params['controller']) && isset($params['action'])) {
+                if (($params['controller'] == 'items') && ($params['action'] == 'index' || $params['action'] == 'browse') && !isset($params['search'])) {
+                    $select = $args['select'];
+                    $db = get_db();
+                    $select->where("item_type_id != ? OR item_type_id IS NULL", get_option('iiifitems_annotation_item_type'));
+                }
+            }
         }
         
         public function filterAdminNavigationMain($nav) {
