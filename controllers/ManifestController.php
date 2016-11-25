@@ -224,9 +224,11 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
         // Add the Image for each file in order
         $itemFiles = $item->getFiles();
         if (!empty($itemFiles)) {
-            $iiifJsonData['images'] = array();
-            foreach ($itemFiles as $file) {
-                $iiifJsonData['images'][] = $this->__fileImageJson($file, $canvasId);
+            if (!isset($iiifJsonData['images']) || empty($iiifJsonData['images']) || $this->__fetchJsonData($itemFiles[0])) {
+                $iiifJsonData['images'] = array();
+                foreach ($itemFiles as $file) {
+                    $iiifJsonData['images'][] = $this->__fileImageJson($file, $canvasId);
+                }
             }
             // If the default canvas template is used, set the width and height to the max among files
             if (!$iiifJsonData['width'] && !$iiifJsonData['height']) {
