@@ -66,14 +66,16 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
             ))[0];
             $theItem = get_record_by_id('Item', $theItemCanvasIdText->record_id);
             $itemCanvas = $this->__itemCanvasJson($theItem);
-            $itemCanvas['otherContent'] = array(array(
-                '@id' => public_full_url(array(
-                    'things' => 'items',
-                    'id' => $item->id,
-                    'typeext' => 'annolist.json',
-                ), 'iiifitems_oa_uri'),
-                '@type' => 'sc:AnnotationList',
-            ));
+            if (!is_admin_theme()) {
+                $itemCanvas['otherContent'] = array(array(
+                    '@id' => public_full_url(array(
+                        'things' => 'items',
+                        'id' => $item->id,
+                        'typeext' => 'annolist.json',
+                    ), 'iiifitems_oa_uri'),
+                    '@type' => 'sc:AnnotationList',
+                ));
+            }
         } else {
             $theItem = $item;
             $itemCanvas = $this->__itemCanvasJson($item);
@@ -98,18 +100,24 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
         ), 'iiifitems_oa_uri');
         $label = metadata($collection, array('Dublin Core', 'Title'));
         if ($this->__getCollectionIiifType($collection) == 'Manifest') {
-            if ($json = get_cached_iiifitems_value_for($collection)) {
-                return $json;
+            if (!is_admin_theme()) {
+                if ($json = get_cached_iiifitems_value_for($collection)) {
+                    return $json;
+                }
             }
             if (!($json = $this->__fetchJsonData($collection))) {
                 $json = $this->__manifestTemplate($atId, $seqId, $label);
             }
+            $json['@id'] = $atId;
+            $json['sequences'][0]['@id'] = $seqId;
             $json['sequences'][0]['canvases'] = array();
             foreach ($this->_helper->db->getTable('Item')->findBy(array('collection' => $collection)) as $item) {
                 $json['sequences'][0]['canvases'][] = $this->__itemCanvasJson($item);
             }
             $this->__addDublinCoreMetadata($json, $collection);
-            cache_iiifitems_value_for($collection, $json);
+            if (!is_admin_theme()) {
+                cache_iiifitems_value_for($collection, $json);
+            }
             return $json;
         }
         return $this->__manifestTemplate($atId, $seqId, $label);
@@ -247,14 +255,18 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
             $this->__addDublinCoreMetadata($iiifJsonData, $item);
         }
         // Plug otherContent for annotation lists
-        $iiifJsonData['otherContent'] = array(array(
-            '@id' => public_full_url(array(
-                'things' => 'items',
-                'id' => $item->id,
-                'typeext' => 'annolist.json',
-            ), 'iiifitems_oa_uri'),
-            '@type' => 'sc:AnnotationList',
-        ));
+        if (is_admin_theme()) {
+            $iiifJsonData['otherContent'] = array();
+        } else {
+            $iiifJsonData['otherContent'] = array(array(
+                '@id' => public_full_url(array(
+                    'things' => 'items',
+                    'id' => $item->id,
+                    'typeext' => 'annolist.json',
+                ), 'iiifitems_oa_uri'),
+                '@type' => 'sc:AnnotationList',
+            ));
+        }
         // Done
         return $iiifJsonData;
     }
