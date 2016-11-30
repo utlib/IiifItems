@@ -18,6 +18,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'admin_collections_show',
             'admin_files_show',
             'items_browse_sql',
+            'admin_items_browse_simple_each',
+            'admin_collections_browse_each',
 	);
 	
 	protected $_filters = array(
@@ -306,6 +308,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                     $select->where("item_type_id != ? OR item_type_id IS NULL", get_option('iiifitems_annotation_item_type'));
                 }
             }
+        }
+        
+        public function hookAdminItemsBrowseSimpleEach($args) {
+            echo '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a>';
+        }
+
+        public function hookAdminCollectionsBrowseEach($args) {
+            echo '<a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a>';
         }
         
         public function filterAdminNavigationMain($nav) {
