@@ -32,7 +32,7 @@
 				name: 'IiifItemsAnnotations',
 				module: 'IiifItemsAnnotations',
 				options: {
-					'prefix': '<?php echo absolute_url(array(), 'iiifitems_annotator_create') ?>'
+					'prefix': '<?php echo absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_annotator_create') ?>'
 				}
 			},
 			"windowObjects": [{

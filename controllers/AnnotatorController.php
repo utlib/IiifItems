@@ -10,8 +10,28 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             $this->__respondWithJson(null, 400);
             return;
         }
-        // Get parameters
+        $contextRecordType = $this->getParam('things');
+        $contextRecordId = $this->getParam('id');
+        if (!($contextThing = $this->__getThing($contextRecordType, $contextRecordId))) {
+            $this->__respondWithJson(null, 400);
+            return;
+        }
         $uri = $this->getParam('uri');
+        if (!($thing = $this->__getSourceItem($contextThing, $uri))) {
+            $this->__respondWithJson(null, 400);
+            return;
+        }
+        
+        // Pull all annotations that belong to $thing
+        $json = $this->__itemAnnotations($thing);
+        
+        // Respond [<anno1>...<annon>]
+        $this->__respondWithJson($json);
+        return;
+        
+        // OLD CODE BELOW
+        // Get parameters
+        
         $queryConditions = "element_texts.text LIKE CONCAT(?, '%')";
         $queryParams = array(get_option('iiifitems_annotation_on_element'), $uri);
         // Temporary: Extract item # from plugin-generated canvas IDs
@@ -21,6 +41,9 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             $uriComps = explode('/', substr($uri, 0, $rpos));
             $queryParams[] = $uriComps[count($uriComps)-1];
         }
+        // UUID
+        $queryConditions .= "OR element_texts.text = ?";
+        $queryParams[] = raw_iiif_metadata($currentThing, 'iiifitems_item_uuid_element');
         // Find all On Canvas annotation texts that match the given canvas URI
         $elementTextTable = get_db()->getTable('ElementText');
         $onCanvasMatches = $elementTextTable->findBySql("element_texts.element_id = ? AND ({$queryConditions})", $queryParams);
@@ -63,6 +86,12 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         if (!$request->isPost()) {
             throw new Omeka_Controller_Exception_404;
         }
+        $contextRecordType = $this->getParam('things');
+        $contextRecordId = $this->getParam('id');
+        if (!($contextThing = $this->__getThing($contextRecordType, $contextRecordId))) {
+            $this->__respondWithJson(null, 400);
+            return;
+        }
         //Decode request params from JSON
         $paramStr = file_get_contents('php://input');
         $params = json_decode($paramStr, true);
@@ -80,6 +109,22 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                 case 'oa:Tag': $tags[] = $resource['chars']; break;
             }
         }
+        // Trace back to the target Item and remember its UUID
+        $originalItem = $this->__getSourceItem($contextThing, $on);
+        if (!$originalItem) {
+            $this->__respondWithJson(null, 400);
+            return;
+        }
+        $uuid = raw_iiif_metadata($originalItem, 'iiifitems_item_uuid_element');
+        if (!$uuid) {
+            $uuid = generate_uuid();
+            $originalItem->addElementTextsByArray(array(
+                'IIIF Item Metadata' => array(
+                    'UUID' => array(array('text' => $uuid, 'html' => false)),
+                ),
+            ));
+            $originalItem->save();
+        }
         // Save
         $newItem = insert_item(array(
             'public' => true,
@@ -87,10 +132,10 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             'tags' => join(',', $tags),
         ), array(
             'Dublin Core' => array(
-                'Title' => array(array('text' => snippet_by_word_count($body), 'html' => false)),
+                'Title' => array(array('text' => 'Annotation: "' . snippet_by_word_count($body) . '"', 'html' => false)),
             ),
             'Item Type Metadata' => array(
-                'On Canvas' => array(array('text' => $on, 'html' => false)),
+                'On Canvas' => array(array('text' => $uuid, 'html' => false)),
                 'Selector' => array(array('text' => json_encode($selector, JSON_UNESCAPED_SLASHES), 'html' => false)),
                 'Text' => array(array('text' => $body, 'html' => true)),
             ),
@@ -199,5 +244,97 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         if (strtolower($request->getMethod()) != strtolower($verb)) {
             throw new Omeka_Controller_Exception_404;
         }
+    }
+    
+    private function __getThing($type, $id) {
+        $class = Inflector::titleize(Inflector::singularize($type));
+        return get_record_by_id($class, $id);
+    }
+    
+    private function __getSourceItem($contextThing, $canvasId) {
+        switch (get_class($contextThing)) {
+            case 'Collection':
+                // Try 1: Exact canvas ID match
+                $originalIdMatches = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ?", array(
+                    get_option('iiifitems_item_atid_element'),
+                    $canvasId,
+                ));
+                foreach ($originalIdMatches as $originalIdMatch) {
+                    $candidateItem = get_record_by_id('Item', $originalIdMatch->record_id);
+                    if ($candidateItem->collection_id === $contextThing->id) {
+                        return $candidateItem;
+                    }
+                }
+                // Try 2: Get from plugin-generated canvas ID ... /items/xxx/canvas.json
+                $root = public_full_url(array(), 'iiifitems_root');
+                if (strpos($uri, $root) === 0 && ($rpos = strrpos($canvasId, '/canvas.json')) !== false) {
+                    $uriComps = explode('/', substr($uri, 0, $rpos));
+                    $candidateItem = get_record_by_id('Item', $uriComps[count($uriComps)-1]);
+                    if ($candidateItem->collection_id === $contextThing->id) {
+                        return $candidateItem;
+                    }
+                } 
+            break;
+            case 'Item':
+                return $contextThing;
+            break;
+        }
+        return null;
+    }
+    
+    // TODO: Copied from annotation controller. Clean it up later.
+    private function __itemAnnotations($item) {
+        $json = $this->__annotationListTemplate(public_full_url(array(
+            'things' => 'items',
+            'id' => $item->id,
+            'typeext' => 'annolist.json',
+        ), 'iiifitems_oa_uri'));
+        $db = get_db();
+        $elementTextTable = $db->getTable('ElementText');
+        // Find annotations associated by item ID or original @id (if available)
+        $originalId = raw_iiif_metadata($item, 'iiifitems_item_atid_element');
+        $uuid = raw_iiif_metadata($item, 'iiifitems_item_uuid_element');
+        $onCanvasMatches = $elementTextTable->findBySql("element_texts.element_id = ? AND (element_texts.text LIKE CONCAT(?, '%') OR element_texts.text = ? OR element_texts.text = ?)", array(
+            get_option('iiifitems_annotation_on_element'),
+            $originalId,
+            $item->id,
+            $uuid,
+        ));
+        $jsonDataElementId = get_option('iiifitems_item_json_element');
+        $textElementId = get_option('iiifitems_annotation_text_element');
+        foreach ($onCanvasMatches as $onCanvasMatch) {
+            $currentAnnotationJson = json_decode($elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
+                $jsonDataElementId,
+                $onCanvasMatch->record_id,
+            ))[0], true);
+            $currentText = $elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
+                $textElementId,
+                $onCanvasMatch->record_id,
+            ))[0];
+            $currentAnnotationJson['resource'] = array(
+                array(
+                    '@type' => 'dctypes:Text',
+                    'format' => $currentText->html ? 'text/html' : 'text/plain',
+                    'chars' => $currentText->text,
+                ),
+            );
+            foreach (get_record_by_id('Item', $onCanvasMatch->record_id)->getTags() as $tag) {
+                $currentAnnotationJson['resource'][] = array(
+                    '@type' => 'oa:Tag',
+                    'chars' => $tag->name,
+                );
+            }
+            $json['resources'][] = $currentAnnotationJson;
+        }
+        return $json['resources'];
+    }
+    
+    private function __annotationListTemplate($atId, $resources=array()) {
+        return array(
+            '@context' => 'http://www.shared-canvas.org/ns/context.json',
+            '@id' => $atId,
+            '@type' => 'sc:AnnotationList',
+            'resources' => $resources,
+        );
     }
 }

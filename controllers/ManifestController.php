@@ -60,8 +60,10 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
             if (strpos($canvasId, '#xywh=') !== false) {
                 $canvasId = strstr($canvasId, '#xywh=', true);
             }
-            $theItemCanvasIdText = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.text = ?", array(
+            $theItemCanvasIdText = get_db()->getTable('ElementText')->findBySql("((element_texts.element_id = ? AND element_texts.text = ?) OR (element_texts.element_id = ? AND element_texts.text = ?)) AND element_texts.record_type = 'Item' ", array(
                 get_option('iiifitems_item_atid_element'),
+                $canvasId,
+                get_option('iiifitems_item_uuid_element'),
                 $canvasId,
             ))[0];
             $theItem = get_record_by_id('Item', $theItemCanvasIdText->record_id);
