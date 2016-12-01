@@ -317,7 +317,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             $currentText = $elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
                 $textElementId,
                 $onCanvasMatch->record_id,
-            ))[0];
+            ));
+            if ($currentText) $currentText = $currentText[0]; else continue;
             $currentAnnotationJson['resource'] = array(
                 array(
                     '@type' => 'dctypes:Text',
