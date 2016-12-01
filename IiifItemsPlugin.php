@@ -20,6 +20,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'items_browse_sql',
             'admin_items_browse_simple_each',
             'admin_collections_browse_each',
+            'before_save_collection',
+            'before_save_item',
 	);
 	
 	protected $_filters = array(
@@ -316,6 +318,18 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
 
         public function hookAdminCollectionsBrowseEach($args) {
             echo '<a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a>';
+        }
+        
+        public function hookBeforeSaveItem($args) {
+            if ($args['insert']) {
+                $args['record']->addTextForElement(get_record_by_id('Element', get_option('iiifitems_item_uuid_element')), generate_uuid());
+            }
+        }
+        
+        public function hookBeforeSaveCollection($args) {
+            if ($args['insert']) {
+                $args['record']->addTextForElement(get_record_by_id('Element', get_option('iiifitems_collection_uuid_element')), generate_uuid());
+            }
         }
         
         public function filterAdminNavigationMain($nav) {
