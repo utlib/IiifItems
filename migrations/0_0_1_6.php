@@ -1,0 +1,25 @@
+<?php
+
+class IiifItems_Migration_0_0_1_6 extends IiifItems_BaseMigration {
+    public static $version = '0.0.1.6';
+    
+    public function up() {
+        // Add elements
+        $collectionElementSet = get_record_by_id('ElementSet', get_option('iiifitems_collection_element_set'));
+        $collectionElementSet->addElements(array('UUID'));
+        $collectionElementSet->save();
+        $itemElementSet = get_record_by_id('ElementSet', get_option('iiifitems_item_element_set'));
+        $itemElementSet->addElements(array('UUID'));
+        $itemElementSet->save();
+        
+        // Set quick-access options
+        $tableElement = get_db()->getTable('Element');
+        $uuidCollectionElement = $tableElement->findByElementSetNameAndElementName($collectionElementSet->name, 'UUID');
+        set_option('iiifitems_collection_uuid_element', $uuidCollectionElement->id);
+        $uuidItemElement = $tableElement->findByElementSetNameAndElementName($itemElementSet->name, 'UUID');
+        set_option('iiifitems_item_uuid_element', $uuidItemElement->id);
+        
+        // Start UUID job
+        Zend_Registry::get('bootstrap')->getResource('jobs')->sendLongRunning('IiifItems_Job_AddUuid', array());
+    }
+}
