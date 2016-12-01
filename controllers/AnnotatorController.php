@@ -267,8 +267,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                 }
                 // Try 2: Get from plugin-generated canvas ID ... /items/xxx/canvas.json
                 $root = public_full_url(array(), 'iiifitems_root');
-                if (strpos($uri, $root) === 0 && ($rpos = strrpos($canvasId, '/canvas.json')) !== false) {
-                    $uriComps = explode('/', substr($uri, 0, $rpos));
+                if (strpos($canvasId, $root) === 0 && ($rpos = strrpos($canvasId, '/canvas.json')) !== false) {
+                    $uriComps = explode('/', substr($canvasId, 0, $rpos));
                     $candidateItem = get_record_by_id('Item', $uriComps[count($uriComps)-1]);
                     if ($candidateItem->collection_id === $contextThing->id) {
                         return $candidateItem;
@@ -293,6 +293,13 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         $elementTextTable = $db->getTable('ElementText');
         // Find annotations associated by item ID or original @id (if available)
         $originalId = raw_iiif_metadata($item, 'iiifitems_item_atid_element');
+        if (!$originalId) {
+            $originalId = public_full_url(array(
+                'things' => 'items',
+                'id' => $item->id,
+                'typeext' => 'canvas.json',
+            ), 'iiifitems_oa_uri');
+        }
         $uuid = raw_iiif_metadata($item, 'iiifitems_item_uuid_element');
         $onCanvasMatches = $elementTextTable->findBySql("element_texts.element_id = ? AND (element_texts.text LIKE CONCAT(?, '%') OR element_texts.text = ? OR element_texts.text = ?)", array(
             get_option('iiifitems_annotation_on_element'),
