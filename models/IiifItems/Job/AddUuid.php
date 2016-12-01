@@ -48,7 +48,7 @@ class IiifItems_Job_AddUuid extends Omeka_Job_AbstractJob {
                 // If its UUID metadata field is empty
                 if (!metadata($record, array('IIIF ' . $type . ' Metadata', 'UUID'))) {
                     // Generate a UUID
-                    $uuid = generateUuid();
+                    $uuid = generate_uuid();
                     // Set its UUID metadata field to the generated UUID
                     $record->addTextForElement($element, $uuid);
                     // Save it
@@ -65,15 +65,5 @@ class IiifItems_Job_AddUuid extends Omeka_Job_AbstractJob {
                 $jobStatus->save();
             }
         }
-    }
-    
-    private function generateUuid() {
-        return sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
-            mt_rand( 0, 0xffff ),
-            mt_rand( 0, 0x0fff ) | 0x4000,
-            mt_rand( 0, 0x3fff ) | 0x8000,
-            mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
-	);
     }
 }
