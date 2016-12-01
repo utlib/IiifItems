@@ -320,13 +320,13 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
                     $downloadedData = file_get_contents($otherContent['@id']);
                     $subJsonData = json_decode($downloadedData, true);
                     foreach ($subJsonData['resources'] as $annotationJson) {
-                        $this->_processAnnotation($annotationJson, $jobStatus, $canvasData['images'][0], $otherContent['@id'], $parentCollection);
+                        $this->_processAnnotation($annotationJson, $jobStatus, $canvasData['images'][0], $otherContent['@id'], $parentCollection, $newItem);
                     }
                 } elseif (is_string($otherContent)) {
                     $downloadedData = file_get_contents($otherContent);
                     $subJsonData = json_decode($downloadedData, true);
                     foreach ($subJsonData['resources'] as $annotationJson) {
-                        $this->_processAnnotation($annotationJson, $jobStatus, $canvasData['images'][0], $otherContent, $parentCollection);
+                        $this->_processAnnotation($annotationJson, $jobStatus, $canvasData['images'][0], $otherContent, $parentCollection, $newItem);
                     }
                 }
             }
@@ -335,10 +335,10 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $newItem;
     }
     
-    protected function _processAnnotation($annotationData, $jobStatus, $image, $source, $parentCollection=null) {
+    protected function _processAnnotation($annotationData, $jobStatus, $image, $source, $parentCollection=null, $attachItem=null) {
         // Set up import options
         $annotationImportOptions = $this->_buildAnnotationImportOptions($annotationData, $parentCollection);
-        $annotationMetadata = $this->_buildAnnotationMetadata($annotationData, $source, $parentCollection);
+        $annotationMetadata = $this->_buildAnnotationMetadata($annotationData, $source, $parentCollection, $attachItem);
       
         // Process annotation
         debug("Processing annotation " . $annotationData['@id']);
@@ -466,7 +466,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             $metadata['Dublin Core']['Rights'] = array(array('text' => $jsonData['license'], 'html' => false));
         }
         if ($parentCollection !== null && $type != 'Item') {
-            $metadata[$metadataPrefix]['Parent Collection'] = array(array('text' => $parentCollection->id, 'html' => false));
+            $metadata[$metadataPrefix]['Parent Collection'] = array(array('text' => metadata($parentCollection, array($metadataPrefix, 'UUID')), 'html' => false));
         }
         return $metadata;
     }
@@ -498,7 +498,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $importOptions;
     }
     
-    protected function _buildAnnotationMetadata($annotationData, $source, $parentCollection=null) {
+    protected function _buildAnnotationMetadata($annotationData, $source, $parentCollection=null, $attachItem=null) {
         // Set up metadata
         $metadata = array(
             'Dublin Core' => array(
@@ -518,14 +518,18 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             ),
         );
         // Determine type in 'on'
-        if (is_string($annotationData['on'])) {
-            $metadata['Item Type Metadata']['On Canvas'][] = array('text' => $annotationData['on'], 'html' => false);
-        } elseif (is_array($annotationData['on'])) {
-            if (isset($annotationData['full'])) {
-                $metadata['Item Type Metadata']['On Canvas'][] = array('text' => $annotationData['on']['full'], 'html' => false);
-            }
-            if (isset($annotationData['selector'])) {
-                $metadata['Item Type Metadata']['Selector'][] = array('text' => json_encode($annotationData['selector'], JSON_UNESCAPED_SLASHES) , 'html' => false);
+        if ($attachItem) {
+            $metadata['Item Type Metadata']['On Canvas'][] = array('text' => metadata($attachItem, array('IIIF Item Metadata', 'UUID')), 'html' => false);
+        } else {
+            if (is_string($annotationData['on'])) {
+                $metadata['Item Type Metadata']['On Canvas'][] = array('text' => $annotationData['on'], 'html' => false);
+            } elseif (is_array($annotationData['on'])) {
+                if (isset($annotationData['full'])) {
+                    $metadata['Item Type Metadata']['On Canvas'][] = array('text' => $annotationData['on']['full'], 'html' => false);
+                }
+                if (isset($annotationData['selector'])) {
+                    $metadata['Item Type Metadata']['Selector'][] = array('text' => json_encode($annotationData['selector'], JSON_UNESCAPED_SLASHES) , 'html' => false);
+                }
             }
         }
         // Grab resources
