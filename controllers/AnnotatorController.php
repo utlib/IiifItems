@@ -28,56 +28,6 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         // Respond [<anno1>...<annon>]
         $this->__respondWithJson($json);
         return;
-        
-        // OLD CODE BELOW
-        // Get parameters
-        
-        $queryConditions = "element_texts.text LIKE CONCAT(?, '%')";
-        $queryParams = array(get_option('iiifitems_annotation_on_element'), $uri);
-        // Temporary: Extract item # from plugin-generated canvas IDs
-        $root = public_full_url(array(), 'iiifitems_root');
-        if (strpos($uri, $root) === 0 && ($rpos = strrpos($uri, '/canvas.json')) !== false) {
-            $queryConditions .= "OR element_texts.text = ?";
-            $uriComps = explode('/', substr($uri, 0, $rpos));
-            $queryParams[] = $uriComps[count($uriComps)-1];
-        }
-        // UUID
-        $queryConditions .= "OR element_texts.text = ?";
-        $queryParams[] = raw_iiif_metadata($currentThing, 'iiifitems_item_uuid_element');
-        // Find all On Canvas annotation texts that match the given canvas URI
-        $elementTextTable = get_db()->getTable('ElementText');
-        $onCanvasMatches = $elementTextTable->findBySql("element_texts.element_id = ? AND ({$queryConditions})", $queryParams);
-        // Find all JSON data annotation texts that belong to these items
-        $itemTable = get_db()->getTable('Item');
-        $jsonDataElementId = get_option('iiifitems_item_json_element');
-        $textElementId = get_option('iiifitems_annotation_text_element');
-        $json = array();
-        foreach ($onCanvasMatches as $onCanvasMatch) {
-            $currentAnnotationJson = json_decode($elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
-                $jsonDataElementId,
-                $onCanvasMatch->record_id,
-            ))[0], true);
-            $currentText = $elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
-                $textElementId,
-                $onCanvasMatch->record_id,
-            ))[0];
-            $currentAnnotationJson['resource'] = array(
-                array(
-                    '@type' => 'dctypes:Text',
-                    'format' => $currentText->html ? 'text/html' : 'text/plain',
-                    'chars' => $currentText->text,
-                ),
-            );      
-            foreach (get_record_by_id('Item', $onCanvasMatch->record_id)->getTags() as $tag) {
-                $currentAnnotationJson['resource'][] = array(
-                    '@type' => 'oa:Tag',
-                    'chars' => $tag->name,
-                );
-            }
-            $json[] = $currentAnnotationJson;
-        }
-        // Respond [<anno1>...<annon>]
-        $this->__respondWithJson($json);
     }
     
     public function createAction() {
@@ -163,9 +113,22 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
     }
     
     public function deleteAction() {
+        // Sanity check
+        $request = $this->getRequest();
+        if (!$request->isDelete()) {
+            throw new Omeka_Controller_Exception_404;
+        }
+        $contextRecordType = $this->getParam('things');
+        $contextRecordId = $this->getParam('id');
+        if (!($contextThing = $this->__getThing($contextRecordType, $contextRecordId))) {
+            $this->__respondWithJson(null, 400);
+            return;
+        }
+        // Decode JSON
         $paramStr = file_get_contents('php://input');
         $params = json_decode($paramStr, true);
         $id = $params['id'];
+        
         // Find the annotation by that ID and delete it
         if ($annoTexts = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $id))) {
             if ($annoItem = get_record_by_id('Item', $annoTexts[0]->record_id)) {
@@ -178,6 +141,18 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
     }
     
     public function updateAction() {
+        // Sanity check
+        $request = $this->getRequest();
+        if (!$request->isPut()) {
+            throw new Omeka_Controller_Exception_404;
+        }
+        $contextRecordType = $this->getParam('things');
+        $contextRecordId = $this->getParam('id');
+        if (!($contextThing = $this->__getThing($contextRecordType, $contextRecordId))) {
+            $this->__respondWithJson(null, 400);
+            return;
+        }
+        // Decode JSON
         $jsonStr = file_get_contents('php://input');
         $json = json_decode($jsonStr, true);
         $atid = $json['@id'];
@@ -211,7 +186,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                         'Title' => array(array('text' => 'Annotation: "' . snippet_by_word_count($text) . '"', 'html' => false)),
                     ),
                     'Item Type Metadata' => array(
-                        'On Canvas' => array(array('text' => $on, 'html' => false)),
+                        'On Canvas' => array(array('text' => raw_iiif_metadata($annoItem, 'iiifitems_annotation_on_element'), 'html' => false)),
                         'Selector' => array(array('text' => json_encode($selector, JSON_UNESCAPED_SLASHES), 'html' => false)),
                         'Text' => array(array('text' => $text, 'html' => true)), // Mirador bug?
                     ),
