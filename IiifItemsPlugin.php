@@ -28,6 +28,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'admin_navigation_main',
             'display_elements',
             // Annotation Type Metadata
+            'displayForAnnotationOnCanvas' => array('Display', 'Item', 'Item Type Metadata', 'On Canvas'),
             'inputForAnnotationOnCanvas' => array('ElementInput', 'Item', 'Item Type Metadata', 'On Canvas'),
             // File Metadata
             'inputForFileOriginalId' => array('ElementInput', 'File', 'IIIF File Metadata', 'Original @id'),
@@ -321,7 +322,18 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function hookAdminItemsBrowseSimpleEach($args) {
-            echo '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a>';
+            if ($args['item']->item_type_id != get_option('iiifitems_annotation_item_type')) {
+                if ($uuid = raw_iiif_metadata($args['item'], 'iiifitems_item_uuid_element')) {
+                    echo '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a>';
+                    echo '<br />';
+                    echo '<a href="' . admin_url('items') . '/browse?search=&ad vanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations</a>';
+                }    
+            } else {
+                $on = raw_iiif_metadata($args['item'], 'iiifitems_annotation_on_element');
+                if (($attachedItem = find_item_by_uuid($on)) || ($attachedItem = find_item_by_atid($on))) {
+                    echo '<p>Attached to: <a href="' . url(array('id' => $attachedItem->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">' . metadata($attachedItem, array('Dublin Core', 'Title')) . '</a></p>';
+                }
+            }
         }
 
         public function hookAdminCollectionsBrowseEach($args) {
@@ -357,6 +369,18 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         /* Annotation Type Metadata */
+        
+        public function displayForAnnotationOnCanvas($comps, $args) {
+            $on = $args['element_text']->text;
+            if (!($target = find_item_by_uuid($on))) {
+                if (!($target = find_item_by_atid($on))) {
+                    return $on;
+                }
+            }
+            $link = url(array('id' => $target->id, 'controller' => 'items', 'action' => 'show'), 'id');
+            $title = metadata($target, array('Dublin Core', 'Title'));
+            return "<a href=\"{$link}\">{$title}</a> ({$on})";
+        }
         
         public function inputForAnnotationOnCanvas($comps, $args) {
             $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
