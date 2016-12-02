@@ -108,10 +108,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             include_once(dirname(__FILE__) . '/migrations/0_0_1_5.php');
             $addTextElementMigration = new IiifItems_Migration_0_0_1_5();
             $addTextElementMigration->up();
-            // Add UUIDs
-            include_once(dirname(__FILE__) . '/migrations/0_0_1_6.php');
-            $addUuidElementMigration = new IiifItems_Migration_0_0_1_6();
-            $addUuidElementMigration->up();
             // Add IIIF server options
             set_option('iiifitems_bridge_prefix', '');
             $serverUrlHelper = new Zend_View_Helper_ServerUrl;
@@ -138,6 +134,10 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 `data` text NOT NULL,
                 `generated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+            // Add UUIDs via a job
+            include_once(dirname(__FILE__) . '/migrations/0_0_1_6.php');
+            $addUuidElementMigration = new IiifItems_Migration_0_0_1_6();
+            $addUuidElementMigration->up();
         }
         
         public function hookUninstall() {
