@@ -35,10 +35,12 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'inputForItemDisplay' => array('ElementInput', 'Item', 'IIIF Item Metadata', 'Display as IIIF?'),
             'inputForItemOriginalId' => array('ElementInput', 'Item', 'IIIF Item Metadata', 'Original @id'),
             'inputForItemParent' => array('ElementInput', 'Item', 'IIIF Item Metadata', 'Parent Collection'),
+            'inputForItemUuid' => array('ElementInput', 'Item', 'IIIF Item Metadata', 'UUID'),
             // Collection Metadata
             'inputForCollectionOriginalId' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'Original @id'),
             'inputForCollectionIiifType' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'IIIF Type'),
             'inputForCollectionParent' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'Parent Collection'),
+            'inputForCollectionUuid' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'UUID'),
 	);
         
         public function hookInstall() {
@@ -224,10 +226,12 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'Original @id'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'Parent Collection'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'JSON Data'), 'filter_singular_form');
+            add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'UUID'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'Original @id'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'IIIF Type'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'Parent Collection'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'JSON Data'), 'filter_singular_form');
+            add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'UUID'), 'filter_singular_form');
             add_filter(array('ElementInput', 'Item', 'Item Type Metadata', 'Selector'), 'filter_minimal_input');
             add_filter(array('ElementInput', 'File', 'IIIF File Metadata', 'JSON Data'), 'filter_minimal_input');
             add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'JSON Data'), 'filter_minimal_input');
@@ -389,12 +393,17 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             return filter_minimal_input($comps, $args);
         }
         
-        public function inputForCollectionOriginalId($comps, $args) {
+        public function inputForItemUuid($comps, $args) {
             $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
             return filter_minimal_input($comps, $args);
         }
         
         /* Collection metadata */
+        
+        public function inputForCollectionOriginalId($comps, $args) {
+            $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
+            return filter_minimal_input($comps, $args);
+        }
         
         public function inputForCollectionIiifType($comps, $args) {
             $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), array(''=>'None','Manifest'=>'Manifest','Collection'=>'Collection'));
@@ -409,6 +418,11 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function inputForCollectionParent($comps, $args) {
             $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), get_table_options('Collection'));
+            return filter_minimal_input($comps, $args);
+        }
+        
+        public function inputForCollectionUuid($comps, $args) {
+            $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
             return filter_minimal_input($comps, $args);
         }
 }
