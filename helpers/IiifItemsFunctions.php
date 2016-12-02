@@ -96,3 +96,35 @@ function generate_uuid() {
         mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
     );
 }
+
+function find_item_by_uuid($uuid) {
+    $db = get_db();
+    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_uuid_element'), $uuid))) {
+        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    }
+    return null;
+}
+
+function find_collection_by_uuid($uuid) {
+    $db = get_db();
+    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_collection_uuid_element'), $uuid))) {
+        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    }
+    return null;
+}
+
+function find_item_by_atid($atid) {
+    $db = get_db();
+    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $atid))) {
+        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    }
+    return null;
+}
+
+function find_collection_by_atid($atid) {
+    $db = get_db();
+    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_collection_atid_element'), $atid))) {
+        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    }
+    return null;
+}
