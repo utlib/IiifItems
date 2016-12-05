@@ -109,6 +109,16 @@
         //if successful, MUST return the OA rendering of the annotation
         create: function(oaAnnotation, successCallback, errorCallback) {
             var _this = this;
+            
+            // Pull the bounds for the SVG selector
+            var div = document.createElement('div');
+            div.setAttribute('style', 'position:absolute;right:-10000px;bottom:-10000px;')
+            document.body.appendChild(div);
+            div.innerHTML = oaAnnotation.on.selector.value;
+            var svgElement = div.firstChild;
+            var bbox = svgElement.getBBox();
+            oaAnnotation._dims = [Math.round(bbox.x), Math.round(bbox.y), Math.round(bbox.width), Math.round(bbox.height)];
+            document.body.removeChild(document.body.lastChild);
 
             jQuery.ajax({
                 url: this.prefix,
