@@ -46,6 +46,15 @@
 				annotationCreation: true,
 				annotationState: 'annoOncreateOn'
 			}],
+                        "windowSettings": {
+                            canvasControls: {
+                                annotations: {
+                                    annotationLayer: true,
+                                    annotationState: "on",
+                                    annotationRefresh: true
+                                }
+                            }
+                        },
                         "autoHideControls": false,
 			"mainMenuSettings": {
 				show: false
