@@ -313,7 +313,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         public function hookItemsBrowseSql($args) {
             $params = $args['params'];
             if (isset($params['controller']) && isset($params['action'])) {
-                if (($params['controller'] == 'items') && ($params['action'] == 'index' || $params['action'] == 'browse') && !isset($params['search'])) {
+                if (($params['controller'] == 'items') && ($params['action'] == 'index' || $params['action'] == 'browse') && !isset($params['search']) && !isset($params['tag'])) {
                     $select = $args['select'];
                     $db = get_db();
                     $select->where("item_type_id != ? OR item_type_id IS NULL", get_option('iiifitems_annotation_item_type'));
