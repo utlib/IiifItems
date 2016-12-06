@@ -12,6 +12,10 @@ class IiifItems_MiradorController extends IiifItems_BaseController {
         $this->__passModelToView();
     }
     
+    public function multiviewerAction() {
+        $this->view->item_ids = explode(',', $this->getParam('items'));
+    }
+    
     public function annotatorAction() {
         // Check existence
         $id = $this->getParam('id');

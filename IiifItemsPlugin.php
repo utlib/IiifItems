@@ -42,6 +42,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'inputForCollectionIiifType' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'IIIF Type'),
             'inputForCollectionParent' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'Parent Collection'),
             'inputForCollectionUuid' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'UUID'),
+            // Exhibits extension
+            'exhibit_layouts',
 	);
         
         public function hookInstall() {
@@ -448,6 +450,16 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         public function inputForCollectionUuid($comps, $args) {
             $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
             return filter_minimal_input($comps, $args);
+        }
+        
+        /* Exhibit builder extension */
+        
+        public function filterExhibitLayouts($layouts) {
+            $layouts['iiifitem'] = array(
+                'name' => __('IIIF Items'),
+                'description' => __('Embed a Mirador viewer for one or more items'),
+            );
+            return $layouts;
         }
 }
 ?>
