@@ -459,6 +459,10 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 'name' => __('IIIF Items'),
                 'description' => __('Embed a Mirador viewer for one or more items'),
             );
+            $layouts['iiifmanifest'] = array(
+                'name' => __('IIIF Manifests'),
+                'description' => __('Embed a Mirador viewer for one or more manifests'),
+            );
             return $layouts;
         }
 }

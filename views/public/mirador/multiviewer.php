@@ -2,6 +2,19 @@
     $mirador_path = get_option('iiifitems_mirador_path');
     $urlJs = $mirador_path . '/mirador.js';
     $urlCss = $mirador_path . '/css/mirador-combined.css';
+    $urls = array();
+    if (!empty($item_ids)) {
+        foreach ($item_ids as $item_id) {
+            $urls[] = js_escape(public_full_url(array('things' => 'items', 'id' => $item_id), 'iiifitems_manifest'));
+        }
+    }
+    if (!empty($manifests)) {
+        foreach ($manifests as $manifest) {
+            if (trim($manifest)) {
+                $urls[] = js_escape($manifest);
+            }
+        }
+    }
 ?>
 <!DOCTYPE html>
 <head>
@@ -24,14 +37,14 @@
             "buildPath": "<?php echo html_escape($mirador_path) . '/'; ?>",
             "layout": "1",
             "data": [
-                <?php foreach ($item_ids as $i => $item_id): ?>
-                <?php if ($i > 0) echo ','; ?>{ "manifestUri": "<?php echo public_full_url(array('things' => 'items', 'id' => $item_id), 'iiifitems_manifest'); ?>" }
+                <?php foreach ($urls as $i => $url): ?>
+                <?php if ($i > 0) echo ','; ?>{ "manifestUri": <?php echo $url; ?> }
                 <?php endforeach; ?>
             ],
             "windowObjects": [{
                 imageMode: "ImageView",
-                <?php if (!empty($item_ids)): ?>
-                loadedManifest: "<?php echo public_full_url(array('things' => 'items', 'id' => $item_ids[0]), 'iiifitems_manifest'); ?>",
+                <?php if (!empty($urls)): ?>
+                loadedManifest: <?php echo $urls[0]; ?>,
                 <?php endif; ?>
                 slotAddress: "row1.column1",
                 viewType: "ImageView",

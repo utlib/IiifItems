@@ -13,7 +13,10 @@ class IiifItems_MiradorController extends IiifItems_BaseController {
     }
     
     public function multiviewerAction() {
-        $this->view->item_ids = explode(',', $this->getParam('items'));
+        if ($this->getParam('items')) {
+            $this->view->item_ids = explode(',', $this->getParam('items'));
+        }
+        $this->view->manifests = $this->getParam('u');
     }
     
     public function annotatorAction() {
