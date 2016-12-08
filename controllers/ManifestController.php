@@ -106,6 +106,10 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
                 if ($json = get_cached_iiifitems_value_for($collection)) {
                     return $json;
                 }
+            } else {
+                if ($json = get_cached_iiifitems_value_for($collection, 'admin_manifest')) {
+                    return $json;
+                }
             }
             if (!($json = $this->__fetchJsonData($collection))) {
                 $json = $this->__manifestTemplate($atId, $seqId, $label);
@@ -119,6 +123,8 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
             $this->__addDublinCoreMetadata($json, $collection);
             if (!is_admin_theme()) {
                 cache_iiifitems_value_for($collection, $json);
+            } else {
+                cache_iiifitems_value_for($collection, $json, 'admin_manifest');
             }
             return $json;
         }
