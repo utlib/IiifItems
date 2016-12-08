@@ -87,7 +87,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             'tags' => join(',', $tags),
         ), array(
             'Dublin Core' => array(
-                'Title' => array(array('text' => 'Annotation: "' . snippet_by_word_count($body) . '"', 'html' => false)),
+                'Title' => array(array('text' => 'Annotation: "' . html_entity_decode(snippet_by_word_count($body)) . '"', 'html' => false)),
             ),
             'Item Type Metadata' => array(
                 'On Canvas' => array(array('text' => $uuid, 'html' => false)),
@@ -196,7 +196,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                 $annoItem->setReplaceElementTexts(true);
                 $annoItem->addElementTextsByArray(array(
                     'Dublin Core' => array(
-                        'Title' => array(array('text' => 'Annotation: "' . snippet_by_word_count($text) . '"', 'html' => false)),
+                        'Title' => array(array('text' => 'Annotation: "' . html_entity_decode(snippet_by_word_count($text)) . '"', 'html' => false)),
                     ),
                     'Item Type Metadata' => array(
                         'On Canvas' => array(array('text' => raw_iiif_metadata($annoItem, 'iiifitems_annotation_on_element'), 'html' => false)),
