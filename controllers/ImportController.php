@@ -125,4 +125,53 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         $form = new IiifItems_Form_Import();
         return $form;
     }
+    
+    public function repairItemAction() {
+        // Admins only via POST
+        if (!is_admin_theme()) {
+            throw new Omeka_Controller_Exception_404();
+        }
+        $request = $this->getRequest();
+        if (strtoupper($request->getMethod()) != 'POST') {
+            throw new Omeka_Controller_Exception_404;
+        }
+        // Get return URL
+        $returnUrl = $request->getServer('HTTP_REFERER', WEB_ROOT . admin_url(array(
+            'controller' => 'items',
+            'action' => 'show',
+            'id' => $this->getParam('id'),
+        ), 'id'));
+        // If item doesn't exist, redirect back with flash
+        $item = get_record_by_id('Item', $this->getParam('id'));
+        if (!$item) {
+            $this->_helper->flashMessenger(__("This item does not exist."));
+            Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($returnUrl);
+            return;
+        }
+        // If no JSON Data, redirect back
+        if (!($jsonStr = raw_iiif_metadata($item, 'iiifitems_item_json_element'))) {
+            $this->_helper->flashMessenger(__("This item does not seem to be imported using IIIF Items."));
+            Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($returnUrl);
+            return;
+        }
+        // Try to repair item
+        $originalFiles = $item->getFiles();
+        try {
+            $jsonData = json_decode($jsonStr, true);
+            foreach ($jsonData['images'] as $image) { 
+                $downloader = new IiifItems_ImageDownloader($image);
+                $file = $downloader->downloadToItem($item, 'full');
+            }
+        } catch (Exception $ex) {
+            $this->_helper->flashMessenger(__("Unable to repair item."));
+            Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($returnUrl);
+            return;
+        }
+        // Done
+        foreach ($originalFiles as $originalFile) {
+            $originalFile->delete();
+        }
+        $this->_helper->flashMessenger(__("Item successfully repaired. Please recheck contents."));
+        Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($returnUrl);
+    }
 }
