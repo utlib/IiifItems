@@ -22,6 +22,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'admin_collections_browse_each',
             'before_save_collection',
             'before_save_item',
+            'admin_items_show_sidebar',
 	);
 	
 	protected $_filters = array(
@@ -373,6 +374,21 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             unset($elementsBySet['IIIF Item Metadata']['JSON Data']);
             unset($elementsBySet['IIIF Collection Metadata']['JSON Data']);
             return $elementsBySet;
+        }
+        
+        public function hookAdminItemsShowSidebar($args) {
+            $item = $args['item'];
+            if (raw_iiif_metadata($item, 'iiifitems_item_json_element') && $item->item_type_id != get_option('iiifitems_annotation_item_type')) {
+                echo '<div class="panel"><h4>Repair</h4>'
+                . '<p>If this item is imported via IIIF Items and the files are '
+                        . 'missing/corrupted, you can repair it below. All '
+                        . 'files belonging to this item will be deleted and '
+                        . 'then reloaded.</p>'
+                        . '<form action="' . admin_url(array('id' => $item->id), 'iiifitems_repair_item') . '" method="POST">'
+                        . '<input type="submit" value="Repair" class="big blue button" style="width:100%"/>'
+                        . '</form>'
+                        . '</div>';
+            }    
         }
         
         /* Annotation Type Metadata */
