@@ -339,7 +339,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             } else {
                 $on = raw_iiif_metadata($args['item'], 'iiifitems_annotation_on_element');
                 if (($attachedItem = find_item_by_uuid($on)) || ($attachedItem = find_item_by_atid($on))) {
-                    echo '<p>Attached to: <a href="' . url(array('id' => $attachedItem->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">' . metadata($attachedItem, array('Dublin Core', 'Title')) . '</a></p>';
+                    $text = 'Attached to: <a href="' . url(array('id' => $attachedItem->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">' . metadata($attachedItem, array('Dublin Core', 'Title')) . '</a>';
+                    if ($attachedItem->collection_id !== null) {
+                        $collection = get_record_by_id('Collection', $attachedItem->collection_id);
+                        $collectionLink = url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id');
+                        $collectionTitle = metadata($collection, array('Dublin Core', 'Title'));                                                                                                      
+                        $text .= " (<a href=\"{$collectionLink}\">{$collectionTitle}</a>)";    
+                    }
+                    echo "<p>{$text}</p>";
                 }
             }
         }
@@ -402,7 +409,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             }
             $link = url(array('id' => $target->id, 'controller' => 'items', 'action' => 'show'), 'id');
             $title = metadata($target, array('Dublin Core', 'Title'));
-            return "<a href=\"{$link}\">{$title}</a> ({$on})";
+            $text = "<a href=\"{$link}\">{$title}</a> ({$on})";
+            if ($target->collection_id !== null) {
+                $collection = get_record_by_id('Collection', $target->collection_id);
+                $collectionLink = url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id');
+                $collectionTitle = metadata($collection, array('Dublin Core', 'Title'));
+                $text .= "<p>From collection <a href=\"{$collectionLink}\">{$collectionTitle}</a></p>";
+            }
+            return $text;
         }
         
         public function inputForAnnotationOnCanvas($comps, $args) {
