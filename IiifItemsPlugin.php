@@ -334,7 +334,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 if ($uuid = raw_iiif_metadata($args['item'], 'iiifitems_item_uuid_element')) {
                     echo '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a>';
                     echo '<br />';
-                    echo '<a href="' . admin_url('items') . '/browse?search=&ad vanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations</a>';
+                    echo '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations</a>';
                 }    
             } else {
                 $on = raw_iiif_metadata($args['item'], 'iiifitems_annotation_on_element');
@@ -385,9 +385,22 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function hookAdminItemsShowSidebar($args) {
             $item = $args['item'];
-            if (raw_iiif_metadata($item, 'iiifitems_item_json_element') && $item->item_type_id != get_option('iiifitems_annotation_item_type')) {
-                echo '<div class="panel"><h4>Repair</h4>'
-                . '<p>If this item is imported via IIIF Items and the files are '
+            if ($uuid = raw_iiif_metadata($item, 'iiifitems_item_uuid_element')) {
+                if ($item->item_type_id != get_option('iiifitems_annotation_item_type')) {
+                    $onCanvasMatches = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ?", array(
+                        get_option('iiifitems_annotation_on_element'),
+                        $uuid,
+                    ));
+                    echo '<div class="panel"><h4>Annotations</h4>'
+                        . '<p>This item has '
+                        . '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">'
+                        . count($onCanvasMatches)
+                        . '</a>'
+                        . ' annotation(s).</p>'
+                        . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
+                        . '</div>';
+                    echo '<div class="panel"><h4>Repair</h4>'
+                        . '<p>If this item is imported via IIIF Items and the files are '
                         . 'missing/corrupted, you can repair it below. All '
                         . 'files belonging to this item will be deleted and '
                         . 'then reloaded.</p>'
@@ -395,7 +408,26 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                         . '<input type="submit" value="Repair" class="big blue button" style="width:100%"/>'
                         . '</form>'
                         . '</div>';
-            }    
+                } else {
+                    if ($onCanvasUuid = raw_iiif_metadata($item, 'iiifitems_annotation_on_element')) {
+                        $onCanvasMatches = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ?", array(
+                            get_option('iiifitems_annotation_on_element'),
+                            $onCanvasUuid,
+                        ));
+                        $belongsTo = find_item_by_uuid($onCanvasUuid);
+                        echo '<div class="panel"><h4>Annotations</h4>'
+                            . '<p>This annotation is one of '
+                            . '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $onCanvasUuid . '">'
+                            . count($onCanvasMatches)
+                            . '</a>'
+                            . ' on the canvas "<a href="' . url(array('id' => $belongsTo->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">'
+                            . metadata($belongsTo, array('Dublin Core', 'Title'))
+                            . '</a>".</p>'
+                            . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
+                            . '</div>';
+                    }
+                }
+            }
         }
         
         /* Annotation Type Metadata */
