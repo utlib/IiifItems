@@ -23,6 +23,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'before_save_collection',
             'before_save_item',
             'admin_items_show_sidebar',
+            'admin_collections_show_sidebar',
 	);
 	
 	protected $_filters = array(
@@ -397,8 +398,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                         . count($onCanvasMatches)
                         . '</a>'
                         . ' annotation(s).</p>'
-                        . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
+                        // . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
                         . '</div>';
+                    echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
                     echo '<div class="panel"><h4>Repair</h4>'
                         . '<p>If this item is imported via IIIF Items and the files are '
                         . 'missing/corrupted, you can repair it below. All '
@@ -423,11 +425,18 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                             . ' on the canvas "<a href="' . url(array('id' => $belongsTo->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">'
                             . metadata($belongsTo, array('Dublin Core', 'Title'))
                             . '</a>".</p>'
-                            . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
+                            // . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
                             . '</div>';
+                        echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
                     }
                 }
             }
+        }
+        
+        public function hookAdminCollectionsShowSidebar($args) {
+            $collection = $args['collection'];
+            $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
+            echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
         }
         
         /* Annotation Type Metadata */
