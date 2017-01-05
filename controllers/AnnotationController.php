@@ -10,107 +10,12 @@ class IiifItems_AnnotationController extends IiifItems_BaseController {
         }
         // Respond with JSON
         try {
-            if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
-                // Annotation (TODO: Clean this up)
-                $jsonData = $this->__annotationListTemplate(public_full_url(array(
-                    'things' => 'items',
-                    'id' => $item->id,
-                    'typeext' => 'annolist.json',
-                ), 'iiifitems_oa_uri'));
-                $currentAnnotationJson = json_decode(get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
-                    get_option('iiifitems_item_json_element'),
-                    $item->id,
-                ))[0], true);
-                $currentText = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
-                    get_option('iiifitems_annotation_text_element'),
-                    $item->id,
-                ))[0];
-                $currentAnnotationJson['resource'] = array(
-                    array(
-                        '@type' => 'dctypes:Text',
-                        'format' => $currentText->html ? 'text/html' : 'text/plain',
-                        'chars' => $currentText->text,
-                    ),
-                );
-                foreach (get_record_by_id('Item', $item->id)->getTags() as $tag) {
-                    $currentAnnotationJson['resource'][] = array(
-                        '@type' => 'oa:Tag',
-                        'chars' => $tag->name,
-                    );
-                }
-                $jsonData['resources'][] = $currentAnnotationJson;
-            } else {
-                // Regular item
-                $jsonData = $this->__itemAnnotationList($item);
-            }
+            $jsonData = IiifItems_AnnotationUtil::buildList($item);
             $this->__respondWithJson($jsonData);
         } catch (Exception $e) {
             $this->__respondWithJson(array(
                 'message' => $e->getMessage()
             ), 500);
         }
-    }
-    
-    private function __itemAnnotationList($item) {
-        $json = $this->__annotationListTemplate(public_full_url(array(
-            'things' => 'items',
-            'id' => $item->id,
-            'typeext' => 'annolist.json',
-        ), 'iiifitems_oa_uri'));
-        $db = get_db();
-        $elementTextTable = $db->getTable('ElementText');
-        // Find annotations associated by item ID or original @id (if available)
-        $originalId = raw_iiif_metadata($item, 'iiifitems_item_atid_element');
-        if (!$originalId) {
-            $originalId = public_full_url(array(
-                'things' => 'items',
-                'id' => $item->id,
-                'typeext' => 'canvas.json',
-            ), 'iiifitems_oa_uri');
-        }
-        $uuid = raw_iiif_metadata($item, 'iiifitems_item_uuid_element');
-        $onCanvasMatches = $elementTextTable->findBySql("element_texts.element_id = ? AND (element_texts.text LIKE CONCAT(?, '%') OR element_texts.text = ? OR element_texts.text = ?)", array(
-            get_option('iiifitems_annotation_on_element'),
-            $originalId,
-            $item->id,
-            $uuid,
-        ));
-        $jsonDataElementId = get_option('iiifitems_item_json_element');
-        $textElementId = get_option('iiifitems_annotation_text_element');
-        foreach ($onCanvasMatches as $onCanvasMatch) {
-            $currentAnnotationJson = json_decode($elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
-                $jsonDataElementId,
-                $onCanvasMatch->record_id,
-            ))[0], true);
-            $currentText = $elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
-                $textElementId,
-                $onCanvasMatch->record_id,
-            ));
-            if ($currentText) $currentText = $currentText[0]; else continue;
-            $currentAnnotationJson['resource'] = array(
-                array(
-                    '@type' => 'dctypes:Text',
-                    'format' => $currentText->html ? 'text/html' : 'text/plain',
-                    'chars' => $currentText->text,
-                ),
-            );
-            foreach (get_record_by_id('Item', $onCanvasMatch->record_id)->getTags() as $tag) {
-                $currentAnnotationJson['resource'][] = array(
-                    '@type' => 'oa:Tag',
-                    'chars' => $tag->name,
-                );
-            }
-            $json['resources'][] = $currentAnnotationJson;
-        }
-        return $json;
-    }
-    
-    private function __annotationListTemplate($atId, $resources=array()) {
-        return array(
-            '@context' => 'http://www.shared-canvas.org/ns/context.json',
-            '@id' => $atId,
-            '@type' => 'sc:AnnotationList',
-            'resources' => $resources,
-        );
     }
 }
