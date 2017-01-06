@@ -65,12 +65,17 @@ class IiifItems_AnnotationUtil extends IiifItems_IiifUtil {
     public static function buildList($item) {
         $atId = public_full_url(array('things' => 'items', 'id' => $item->id, 'typeext' => 'annolist.json'), 'iiifitems_oa_uri');
         $annotations = array();
-        return self::blankListTemplate($atId, self::findAnnotationsFor($item));
+        if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
+            return self::blankListTemplate($atId, array(self::buildAnnotation($item)));
+        } else {
+            return self::blankListTemplate($atId, self::findAnnotationsFor($item));
+        }
     }
 
     /**
      * Convert an annotation item to JSON object form
      * @param Item $annoItem An annotation-type item
+     * @return array
      */
     public static function buildAnnotation($annoItem) {
         $elementTextTable = get_db()->getTable('ElementText');
@@ -94,7 +99,7 @@ class IiifItems_AnnotationUtil extends IiifItems_IiifUtil {
                 'chars' => $currentText->text,
             ),
         );
-        foreach (get_record_by_id('Item', $onCanvasMatch->record_id)->getTags() as $tag) {
+        foreach ($annoItem->getTags() as $tag) {
             $currentAnnotationJson['resource'][] = array(
                 '@type' => 'oa:Tag',
                 'chars' => $tag->name,
