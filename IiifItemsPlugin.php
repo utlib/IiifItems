@@ -24,6 +24,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'before_save_item',
             'admin_items_show_sidebar',
             'admin_collections_show_sidebar',
+            'before_delete_item',
 	);
 	
 	protected $_filters = array(
@@ -437,6 +438,15 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $collection = $args['collection'];
             $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
             echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+        }
+        
+        public function hookBeforeDeleteItem($args) {
+            $item = $args['record'];
+            if ($item->item_type_id != get_option('iiifitems_annotation_item_type')) {
+                Zend_Registry::get('bootstrap')->getResource('jobs')->sendLongRunning('IiifItems_Job_RemoveSubannotations', array(
+                    'item_uuid' => raw_iiif_metadata($item, 'iiifitems_item_uuid_element'),
+                ));
+            }
         }
         
         /* Annotation Type Metadata */

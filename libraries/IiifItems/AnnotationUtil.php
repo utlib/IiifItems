@@ -155,6 +155,26 @@ class IiifItems_AnnotationUtil extends IiifItems_IiifUtil {
         }
         return $annoItems;
     }
+    
+    /**
+     * Return an array of annotations for a non-annotation item, as Item records.
+     * @param type $item
+     * @return array
+     */
+    public static function findAnnotationItemsUnder($item) {
+        $elementTextTable = get_db()->getTable('ElementText');
+        $uuid = raw_iiif_metadata($item, 'iiifitems_item_uuid_element');
+        $onCanvasMatches = $elementTextTable->findBySql("element_texts.record_type = ? AND element_texts.element_id = ? AND element_texts.text = ?", array(
+            'Item',
+            get_option('iiifitems_annotation_on_element'),
+            $uuid,
+        ));
+        $annoItems = array();
+        foreach ($onCanvasMatches as $onCanvasMatch) {
+            $annoItems[] = get_record_by_id('Item', $onCanvasMatch->record_id);
+        }
+        return $annoItems;
+    }
 
     /**
      * Return the correct annotation Item corresponding to $uri for the context being annotated
