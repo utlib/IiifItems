@@ -3,9 +3,8 @@
 class IiifItems_AnnotatorController extends IiifItems_BaseController {
     public function indexAction() {
         // Sanity checks
-        if (!$this->getRequest()->isGet()) {
-            throw new Omeka_Controller_Exception_404;
-        }
+        $this->__blockPublic();
+        $this->__restrictVerb('GET');
         if (empty($_GET['uri'])) {
             $this->__respondWithJson(null, 400);
             return;
@@ -32,10 +31,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
     
     public function createAction() {
         // Sanity check
-        $request = $this->getRequest();
-        if (!$request->isPost()) {
-            throw new Omeka_Controller_Exception_404;
-        }
+        $this->__blockPublic();
+        $this->__restrictVerb('POST');
         $contextRecordType = $this->getParam('things');
         $contextRecordId = $this->getParam('id');
         if (!($contextThing = $this->__getThing($contextRecordType, $contextRecordId))) {
@@ -127,10 +124,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
     
     public function deleteAction() {
         // Sanity check
-        $request = $this->getRequest();
-        if (!$request->isDelete()) {
-            throw new Omeka_Controller_Exception_404;
-        }
+        $this->__blockPublic();
+        $this->__restrictVerb('DELETE');
         $contextRecordType = $this->getParam('things');
         $contextRecordId = $this->getParam('id');
         if (!($contextThing = $this->__getThing($contextRecordType, $contextRecordId))) {
@@ -155,10 +150,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
     
     public function updateAction() {
         // Sanity check
-        $request = $this->getRequest();
-        if (!$request->isPut()) {
-            throw new Omeka_Controller_Exception_404;
-        }
+        $this->__blockPublic();
+        $this->__restrictVerb('PUT');
         $contextRecordType = $this->getParam('things');
         $contextRecordId = $this->getParam('id');
         if (!($contextThing = $this->__getThing($contextRecordType, $contextRecordId))) {
@@ -219,19 +212,6 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
     
     public function annotateAction() {
         $this->__passModelToView();
-    }
-    
-    private function __blockPublic() {
-        if (!is_admin_theme()) {
-            throw new Omeka_Controller_Exception_404;
-        }
-    }
-    
-    private function __restrictVerb($verb) {
-        $request = $this->getRequest();
-        if (strtolower($request->getMethod()) != strtolower($verb)) {
-            throw new Omeka_Controller_Exception_404;
-        }
     }
     
     private function __getThing($type, $id) {

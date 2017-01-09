@@ -127,5 +127,18 @@ abstract class IiifItems_BaseController extends Omeka_Controller_AbstractActionC
             ? json_encode($mixed)
             : json_encode($mixed, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
     }
+    
+    protected function __blockPublic() {
+        if (!is_admin_theme()) {
+            throw new Omeka_Controller_Exception_404;
+        }
+    }
+    
+    protected function __restrictVerb($verb) {
+        $request = $this->getRequest();
+        if (strtolower($request->getMethod()) != strtolower($verb)) {
+            throw new Omeka_Controller_Exception_404;
+        }
+    }
 }
 ?>
