@@ -2,7 +2,7 @@
 
 class IiifItems_AnnotationController extends IiifItems_BaseController {
     public function listAction() {
-        // Check if the item exists and isn't itself an annotation
+        // Check if the item exists
         $id = $this->getParam('id');
         $item = get_record_by_id('Item', $id);
         if (!$item) {
