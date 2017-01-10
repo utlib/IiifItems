@@ -41,6 +41,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'inputForItemParent' => array('ElementInput', 'Item', 'IIIF Item Metadata', 'Parent Collection'),
             'inputForItemUuid' => array('ElementInput', 'Item', 'IIIF Item Metadata', 'UUID'),
             // Collection Metadata
+            'displayForCollectionParent' => array('Display', 'Collection', 'IIIF Collection Metadata', 'Parent Collection'),
             'inputForCollectionOriginalId' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'Original @id'),
             'inputForCollectionIiifType' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'IIIF Type'),
             'inputForCollectionParent' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'Parent Collection'),
@@ -223,7 +224,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             
             add_filter(array('Display', 'File', 'IIIF File Metadata', 'JSON Data'), 'filter_hide_element_display');
             add_filter(array('Display', 'Item', 'IIIF Item Metadata', 'Parent Collection'), 'filter_hide_element_display');
-            add_filter(array('Display', 'Collection', 'IIIF Collection Metadata', 'Parent Collection'), 'filter_hide_element_display');
             add_filter(array('ElementForm', 'Item', 'Item Type Metadata', 'On Canvas'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Item', 'Item Type Metadata', 'Selector'), 'filter_singular_form');
             add_filter(array('ElementForm', 'File', 'IIIF File Metadata', 'Original @id'), 'filter_singular_form');
@@ -364,8 +364,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function hookBeforeSaveCollection($args) {
+            $uuidElement = get_option('iiifitems_collection_uuid_element');
             if ($args['insert']) {
-                $args['record']->addTextForElement(get_record_by_id('Element', get_option('iiifitems_collection_uuid_element')), generate_uuid());
+                $args['record']->addTextForElement(get_record_by_id('Element', $uuidElement), generate_uuid());
             }
         }
         
@@ -522,14 +523,25 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             return filter_minimal_input($comps, $args);
         }
         
-        public function displayForCollectionParent($text, $args) {
-            $collection = get_db()->getTable('Collection')->find($args['element_text']->text);
-            return '<a href="' . url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . metadata($collection, array('Dublin Core', 'Title')) . '</a>';
-
+        public function displayForCollectionParent($comps, $args) {
+            $uuid = $args['element_text']->text;
+            $collection = find_collection_by_uuid($uuid);
+            if (!$collection) {
+                return $uuid;
+            }
+            return '<a href="' . url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . metadata($collection, array('Dublin Core', 'Title')) . '</a> (' . $uuid. ')';
         }
         
         public function inputForCollectionParent($comps, $args) {
-            $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), get_table_options('Collection'));
+            $options = get_table_options('Collection');
+            $uuidOptions = array('' => 'No Parent');
+            foreach ($options as $id => $optionTitle) {
+                $collection = get_record_by_id('Collection', $id);
+                if ($collection) {
+                    $uuidOptions[raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element')] = $optionTitle;
+                }
+            }
+            $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), $uuidOptions);
             return filter_minimal_input($comps, $args);
         }
         
