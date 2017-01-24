@@ -52,7 +52,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 break;
                 case 1:
                     $importSource = 'Url';
-                    $importSourceBody = $form->getValue('items_import_source_url');
+                    $importSourceBody = $this->_extractResourceUrl($form->getValue('items_import_source_url'));
+                    
                 break;
                 case 2:
                     $importSource = 'Paste';
@@ -93,6 +94,22 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             $this->_helper->flashMessenger(__('An unexpected error occurred during submission. Please retry later.'));
             return false;
         }
+    }
+    
+    protected function _extractResourceUrl($url) {
+        // Return URL as is if there are no queries
+        $queryPos = strpos($url, '?');
+        if ($queryPos === false) {
+            return $url;
+        }
+        // Parse the query portion (i.e. after ?) and return any manifest found
+        $querySection = substr($url, $queryPos+1);
+        parse_str($querySection, $parsed);
+        if (isset($parsed['manifest'])) {
+            return $parsed['manifest'];
+        }
+        // Still nothing, just give back the URL
+        return $url;
     }
     
     public function statusAction() {
