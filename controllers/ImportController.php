@@ -52,7 +52,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 break;
                 case 1:
                     $importSource = 'Url';
-                    $importSourceBody = $form->getValue('items_import_source_url');
+                    $importSourceBody = $this->_extractResourceUrl($form->getValue('items_import_source_url'));
+                    
                 break;
                 case 2:
                     $importSource = 'Paste';
@@ -93,6 +94,22 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             $this->_helper->flashMessenger(__('An unexpected error occurred during submission. Please retry later.'));
             return false;
         }
+    }
+    
+    protected function _extractResourceUrl($url) {
+        // Return URL as is if there are no queries
+        $queryPos = strpos($url, '?');
+        if ($queryPos === false) {
+            return $url;
+        }
+        // Parse the query portion (i.e. after ?) and return any manifest found
+        $querySection = substr($url, $queryPos+1);
+        parse_str($querySection, $parsed);
+        if (isset($parsed['manifest'])) {
+            return $parsed['manifest'];
+        }
+        // Still nothing, just give back the URL
+        return $url;
     }
     
     public function statusAction() {
@@ -173,5 +190,66 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         }
         $this->_helper->flashMessenger(__("Item successfully repaired. Please recheck contents."));
         Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($returnUrl);
+    }
+    
+    public function maintenanceAction() {
+        $this->__blockPublic();
+    }
+    
+    public function cleanCacheAction() {
+        // Block unwanted people
+        $this->__blockPublic();
+        $this->__restrictVerb('POST');
+        
+        // Set up request
+        $request = $this->getRequest();
+        $targetType = $this->getParam('type');
+        $targetId = $this->getParam('id');
+        $db = get_db();
+        
+        // Clear all
+        if ($targetType == 'all' && $targetId == 'all') {
+            $db->query("TRUNCATE `{$db->prefix}iiif_items_cached_json_data`;");
+            $this->_helper->flashMessenger(__("JSON cache purged."));
+            $targetUrl = $request->getServer('HTTP_REFERER', WEB_ROOT . admin_url(array(), 'iiifItemsMaintenance'));
+            Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($targetUrl);
+            return;
+        }
+        // Clear for just one record
+        else {
+            try {
+                $target = get_record_by_id($targetType, $targetId);
+                if ($target) {
+                    $db->query("DELETE FROM `{$db->prefix}iiif_items_cached_json_data` WHERE record_id = ? AND record_type = ?;", array($targetId, $targetType));
+                    $this->_helper->flashMessenger(__("Cleaned JSON cached data."));
+                    switch (get_class($target)) {
+                        case 'Collection': 
+                            $targetUrl = $request->getServer('HTTP_REFERER', WEB_ROOT . admin_url(array(
+                                'controller' => 'collections',
+                                'action' => 'show',
+                                'id' => $targetId,
+                            ), 'id'));
+                        break;
+                        case 'Item':
+                            $targetUrl = $request->getServer('HTTP_REFERER', WEB_ROOT . admin_url(array(
+                                'controller' => 'items',
+                                'action' => 'show',
+                                'id' => $targetId,
+                            ), 'id'));
+                        break;
+                        default: 
+                            $targetUrl = $request->getServer('HTTP_REFERER', WEB_ROOT . admin_url()); 
+                        break;
+                    }
+                    Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($targetUrl);
+                    return;
+                }
+            }
+            catch (Exception $e) {
+            }
+        }
+        
+        // Fail
+        $this->_helper->flashMessenger("Failed to purge JSON cache");
     }
 }

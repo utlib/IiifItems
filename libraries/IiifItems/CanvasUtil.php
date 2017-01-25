@@ -131,7 +131,6 @@ class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
         }
         // If missing or failed, build from file data
         list($fileWidth, $fileHeight) = getimagesize(FILES_DIR . DIRECTORY_SEPARATOR . $file->getStoragePath());
-        $iiifRoot = get_option('iiifitems_bridge_prefix');
         $fileJson = array(
             '@id' => public_full_url(array(
                 'things' => 'files',
@@ -147,7 +146,7 @@ class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
                 'width' => $fileWidth,
                 'height' => $fileHeight,
                 'service' => array(
-                    '@id' => $iiifRoot . '/' . $file->filename,
+                    '@id' => self::fileIiifPrefix($file),
                     '@context' => 'http://iiif.io/api/image/2/context.json',
                     'profile' => 'http://iiif.io/api/image/2/level2.json',
                 ),
@@ -155,6 +154,21 @@ class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
             'on' => $on,
         );
         return $fileJson;
+    }
+    
+    /**
+     * Return the IIIF prefix for the given local File record.
+     * @param File $file
+     * @return string
+     */
+    public static function fileIiifPrefix($file) {
+        $bridgePrefix = get_option('iiifitems_bridge_prefix');
+        $replacedBridgePrefix = str_replace(
+            array('{FILENAME}', '{EXTENSION}', '{FULLNAME}'), 
+            array(basename($file->filename), $file->DERIVATIVE_EXT, $file->filename), 
+            $bridgePrefix
+        );
+        return $replacedBridgePrefix;
     }
 
     /**

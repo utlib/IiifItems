@@ -1,23 +1,10 @@
 <?php
 echo head(array(
-    'title' => __('IIIF Import'),
+    'title' => __('IIIF Items'),
 ));
+include __DIR__ . '/_nav.php';
 ?>
-<nav id="section-nav" class="navigation vertical">
-    <?php
-    $navArray = array(
-        array(
-            'label' => __('Import Items'),
-            'uri' => url('iiif-items/import'),
-        ),
-        array(
-            'label' => __('Status'),
-            'uri' => url('iiif-items/status'),
-        ),
-    );
-    echo nav($navArray, 'admin_navigation_settings');
-    ?>
-</nav>
+
 <style>
     progress {
         display: block;
