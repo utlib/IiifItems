@@ -354,7 +354,13 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
 
         public function hookAdminCollectionsBrowseEach($args) {
-            echo '<a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a>';
+            if (raw_iiif_metadata($args['collection'], 'iiifitems_collection_type_element') == 'Collection') {
+                if ($uuid = raw_iiif_metadata($args['collection'], 'iiifitems_collection_uuid_element')) {
+                    echo '<a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">List Members</a>';
+                }    
+            } else {
+                echo '<a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a>';
+            }
         }
         
         public function hookBeforeSaveItem($args) {
