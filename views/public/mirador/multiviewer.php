@@ -57,7 +57,8 @@
                         annotationState: "on",
                         annotationRefresh: true
                     }
-                }
+                },
+                sidePanelVisible: false
             },
             "autoHideControls": false,
             "mainMenuSettings": {
