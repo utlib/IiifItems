@@ -22,6 +22,20 @@ class IiifItems_ManifestUtil extends IiifItems_IiifUtil {
             )),
         );
     }
+    
+    /**
+     * Bare minimum template for a manifest, for embedding in a collection listing
+     * @param string $atId The unique URI ID for this manifest
+     * @param string $label The title of this manifest
+     * @return array
+     */
+    public static function bareTemplate($atId, $label) {
+        return array(
+            '@id' => $atId,
+            '@type' => 'sc:Manifest',
+            'label' => $label,
+        );
+    }
 
     /**
      * Return the IIIF Presentation API manifest representation of the Omeka collection
