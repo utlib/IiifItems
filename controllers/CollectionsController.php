@@ -35,4 +35,44 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
             $this->view->sort_order = $sortOrder;
         }
     }
+    
+    public function collectionAction() {
+        // Get and check the collection's existence
+        $collection = get_record_by_id('Collection', $this->getParam('id'));
+        if (empty($collection) || raw_iiif_metadata($collection, 'iiifitems_collection_type_element') != 'Collection') {
+            throw new Omeka_Controller_Exception_404;
+        }
+        //Respond with JSON
+        try {
+            $jsonData = IiifItems_CollectionUtil::buildCollection($collection);
+            $this->__respondWithJson($jsonData);
+        } catch (Exception $e) {
+            $this->__respondWithJson(array(
+                'message' => $e->getMessage(),
+            ), 500);
+        }
+    }
+    
+    public function topAction() {
+        $db = get_db();
+        $parentUuidElementId = get_option('iiifitems_collection_parent_element');
+        $iiifTypeElementId = get_option('iiifitems_collection_type_element');
+        // Get parent-less collections
+        $collections = array();
+        foreach (IiifItems_CollectionUtil::findTopCollections() as $collection) {
+            $atId = public_full_url(array('things' => 'collections', 'id' => $collection->id, 'typeext' => 'collection.json'), 'iiifitems_oa_uri');
+            $label = metadata($collection, array('Dublin Core', 'Title'), array('no_escape' => true));
+            $collections[] = IiifItems_CollectionUtil::bareTemplate($atId, $label);
+        }
+        // Get parent-less manifests
+        $manifests = array();
+        foreach (IiifItems_CollectionUtil::findTopManifests() as $manifest) {
+            $atId = public_full_url(array('things' => 'collections', 'id' => $manifest->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
+            $label = metadata($manifest, array('Dublin Core', 'Title'), array('no_escape' => true));
+            $manifests[] = IiifItems_CollectionUtil::bareTemplate($atId, $label);
+        }
+        // Merge and serve
+        $atId = public_url();
+        $this->__respondWithJson(IiifItems_CollectionUtil::blankTemplate($atId, get_option('site_title'), $manifests, $collections));
+    }
 }
