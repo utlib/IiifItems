@@ -41,7 +41,7 @@
 				slotAddress: "row1.column1",
 				viewType: "ImageView",
 				displayLayout: false,
-				sidePanel: false,
+				sidePanel: true,
 				annotationLayer: true,
 				annotationCreation: true,
 				annotationState: 'annoOncreateOn'

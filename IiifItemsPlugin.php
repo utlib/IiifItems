@@ -274,7 +274,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $iiifUrl = public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
             echo '<h2>IIIF File Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
-            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
         }
         
@@ -284,7 +284,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             }
             $iiifUrl = absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_manifest');
             echo '<h2>IIIF Manifest</h2><p><a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
-            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
         }
         
         public function hookAdminItemsShow($args) {
@@ -294,7 +294,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $iiifUrl = public_full_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
             echo '<h2>IIIF Item Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
-            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
         }
         
@@ -305,7 +305,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $iiifUrl = absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
             echo '<h2>IIIF Manifest</h2><p><a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
-            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';    
         }
         
@@ -316,7 +316,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $iiifUrl = public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
             echo '<h2>IIIF Collection Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
-            echo '<iframe style="width:100%;height:600px;" allowfullscreen="allowfullscreen" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
         }
         
@@ -635,14 +635,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                     $item_ids[] = $item->id;
                 }
                 // Add iframe
-                return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('items' => join(',', $item_ids))) . '" style="width:100%;height:400px;' . $styles . '"></iframe>';
+                return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('items' => join(',', $item_ids))) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
             }
             // Single: View quick-view manifest of the item
             if (isset($args['id'])) {
                 $id = $args['id'];
                 $item = get_record_by_id('Item', $id);
                 if ($item) {
-                    return '<iframe src="' . public_full_url(array('things' => 'items', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:400px;' . $styles . '"></iframe>';
+                    return '<iframe src="' . public_full_url(array('things' => 'items', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
                 }
             }
             // Fail
@@ -678,14 +678,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                     $collection_urls[] = public_full_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_manifest');
                 }
                 // Add iframe
-                return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $collection_urls)) . '" style="width:100%;height:400px;' . $styles . '"></iframe>';
+                return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $collection_urls)) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
             }
             // Single: View quick-view manifest of the collection
             if (isset($args['id'])) {
                 $id = $args['id'];
                 $collection = get_record_by_id('Collection', $id);
                 if ($collection) {
-                    return '<iframe src="' . public_full_url(array('things' => 'collections', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:400px;' . $styles . '"></iframe>';
+                    return '<iframe src="' . public_full_url(array('things' => 'collections', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
                 }
             }
             // Fail
@@ -698,7 +698,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             // Grab URL arguments
             $urls = isset($args['urls']) ? explode(';', $args['urls']) : array();
             // Add iframe
-            return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $urls)) . '" style="width:100%;height:400px;' . $styles . '"></iframe>';
+            return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $urls)) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
         }
 }
 ?>
