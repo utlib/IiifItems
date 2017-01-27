@@ -46,6 +46,7 @@
                 <?php if (!empty($urls)): ?>
                 loadedManifest: <?php echo $urls[0]; ?>,
                 <?php endif; ?>
+                sidePanel: true,
                 slotAddress: "row1.column1",
                 viewType: "ImageView",
                 annotationLayer: true
