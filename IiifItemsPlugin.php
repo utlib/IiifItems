@@ -370,9 +370,43 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function hookBeforeSaveCollection($args) {
-            $uuidElement = get_option('iiifitems_collection_uuid_element');
+            $uuidElementId = get_option('iiifitems_collection_uuid_element');
+            $parentElementId = get_option('iiifitems_collection_parent_element');
+            $uuidElement = get_record_by_id('Element', $uuidElementId);
+            $parentElement = get_record_by_id('Element', $parentElementId);
+            $record = $args['record'];
+            // Add UUID if it's new
             if ($args['insert']) {
-                $args['record']->addTextForElement(get_record_by_id('Element', $uuidElement), generate_uuid());
+                $record->addTextForElement($uuidElement, generate_uuid());
+            }
+            // Check Parent Collection element text
+            if (isset($args['post']['Elements'][$parentElementId])) {
+                $parentUuid = $args['post']['Elements'][$parentElementId][0]['text'];
+                if ($parentUuid) {
+                    // Manifests can't be parents
+                    $parent = find_collection_by_uuid($parentUuid);
+                    if (raw_iiif_metadata($parent, 'iiifitems_collection_type_element')) {
+                        $record->addError('Parent Collection', __('A collection can only have collection-type collections as its parent.'));
+                    }
+                    // Anti-loop check if is collection has a parent
+                    $visitedUuids = array($record->getElementTextsByRecord($uuidElement)[0]->text => true);
+                    $current = $parent;
+                    while ($current) {
+                        $currentUuid = raw_iiif_metadata($current, 'iiifitems_collection_uuid_element');
+                        if (isset($visitedUuids[$currentUuid])) {
+                            $record->addError('Parent Collection', __('A collection cannot have itself or a descendent as its parent.'));
+                            break;
+                        }
+                        $visitedUuids[$currentUuid] = true;
+                        $current = find_collection_by_uuid(raw_iiif_metadata($current, 'iiifitems_collection_parent_element'));
+                    }
+                }
+            }
+        }
+        
+        protected function _isCircularCollection($args) {
+            if ($args['post']) {
+                
             }
         }
         
