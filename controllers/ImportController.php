@@ -85,6 +85,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 'importSourceBody' => $importSourceBody,
                 'importPreviewSize' => $importPreviewSize,
                 'isReversed' => $form->getValue('items_are_reversed') ? 1 : 0,
+                'parent' => $form->getValue('items_import_to_parent'),
             ));
             // OK
             return true;

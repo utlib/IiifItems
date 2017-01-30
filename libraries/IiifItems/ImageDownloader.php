@@ -55,18 +55,23 @@ class IiifItems_ImageDownloader {
             switch ($image['resource']['service']['@context']) {
                 case 'http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
                 case 'http://iiif.io/api/image/1/context.json':
+                case 'https://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
+                case 'https://iiif.io/api/image/1/context.json':
                     return 'native.jpg';
                 case 'http://iiif.io/api/image/2/context.json':
+                case 'https://iiif.io/api/image/2/context.json':
                     return 'default.jpg';
             }
             switch ($image['resource']['service']['profile']) {
                 case 'http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
+                case 'https://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
                     return 'native.jpg';
             }
         }
         catch (Exception $e) {
             return 'native.jpg';
         }
+        return 'native.jpg';
     }
     
     private function __buildUrl($xywh, $trySize) {

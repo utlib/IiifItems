@@ -41,6 +41,11 @@ class IiifItems_Form_Import extends Omeka_Form {
 //            'label' => __('Import Depth'),
 //            'multiOptions' => array('Full', 'Link Only'),
 //        ));
+        // Parent
+        $this->addElement('select', 'items_import_to_parent', array(
+            'label' => __('Parent'),
+            'multiOptions' => get_table_options('Collection'),
+        ));
         // Set to Public?
         $this->addElement('checkbox', 'items_are_public', array(
             'label' => __('Set as Public?'),
