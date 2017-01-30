@@ -7,8 +7,8 @@ echo flash();
 <?php if (total_records('Collection') > 0): ?>
     <div class="table-actions">
     <?php if (is_allowed('Collections', 'add')): ?>
-        <a href="<?php echo html_escape(url('collections/add')); ?>" class="small green button">
-            <?php echo __('Add a Collection'); ?>
+        <a href="<?php echo html_escape(url('collections/add?parent=' . raw_iiif_metadata($parentCollection, 'iiifitems_collection_uuid_element'))); ?>" class="small green button">
+            <?php echo __('Add New Sub-Collection'); ?>
         </a>
     <?php endif; ?>
     </div>
@@ -64,7 +64,7 @@ echo flash();
         </table>
 
         <?php if (is_allowed('Collections', 'add')): ?>
-            <a href="<?php echo html_escape(url('collections/add')); ?>" class="small green button"><?php echo __('Add a Collection'); ?></a>
+<a href="<?php echo html_escape(url('collections/add?parent=' . raw_iiif_metadata($parentCollection, 'iiifitems_collection_uuid_element'))); ?>" class="small green button"><?php echo __('Add New Sub-Collection'); ?></a>
         <?php endif; ?>
     <?php else: ?>
         <p><?php echo __('There are no collections on this page.'); ?> <?php echo link_to('collections', null, __('View All Collections')); ?></p>
@@ -72,7 +72,7 @@ echo flash();
 <?php else: ?>
     <h2><?php echo __('This collection has no submembers.'); ?></h2>
     <?php if(is_allowed('Collections', 'add')): ?>
-        <a href="<?php echo html_escape(url('collections/add')); ?>" class="add big green button"><?php echo __('Add a Collection'); ?></a>
+        <a href="<?php echo html_escape(url('collections/add')); ?>" class="add big green button"><?php echo __('Add New Sub-Collection'); ?></a>
     <?php endif; ?>
 <?php endif; ?>
 
