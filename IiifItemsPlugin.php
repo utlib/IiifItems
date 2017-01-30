@@ -594,6 +594,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                     $uuidOptions[raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element')] = $optionTitle;
                 }
             }
+            if (isset($_GET['parent']) && find_collection_by_uuid($_GET['parent'])) {
+                $args['value'] = $_GET['parent'];
+            }
             $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), $uuidOptions);
             return filter_minimal_input($comps, $args);
         }

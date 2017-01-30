@@ -20,6 +20,7 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
             $matchIds[] = $match->record_id;
         }
         if (empty($matchIds)) {
+            $this->view->parentCollection = $parentCollection;
             $this->view->collections = array();
             $this->view->total_results = 0;
         } else {
@@ -29,6 +30,7 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
             $sortOrder = ($this->_getParam('sort_dir') ? (($_GET['sort_dir'] == 'd') ? 'DESC' : 'ASC') : 'ASC');
             $select = $table->getSelectForFindBy()->where($query, $matchIds);
             $this->_helper->db->applySorting($select, $sortField, $sortOrder);
+            $this->view->parentCollection = $parentCollection;
             $this->view->collections = $table->fetchObjects($select);
             $this->view->total_results = count($matches);
             $this->view->sort_field = $sortField;
