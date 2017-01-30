@@ -1,7 +1,7 @@
 <?php
 
 class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
-    private $_importType, $_importSource, $_importSourceBody, $_importPreviewSize, $_isPublic, $_isFeatured, $_isReversed;
+    private $_importType, $_importSource, $_importSourceBody, $_importPreviewSize, $_isPublic, $_isFeatured, $_isReversed, $_parent;
     private $_statusId;
     
     public function __construct(array $options) {
@@ -13,6 +13,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $this->_isPublic = $options['isPublic'];
         $this->_isFeatured = $options['isFeatured'];
         $this->_isReversed = $options['isReversed'];
+        $this->_parent = $options['parent'];
     }
     
     public function perform() {
@@ -66,15 +67,16 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             debug("Found " . $js->total . " download items for Import Job " . $this->_statusId);
             
             // Process the submission
+            $parentCollection = get_record_by_id('Collection', $this->_parent);
             switch ($this->_importType) {
                 case 'Collection':
-                    $this->_processCollection($jsonData, $js);
+                    $this->_processCollection($jsonData, $js, $parentCollection);
                 break;
                 case 'Manifest':
-                    $this->_processManifest($jsonData, $js);
+                    $this->_processManifest($jsonData, $js, $parentCollection);
                 break;
                 case 'Canvas':
-                    $this->_processCanvas($jsonData, $js);
+                    $this->_processCanvas($jsonData, $js, $parentCollection);
                 break;
                 default:
                     throw new Exception("Invalid import source.");
@@ -408,18 +410,23 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             switch ($image['resource']['service']['@context']) {
                 case 'http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
                 case 'http://iiif.io/api/image/1/context.json':
+                case 'https://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
+                case 'https://iiif.io/api/image/1/context.json':
                     return 'native.jpg';
                 case 'http://iiif.io/api/image/2/context.json':
+                case 'https://iiif.io/api/image/2/context.json':
                     return 'default.jpg';
             }
             switch ($image['resource']['service']['profile']) {
                 case 'http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
+                case 'https://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
                     return 'native.jpg';
             }
         }
         catch (Exception $e) {
             return 'native.jpg';
         }
+        return 'native.jpg';
     }
     
     protected function _buildMetadata($type, $jsonData, $parentCollection=null) {
@@ -451,7 +458,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             break;
             case 'Item':
                 if ($parentCollection) {
-                    $metadata['Dublin Core']['Source'][] = array('text' => metadata($parentCollection, array('IIIF Collection Metadata', 'Original @id'), array('no_escape' => true)), 'html' => false);
+                    $metadata['Dublin Core']['Source'][] = array('text' => metadata($parentCollection, array('IIIF Collection Metadata', 'Original @id'), array('no_escape' => true, 'no_filter' => true)), 'html' => false);
                 }
                 $metadata['IIIF Item Metadata']['Display as IIIF?'] = array(array('text' => 'Yes', 'html' => false));
             break;
@@ -466,7 +473,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             $metadata['Dublin Core']['Rights'] = array(array('text' => $jsonData['license'], 'html' => false));
         }
         if ($parentCollection !== null && $type != 'Item') {
-            $metadata[$metadataPrefix]['Parent Collection'] = array(array('text' => metadata($parentCollection, array($metadataPrefix, 'UUID')), 'html' => false));
+            $metadata[$metadataPrefix]['Parent Collection'] = array(array('text' => metadata($parentCollection, array($metadataPrefix, 'UUID'), array('no_escape' => true, 'no_filter' => true)), 'html' => false));
         }
         return $metadata;
     }
