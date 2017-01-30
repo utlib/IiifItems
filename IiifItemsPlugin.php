@@ -364,6 +364,11 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function hookBeforeSaveItem($args) {
+            // Unset sensitive fields
+            if (isset($args['post'])) {
+                unset($args['post']['Elements'][get_option('iiifitems_item_uuid_element')]);
+            }
+            // Add UUID if it's new
             if ($args['insert']) {
                 $args['record']->addTextForElement(get_record_by_id('Element', get_option('iiifitems_item_uuid_element')), generate_uuid());
             }
@@ -375,6 +380,10 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $uuidElement = get_record_by_id('Element', $uuidElementId);
             $parentElement = get_record_by_id('Element', $parentElementId);
             $record = $args['record'];
+            // Unset sensitive fields
+            if (isset($args['post'])) {
+                unset($args['post']['Elements'][$uuidElementId]);
+            }
             // Add UUID if it's new
             if ($args['insert']) {
                 $record->addTextForElement($uuidElement, generate_uuid());
@@ -523,7 +532,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         /* File Metadata */
         
         public function inputForFileOriginalId($comps, $args) {
-            $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
+            $comps['input'] = $args['value'] ? $args['value'] : '';
             return filter_minimal_input($comps, $args);
         }
         
@@ -535,7 +544,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function inputForItemOriginalId($comps, $args) {
-            $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
+            $comps['input'] = $args['value'] ? $args['value'] : '';
             return filter_minimal_input($comps, $args);
         }
         
@@ -551,14 +560,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function inputForItemUuid($comps, $args) {
-            $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
+            $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
             return filter_minimal_input($comps, $args);
         }
         
         /* Collection metadata */
         
         public function inputForCollectionOriginalId($comps, $args) {
-            $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
+            $comps['input'] = $args['value'] ? $args['value'] : '';
             return filter_minimal_input($comps, $args);
         }
         
@@ -590,7 +599,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function inputForCollectionUuid($comps, $args) {
-            $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
+            $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
             return filter_minimal_input($comps, $args);
         }
         
