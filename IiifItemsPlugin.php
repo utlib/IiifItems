@@ -283,7 +283,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 $args['view'] = get_view();
             }
             $iiifUrl = absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_manifest');
-            echo '<h2>IIIF Manifest</h2><p><a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<h2>IIIF Manifest</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
         }
         
@@ -302,20 +302,48 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if (!isset($args['view'])) {
                 $args['view'] = get_view();
             }
-            $iiifUrl = absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_manifest');
+            switch (raw_iiif_metadata($args['view']->collection, 'iiifitems_collection_type_element')) {
+                case 'None':
+                    return;
+                break;
+                case 'Collection':
+                    $iiifLabel = __('IIIF Collection');
+                    $urlLabel = __('Collection URL');
+                    $iiifUrl = absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_collection');
+                break;
+                case 'Manifest': default:
+                    $iiifLabel = __('IIIF Manifest');
+                    $urlLabel = __('Manifest URL');
+                    $iiifUrl = absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_manifest');
+                break;
+            }
             echo '<div class="element-set">';
-            echo '<h2>IIIF Manifest</h2><p><a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<h2>' . $iiifLabel . '</h2><p>' . $urlLabel . ': <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
-            echo '</div>';    
+            echo '</div>';  
         }
         
         public function hookAdminCollectionsShow($args) {
             if (!isset($args['view'])) {
                 $args['view'] = get_view();
             }
-            $iiifUrl = public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_manifest');
+            switch (raw_iiif_metadata($args['view']->collection, 'iiifitems_collection_type_element')) {
+                case 'None':
+                    return;
+                break;
+                case 'Collection':
+                    $iiifLabel = __('IIIF Collection Information');
+                    $urlLabel = __('Collection URL');
+                    $iiifUrl = public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_collection');
+                break;
+                case 'Manifest': default:
+                    $iiifLabel = __('IIIF Manifest Information');
+                    $urlLabel = __('Manifest URL');
+                    $iiifUrl = public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_manifest');
+                break;
+            }
             echo '<div class="element-set">';
-            echo '<h2>IIIF Collection Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<h2>' . $iiifLabel . '</h2><p>' . $urlLabel . ': <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
         }
