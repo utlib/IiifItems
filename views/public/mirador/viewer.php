@@ -41,12 +41,12 @@
                 if ($type != 'collections' || !IiifItems_CollectionUtil::isCollection($thing)) {
                     $defaultManifest = absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest');
                 }
-                else {
-                    $submanifests = IiifItems_CollectionUtil::findSubmanifestsFor($thing);
-                    if (count($submanifests) > 0) {
-                        $defaultManifest = absolute_url(array('things' => $type, 'id' => $submanifests[0]->id), 'iiifitems_manifest');
-                    }
-                }
+//                else {
+//                    $submanifests = IiifItems_CollectionUtil::findSubmanifestsFor($thing);
+//                    if (count($submanifests) > 0) {
+//                        $defaultManifest = absolute_url(array('things' => $type, 'id' => $submanifests[0]->id), 'iiifitems_manifest');
+//                    }
+//                }
             ?>
             "windowObjects": [{
                 imageMode: "ImageView",
