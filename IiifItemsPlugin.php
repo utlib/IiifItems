@@ -271,6 +271,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if (!isset($args['view'])) {
                 $args['view'] = get_view();
             }
+            
             $iiifUrl = public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
             echo '<h2>IIIF File Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
@@ -282,7 +283,11 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if (!isset($args['view'])) {
                 $args['view'] = get_view();
             }
-            $iiifUrl = absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_manifest');
+            $item = $args['view']->item;
+            if ($this->_isntIiifDisplayableItem($item)) {
+                return;
+            }
+            $iiifUrl = absolute_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
             echo '<h2>IIIF Manifest</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
         }
@@ -291,11 +296,19 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if (!isset($args['view'])) {
                 $args['view'] = get_view();
             }
-            $iiifUrl = public_full_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_manifest');
+            $item = $args['view']->item;
+            if ($this->_isntIiifDisplayableItem($item)) {
+                return;
+            }
+            $iiifUrl = public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
             echo '<h2>IIIF Item Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
-            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
+        }
+        
+        protected function _isntIiifDisplayableItem($item) {
+            return $item->fileCount() == 0 && !$item->hasElementText('IIIF Item Metadata', 'JSON Data');
         }
         
         public function hookPublicCollectionsShow($args) {
@@ -360,6 +373,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function hookAdminItemsBrowseSimpleEach($args) {
+            if ($this->_isntIiifDisplayableItem($args['item'])) {
+                return;
+            }
             if ($args['item']->item_type_id != get_option('iiifitems_annotation_item_type')) {
                 if ($uuid = raw_iiif_metadata($args['item'], 'iiifitems_item_uuid_element')) {
                     echo '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a>';
@@ -465,6 +481,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function hookAdminItemsShowSidebar($args) {
             $item = $args['item'];
+            if ($this->_isntIiifDisplayableItem($item)) {
+                return;
+            }
             if ($uuid = raw_iiif_metadata($item, 'iiifitems_item_uuid_element')) {
                 if ($item->item_type_id != get_option('iiifitems_annotation_item_type')) {
                     $onCanvasMatches = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ?", array(
