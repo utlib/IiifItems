@@ -315,6 +315,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if (!isset($args['view'])) {
                 $args['view'] = get_view();
             }
+            if ($this->_isntIiifDisplayableCollection($args['collection'])) {
+                return;
+            }
             switch (raw_iiif_metadata($args['view']->collection, 'iiifitems_collection_type_element')) {
                 case 'None':
                     return;
@@ -340,6 +343,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if (!isset($args['view'])) {
                 $args['view'] = get_view();
             }
+            if ($this->_isntIiifDisplayableCollection($args['collection'])) {
+                return;
+            }
             switch (raw_iiif_metadata($args['view']->collection, 'iiifitems_collection_type_element')) {
                 case 'None':
                     return;
@@ -359,6 +365,10 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             echo '<h2>' . $iiifLabel . '</h2><p>' . $urlLabel . ': <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
+        }
+        
+        protected function _isntIiifDisplayableCollection($collection) {
+            return $collection->totalItems() == 0 && !$collection->hasElementText('IIIF Collection Metadata', 'JSON Data') && empty(IiifItems_CollectionUtil::findSubmembersFor($collection));
         }
         
         public function hookItemsBrowseSql($args) {
@@ -398,6 +408,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
 
         public function hookAdminCollectionsBrowseEach($args) {
+            if ($this->_isntIiifDisplayableCollection($args['collection'])) {
+                return;
+            }
             if (raw_iiif_metadata($args['collection'], 'iiifitems_collection_type_element') == 'Collection') {
                 if ($uuid = raw_iiif_metadata($args['collection'], 'iiifitems_collection_uuid_element')) {
                     echo '<a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">List Members</a>';
@@ -533,6 +546,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function hookAdminCollectionsShowSidebar($args) {
             $collection = $args['collection'];
+            if ($this->_isntIiifDisplayableCollection($collection)) {
+                return;
+            }
             $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
             echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
             echo '<div class="panel"><h4>Cache Management</h4>'
