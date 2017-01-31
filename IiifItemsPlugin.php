@@ -394,7 +394,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 if ($parentUuid) {
                     // Manifests can't be parents
                     $parent = find_collection_by_uuid($parentUuid);
-                    if (raw_iiif_metadata($parent, 'iiifitems_collection_type_element')) {
+                    if (raw_iiif_metadata($parent, 'iiifitems_collection_type_element') != 'Collection') {
                         $record->addError('Parent Collection', __('A collection can only have collection-type collections as its parent.'));
                     }
                     // Anti-loop check if is collection has a parent
