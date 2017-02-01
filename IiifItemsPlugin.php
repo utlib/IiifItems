@@ -271,12 +271,22 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if (!isset($args['view'])) {
                 $args['view'] = get_view();
             }
-            
+            if ($this->_isntIiifDisplayableFile($args['view']->file)) {
+                return;
+            }
             $iiifUrl = public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
             echo '<h2>IIIF File Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
+        }
+        
+        protected function _isntIiifDisplayableFile($file) {
+            switch ($file->mime_type) {
+                case 'image/jpeg': case 'image/png': case 'image/tiff': case 'image/jp2':
+                    return false;
+            }
+            return true;
         }
         
         public function hookPublicItemsShow($args) {
