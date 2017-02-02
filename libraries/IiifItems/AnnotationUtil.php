@@ -117,8 +117,11 @@ class IiifItems_AnnotationUtil extends IiifItems_IiifUtil {
         if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
             return $item;
         }
-        if (IiifItems_CanvasUtil::isNonIiifItem($item)) {
-            return self::findAnnotationsForNonIiif($item);
+        // TENTATIVE: Accept annotations on non-IIIF items for now, but seed it with download links annotation.
+        if (IiifItems_CanvasUtil::isNonIiifItem($item) && !is_admin_theme()) {
+            $annoItems = self::findAnnotationsForNonIiif($item);
+        } else {
+            $annoItems = array();
         }
         $elementTextTable = get_db()->getTable('ElementText');
         $uuid = raw_iiif_metadata($item, 'iiifitems_item_uuid_element');
@@ -126,7 +129,6 @@ class IiifItems_AnnotationUtil extends IiifItems_IiifUtil {
             get_option('iiifitems_annotation_on_element'),
             $uuid,
         ));
-        $annoItems = array();
         foreach ($onCanvasMatches as $onCanvasMatch) {
             $currentAnnotationJson = json_decode($elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
                 get_option('iiifitems_item_json_element'),
