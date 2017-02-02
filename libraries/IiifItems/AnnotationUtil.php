@@ -117,6 +117,9 @@ class IiifItems_AnnotationUtil extends IiifItems_IiifUtil {
         if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
             return $item;
         }
+        if (IiifItems_CanvasUtil::isNonIiifItem($item)) {
+            return self::findAnnotationsForNonIiif($item);
+        }
         $elementTextTable = get_db()->getTable('ElementText');
         $uuid = raw_iiif_metadata($item, 'iiifitems_item_uuid_element');
         $onCanvasMatches = $elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.text = ?", array(
@@ -154,6 +157,37 @@ class IiifItems_AnnotationUtil extends IiifItems_IiifUtil {
             $annoItems[] = $currentAnnotationJson;
         }
         return $annoItems;
+    }
+    
+    /**
+     * Return an array of annotations for a non-IIIF item, as JSON objects.
+     * @param Item $item
+     * @return array
+     */
+    public static function findAnnotationsForNonIiif($item) {
+        $fileLinks = array();
+        foreach ($item->getFiles() as $file) {
+            $fileLinks[] = '<a href="' . $file->getWebPath() . '" target="_blank">' . metadata($file, 'display_title') . '</a>';
+        }
+        return array(array(
+            '@id' => public_full_url(array(
+                'things' => 'files',
+                'id' => $file->id,
+                'typeext' => 'anno.json',
+            ), 'iiifitems_oa_uri'),
+            '@type' => 'oa:Annotation',
+            'motivation' => 'oa:linking',
+            'on' => public_full_url(array(
+                'things' => 'items',
+                'id' => $item->id,
+                'typeext' => 'canvas.json',
+            ), 'iiifitems_oa_uri') . '#xywh=60,60,180,180',
+            'resource' => array(
+                '@type' => 'dctypes:Text',
+                'format' => 'text/html',
+                'chars' => '<ul><li>' . join($fileLinks, '</li><li>') . '</li></ul>'
+            ),
+        ));
     }
     
     /**

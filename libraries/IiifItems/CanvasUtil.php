@@ -50,21 +50,55 @@ class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
         }
         // Add the Image for each file in order
         $itemFiles = $item->getFiles();
-        if (!empty($itemFiles)) {
-            if (!isset($iiifJsonData['images']) || empty($iiifJsonData['images']) || parent::fetchJsonData($itemFiles[0])) {
-                $iiifJsonData['images'] = array();
-                foreach ($itemFiles as $file) {
-                    $iiifJsonData['images'][] = self::fileImageJson($file, $canvasId);
-                }
-            }
-            // If the default canvas template is used, set the width and height to the max among files
-            if (!$iiifJsonData['width'] && !$iiifJsonData['height']) {
-                foreach ($iiifJsonData['images'] as $fileJson) {
-                    if ($fileJson['resource']['width'] > $iiifJsonData['width']) {
-                        $iiifJsonData['width'] = $fileJson['resource']['width'];
+        if (self::_containsNonIiifFile($itemFiles)) {
+            $representativeType = self::_getNonIiifType($itemFiles);
+            $representativeUrlBase = str_replace(
+                array('{FILENAME}', '{EXTENSION}', '{FULLNAME}'), 
+                array('iiifitems_' . $representativeType, 'jpg', 'iiifitems_' . $representativeType . '.jpg'), 
+                get_option('iiifitems_bridge_prefix')
+            );
+            $iiifJsonData['images'][] = array(
+                '@id' => public_full_url(array(
+                    'things' => 'item',
+                    'id' => $item->id,
+                    'typeext' => 'anno.json',
+                ), 'iiifitems_oa_uri'),
+                '@type' => 'oa:Annotation',
+                'motivation' => 'sc:painting',
+                'on' => $canvasId,
+                'resource' => array(
+                    '@id' => $representativeUrlBase . '/full/full/0/default.jpg',
+                    '@type' => 'dctypes:Image',
+                    'format' => 'image/jpeg',
+                    'width' => 300,
+                    'height' => 300,
+                    'service' => array(
+                        '@id' => $representativeUrlBase,
+                        '@context' => 'http://iiif.io/api/image/2/context.json',
+                        'profile' => 'http://iiif.io/api/image/2/level2.json',
+                    ),
+                ),
+            );
+            $iiifJsonData['width'] = 300;
+            $iiifJsonData['height'] = 300;
+        }
+        else {
+            if (!empty($itemFiles)) {
+                if (!isset($iiifJsonData['images']) || empty($iiifJsonData['images']) || parent::fetchJsonData($itemFiles[0])) {
+                    $iiifJsonData['images'] = array();
+                    foreach ($itemFiles as $file) {
+                        $iiifJsonData['images'][] = self::fileImageJson($file, $canvasId);
                     }
-                    if ($fileJson['resource']['height'] > $iiifJsonData['height']) {
-                        $iiifJsonData['height'] = $fileJson['resource']['height'];
+                }
+                // If the default canvas template is used, set the width and height to the max among files
+                if (!$iiifJsonData['width'] && !$iiifJsonData['height']) {
+                    foreach ($iiifJsonData['images'] as $fileJson) {
+                        if ($fileJson['resource']['width'] > $iiifJsonData['width']) {
+                            $iiifJsonData['width'] = $fileJson['resource']['width'];
+                        }
+                        if ($fileJson['resource']['height'] > $iiifJsonData['height']) {
+                            $iiifJsonData['height'] = $fileJson['resource']['height'];
+                        }
                     }
                 }
             }
@@ -197,5 +231,77 @@ class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
             parent::addDublinCoreMetadata($json, $file);
         }
         return $json;
+    }
+    
+    /**
+     * Return whether this item is not presentable in IIIF
+     * @param Item $item
+     * @return boolean
+     */
+    public static function isNonIiifItem($item) {
+        return self::_containsNonIiifFile($item->getFiles());
+    }
+    
+    /**
+     * Return whether the array contains non-IIIF File records
+     * @param array $files
+     * @return boolean
+     */
+    protected static function _containsNonIiifFile($files) {
+        if (empty($files)) {
+            return true;
+        }
+        foreach ($files as $file) {
+            $mime = $file->mime_type;
+            switch ($mime) {
+                case 'image/jpeg': case 'image/tiff': case 'image/png': case 'image/jp2':
+                    break;
+                default:
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    /**
+     * Return the multimedia type of the files given.
+     * @param array $files
+     * @return string "audio", "file", "image", "pdf", "text" or "video"
+     */
+    protected static function _getNonIiifType($files) {
+        $candidateType = null;
+        // Go through the list of files
+        foreach ($files as $file) {
+            // Sniff mime types
+            $currentMime = $file->mime_type;
+            if ($currentMime == 'application/pdf') {
+                $currentType = 'pdf';
+            }
+            elseif ($currentMime == 'application/zip' || strpos($currentMime, 'compressed') !== false || $currentMime == 'application/x-gtar' || $currentMime == 'application/x-tar' || $currentMime == 'application/gzip') {
+                $currentType = 'zip';
+            }
+            else {
+                switch ($currentMimePrefix = substr($currentMime, 0, 5)) {
+                    case 'audio': case 'image': case 'video':
+                        $currentType = $currentMimePrefix;
+                    break;
+                    case 'text/':
+                        $currentType = 'text';
+                    break;
+                    default:
+                        $currentType = 'file';
+                    break;
+                }
+            }
+            // First file should determine the starting type
+            if ($candidateType === null) {
+                $candidateType = $currentType;
+            }
+            // Otherwise, if the file doesn't match the first file's type, return mixed
+            else if ($candidateType != $currentType) {
+                return 'mixed';
+            }
+        }
+        return ($candidateType === null) ? 'none' : $candidateType;
     }
 }
