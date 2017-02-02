@@ -438,7 +438,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function hookBeforeSaveItem($args) {
             // Unset sensitive fields
-            if (isset($args['post'])) {
+            if (isset($args['post']['Elements'][get_option('iiifitems_item_uuid_element')])) {
                 unset($args['post']['Elements'][get_option('iiifitems_item_uuid_element')]);
             }
             // Add UUID if it's new
@@ -454,7 +454,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $parentElement = get_record_by_id('Element', $parentElementId);
             $record = $args['record'];
             // Unset sensitive fields
-            if (isset($args['post'])) {
+            if (isset($args['post']['Elements'][$uuidElementId])) {
                 unset($args['post']['Elements'][$uuidElementId]);
             }
             // Add UUID if it's new
