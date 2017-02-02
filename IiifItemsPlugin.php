@@ -143,6 +143,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 `data` mediumtext NOT NULL,
                 `generated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
+            // Add media placeholder files
+            $addMediaPlaceholdersMigration = new IiifItems_Migration_0_0_1_7();
+            $addMediaPlaceholdersMigration->up();
             // Add UUIDs via a job
             include_once(dirname(__FILE__) . '/migrations/0_0_1_6.php');
             $addUuidElementMigration = new IiifItems_Migration_0_0_1_6();
@@ -186,6 +189,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $db = $this->_db;
             $db->query("DROP TABLE IF EXISTS `{$db->prefix}iiif_items_job_statuses`;");
             $db->query("DROP TABLE IF EXISTS `{$db->prefix}iiif_items_cached_json_data`;");
+            // Remove media placeholder files
+            $addMediaPlaceholdersMigration = new IiifItems_Migration_0_0_1_7();
+            $addMediaPlaceholdersMigration->uninstall();
         }
         
         public function hookUpgrade($args) {
