@@ -18,6 +18,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'admin_collections_show',
             'admin_files_show',
             'items_browse_sql',
+            'collections_browse_sql',
             'admin_items_browse_simple_each',
             'admin_collections_browse_each',
             'before_save_collection',
@@ -395,6 +396,15 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                     $db = get_db();
                     $select->where("item_type_id != ? OR item_type_id IS NULL", get_option('iiifitems_annotation_item_type'));
                 }
+            }
+        }
+        
+        public function hookCollectionsBrowseSql($args) {
+            $params = $args['params'];
+            if (isset($params['controller']) && isset($params['action'])) {
+                $select = $args['select'];
+                $select->joinLeft(array('element_textsA' => get_db()->ElementText), "element_textsA.element_id = " . get_option('iiifitems_collection_parent_element') . " AND element_textsA.record_type = 'Collection' AND element_textsA.record_id = collections.id", array('text'));
+                $select->where("element_textsA.text IS NULL OR element_textsA.text = ''");
             }
         }
         
