@@ -6,13 +6,13 @@ echo flash();
 
 <?php if (total_records('Collection') > 0): ?>
     <div class="table-actions">
+    <?php echo pagination_links(); ?>
     <?php if (is_allowed('Collections', 'add')): ?>
         <a href="<?php echo html_escape(url('collections/add?parent=' . raw_iiif_metadata($parentCollection, 'iiifitems_collection_uuid_element'))); ?>" class="small green button">
             <?php echo __('Add New Sub-Collection'); ?>
         </a>
     <?php endif; ?>
     </div>
-    <?php echo pagination_links(); ?>
     <?php if (has_loop_records('collections')): ?>
         <table id="collections">
             <thead>
@@ -62,7 +62,8 @@ echo flash();
             <?php endforeach; ?>
             </tbody>
         </table>
-
+        
+        <?php echo pagination_links(); ?>
         <?php if (is_allowed('Collections', 'add')): ?>
 <a href="<?php echo html_escape(url('collections/add?parent=' . raw_iiif_metadata($parentCollection, 'iiifitems_collection_uuid_element'))); ?>" class="small green button"><?php echo __('Add New Sub-Collection'); ?></a>
         <?php endif; ?>
