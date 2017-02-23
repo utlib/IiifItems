@@ -1,5 +1,7 @@
 <?php
 class IiifItems_CollectionsController extends IiifItems_BaseController {
+    protected $_browseRecordsPerPage = self::RECORDS_PER_PAGE_SETTING;
+    
     public function init() {
         $this->_helper->db->setDefaultModelName('Collection');     
     }
@@ -29,13 +31,47 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
             $sortField = $this->_getParam('sort_field') ? $_GET['sort_field'] : 'added';
             $sortOrder = ($this->_getParam('sort_dir') ? (($_GET['sort_dir'] == 'd') ? 'DESC' : 'ASC') : 'ASC');
             $select = $table->getSelectForFindBy()->where($query, $matchIds);
+            $recordsPerPage = $this->_getBrowseRecordsPerPage();
+            $currentPage = $this->getParam('page', 1);
             $this->_helper->db->applySorting($select, $sortField, $sortOrder);
+            $this->_helper->db->applyPagination($select, $recordsPerPage, $currentPage);
             $this->view->parentCollection = $parentCollection;
             $this->view->collections = $table->fetchObjects($select);
             $this->view->total_results = count($matches);
             $this->view->sort_field = $sortField;
             $this->view->sort_order = $sortOrder;
+            // Add pagination data to the registry. Used by pagination_links().
+            if ($recordsPerPage) {
+                Zend_Registry::set('pagination', array(
+                    'page' => $currentPage, 
+                    'per_page' => $recordsPerPage, 
+                    'total_results' => count($matchIds), 
+                ));
+            }
         }
+    }
+    
+    public function newSubmembersAction() {
+        $this->__blockPublic();
+        $this->view->form = $this->_getSubmembersForm();
+    }
+    
+    public function addSubmembersAction() {
+        $this->__blockPublic();
+        try {
+            foreach ($_POST['subcollections'] as $subcollectionUuid) {
+                $subcollection = find_collection_by_uuid($subcollectionUuid);
+                // 
+            }
+        } catch (Exception $ex) {
+            $this->view->render('new-submembers');
+        }
+    }
+    
+    protected function _getSubmembersForm() {
+        require_once IIIF_ITEMS_DIRECTORY . '/forms/AddExistingSubcollection.php';
+        $form = new IiifItems_Form_AddExistingSubcollection();
+        return $form;
     }
     
     public function collectionAction() {
