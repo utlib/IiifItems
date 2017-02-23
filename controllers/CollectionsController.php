@@ -48,7 +48,9 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
                 ));
             }
         }
-        $this->render('browse');
+        if (!is_admin_theme()) {
+            $this->render('browse');
+        }
     }
     
     public function newSubmembersAction() {
