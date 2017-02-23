@@ -9,6 +9,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'uninstall',
             'upgrade',
             'initialize',
+            'define_acl',
             'define_routes',
             'config_form',
             'config',
@@ -221,6 +222,13 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                     }
                 }
             }
+        }
+        
+        public function hookDefineAcl($args) {
+            $acl = $args['acl'];
+            // Solve login redirect when viewing submembers or collection.json as public user
+            $acl->allow(null, 'Collections', 'members');
+            $acl->allow(null, 'Collections', 'collection');
         }
         
         public function hookInitialize() {
