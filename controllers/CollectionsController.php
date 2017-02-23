@@ -7,7 +7,6 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
     }
     
     public function membersAction() {
-        $this->__blockPublic();
         $db = get_db();
         $parentUuidElementId = get_option('iiifitems_collection_parent_element');
         $parentCollection = get_record_by_id('Collection', $this->getParam('id'));
@@ -49,6 +48,7 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
                 ));
             }
         }
+        $this->render('browse');
     }
     
     public function newSubmembersAction() {

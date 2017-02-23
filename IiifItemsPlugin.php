@@ -21,6 +21,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'collections_browse_sql',
             'admin_items_browse_simple_each',
             'admin_collections_browse_each',
+            'public_collections_browse_each',
+            'public_collections_browse',
             'before_save_collection',
             'before_save_item',
             'admin_items_show_sidebar',
@@ -444,6 +446,17 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             } else {
                 echo '<a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a>';
             }
+        }
+        
+        public function hookPublicCollectionsBrowseEach($args) {
+            $collection = $args['collection'];
+            if (IiifItems_CollectionUtil::isCollection($collection)) {
+                echo '<p class="view-members-link"><a href="' . html_escape(public_url(array('id' => $collection->id), 'iiifitems_collection_members')) . '" data-hasmembers="' . $collection->id . '">View Submembers</a></p>';
+            }
+        }
+        
+        public function hookPublicCollectionsBrowse($args) {
+            echo '<script>jQuery(document).ready(function() { jQuery("[data-hasmembers]").each(function() { jQuery(this).parent().parent().find(".view-items-link").remove(); }); });</script>';
         }
         
         public function hookBeforeSaveItem($args) {
