@@ -80,4 +80,41 @@ class IiifItems_IiifUtil {
             }
         }
     }
+    
+    /**
+     * Attach a LEFT JOIN to the given metadata elements, with the given prefixes
+     * @param Omeka_Db_Select $select The selector to use
+     * @param array $elements The metadata element(s) to attach, in prefix => string|Element|Element ID form
+     * @param string|null $primaryType (optional) The type of record held by the primary table
+     * @param string|null $primaryPrefix (optional) The table prefix for the primary table in the selector
+     * @throws InvalidArgumentException
+     * @return The original selector passed in
+     */
+    protected function attachMetadataToSelect($select, $elements, $primaryType=null, $primaryPrefix=null) {
+        // Convert all elements to prefix => element ID form
+        $theElements = array();
+        foreach ($elements as $prefix => $element) {
+            if (is_string($element)) {
+                $theElements[$prefix] = get_option($element);
+            } elseif (is_numeric($element)) {
+                $theElements[$prefix] = $element;
+            } elseif (get_class($element) == 'Element') {
+                $theElements[$prefix] = $element->id;
+            } else {
+                throw new InvalidArgumentException('attachMetadataToSelect only accepts string, numeric or Element for elements. Input was: ' . $element);
+            }
+        }
+        // Attach left joins on $select
+        $thePrimaryPrefix = $primaryPrefix ? ($primaryPrefix.'.') : '';
+        $db = get_db();
+        foreach ($theElements as $thePrefix => $theElementId) {
+            $select->joinLeft(array($thePrefix => $db->ElementText), 
+                "{$thePrefix}.record_id = {$thePrimaryPrefix}id"
+                . " AND {$thePrefix}.element_id = {$theElementId}"
+                . (($primaryType) ? " AND {$thePrefix}.record_type = '{$primaryType}'" : ""), 
+            array('text'));
+        }
+        // Done
+        return $select;
+    }
 }
