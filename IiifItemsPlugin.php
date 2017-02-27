@@ -696,14 +696,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function inputForCollectionParent($comps, $args) {
-            $options = get_table_options('Collection');
-            $uuidOptions = array('' => 'No Parent');
-            foreach ($options as $id => $optionTitle) {
-                $collection = get_record_by_id('Collection', $id);
-                if ($collection) {
-                    $uuidOptions[raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element')] = $optionTitle;
-                }
-            }
+            $uuidOptions = IiifItems_CollectionOptions::getCollectionOptions();
             if (isset($_GET['parent']) && find_collection_by_uuid($_GET['parent'])) {
                 $args['value'] = $_GET['parent'];
             }
