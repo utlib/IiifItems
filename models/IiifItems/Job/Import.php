@@ -67,7 +67,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             debug("Found " . $js->total . " download items for Import Job " . $this->_statusId);
             
             // Process the submission
-            $parentCollection = get_record_by_id('Collection', $this->_parent);
+            $parentCollection = find_collection_by_uuid($this->_parent);
             switch ($this->_importType) {
                 case 'Collection':
                     $this->_processCollection($jsonData, $js, $parentCollection);
