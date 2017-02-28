@@ -1,6 +1,9 @@
 <?php 
 $pageTitle = __('Browse Collections') . ' ' .  __('(%s total)', $total_results);
 echo head(array('title'=>$pageTitle, 'bodyclass'=>'collections'));
+?>
+<h2><a href="<?php echo url('collections'); ?>">Top</a> &raquo; <?php echo IiifItems_CollectionOptions::getPathBreadcrumb($parentCollection, true); ?></h2>
+<?php
 echo flash();
 ?>
 
