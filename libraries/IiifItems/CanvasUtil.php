@@ -239,7 +239,7 @@ class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
      * @return boolean
      */
     public static function isNonIiifItem($item) {
-        return self::_containsNonIiifFile($item->getFiles());
+        return $item->item_type_id != get_option('iiifitems_annotation_item_type') && self::_containsNonIiifFile($item->getFiles());
     }
     
     /**
@@ -249,7 +249,7 @@ class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
      */
     protected static function _containsNonIiifFile($files) {
         if (empty($files)) {
-            return true;
+            return false;
         }
         foreach ($files as $file) {
             $mime = $file->mime_type;
