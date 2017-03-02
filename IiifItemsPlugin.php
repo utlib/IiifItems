@@ -454,7 +454,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             } else {
                 $withoutCollectionMessage = __('All items are in a collection.');
             }
-            echo '<script>jQuery(document).ready(function() { jQuery(".not-in-collections").html(' . js_escape($withoutCollectionMessage) . '); });</script>';
+            echo '<script>jQuery(document).ready(function() {'
+                    . 'jQuery(".not-in-collections").html(' . js_escape($withoutCollectionMessage) . ');'
+                    . 'jQuery(".iiifitems-replace-items-link").each(function() {'
+                        . 'var _this = jQuery(this);'
+                        . '_this.parent().parent().find("td:last a").attr("href", _this.data("newurl")).text(_this.data("newcount"));'
+                        . '_this.remove();'
+                    . '});'
+                . '});</script>';
         }
         
         public function hookAdminCollectionsBrowseEach($args) {
@@ -463,7 +470,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             }
             if (raw_iiif_metadata($args['collection'], 'iiifitems_collection_type_element') == 'Collection') {
                 if ($uuid = raw_iiif_metadata($args['collection'], 'iiifitems_collection_uuid_element')) {
-                    echo '<a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">List Members</a>';
+                    $count = IiifItems_CollectionUtil::countSubmembersFor($args['collection']);
+                    echo '<span class="iiifitems-replace-items-link" data-newcount="' . $count . '" data-newurl="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '"></span>';
                 }    
             } else {
                 echo '<a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a>';
