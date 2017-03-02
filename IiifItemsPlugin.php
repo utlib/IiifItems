@@ -22,6 +22,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'collections_browse_sql',
             'admin_items_browse_simple_each',
             'admin_collections_browse_each',
+            'admin_collections_browse',
             'public_collections_browse_each',
             'public_collections_browse',
             'before_save_collection',
@@ -443,6 +444,19 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             }
         }
 
+        public function hookAdminCollectionsBrowse($args) {
+            $db = get_db();
+            $itemsTable = $db->getTable('Item');
+            $select = $itemsTable->getSelectForCount()->where('items.collection_id IS NULL AND items.item_type_id <> ?', array(get_option('iiifitems_annotation_item_type')));
+            $totalItemsWithoutCollection = $db->fetchOne($select);
+            if ($totalItemsWithoutCollection) {
+                $withoutCollectionMessage = __(plural('%sOne item%s has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '<a href="' . html_escape(url('items/browse?collection=0')) . '">', $totalItemsWithoutCollection, '</a>');
+            } else {
+                $withoutCollectionMessage = __('All items are in a collection.');
+            }
+            echo '<script>jQuery(document).ready(function() { jQuery(".not-in-collections").html(' . js_escape($withoutCollectionMessage) . '); });</script>';
+        }
+        
         public function hookAdminCollectionsBrowseEach($args) {
             if ($this->_isntIiifDisplayableCollection($args['collection'])) {
                 return;
