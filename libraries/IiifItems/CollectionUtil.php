@@ -204,6 +204,19 @@ class IiifItems_CollectionUtil extends IiifItems_IiifUtil {
         return $results;
     }
     
+    public static function countSubmembersFor($collection) {
+        $myUuid = raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element');
+        if (!$myUuid) {
+            return 0;
+        }
+        $db = get_db();
+        $elementTextTable = $db->getTable('ElementText');
+        $select = $elementTextTable->getSelectForCount()
+                ->where('element_texts.element_id = ?', get_option('iiifitems_collection_parent_element'))
+                ->where('element_texts.text = ?', $myUuid);
+        return $db->fetchOne($select);
+    }
+    
     public static function findTopMembers() {
         $db = get_db();
         $collectionsTable = $db->getTable('Collection');
