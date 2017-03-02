@@ -30,6 +30,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'admin_items_show_sidebar',
             'admin_collections_show_sidebar',
             'before_delete_item',
+            'before_delete_collection',
 	);
 	
 	protected $_filters = array(
@@ -632,6 +633,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 Zend_Registry::get('bootstrap')->getResource('jobs')->sendLongRunning('IiifItems_Job_RemoveSubannotations', array(
                     'item_uuid' => raw_iiif_metadata($item, 'iiifitems_item_uuid_element'),
                 ));
+            }
+        }
+        
+        public function hookBeforeDeleteCollection($args) {
+            $db = get_db();
+            $collection = $args['record'];
+            if (IiifItems_CollectionUtil::isCollection($collection) && $uuid = raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element')) {
+                $db->query("DELETE FROM `{$db->prefix}element_texts` WHERE element_id IN (?, ?) AND text = ?;", array(get_option('iiifitems_collection_parent_element'), get_option('iiifitems_manifest_parent_element'), $uuid));
             }
         }
         
