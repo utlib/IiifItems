@@ -331,7 +331,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             }
             $iiifUrl = public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
-            echo '<h2>IIIF Item Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<h2>IIIF ' . ($item->item_type_id == get_option('iiifitems_annotation_item_type') ? 'Annotation' : 'Item') . ' Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
         }
