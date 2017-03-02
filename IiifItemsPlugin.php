@@ -383,6 +383,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                     $iiifLabel = __('IIIF Collection Information');
                     $urlLabel = __('Collection URL');
                     $iiifUrl = public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_collection');
+                    $count = IiifItems_CollectionUtil::countSubmembersFor($args['collection']);
+                    echo '<script>jQuery(document).ready(function() { jQuery(".total-items a:first").attr("href", ' . js_escape(admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members')) . ').text("' . $count . '"); });</script>';
                 break;
                 case 'Manifest': default:
                     $iiifLabel = __('IIIF Manifest Information');
