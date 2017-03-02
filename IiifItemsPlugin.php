@@ -621,8 +621,10 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if ($this->_isntIiifDisplayableCollection($collection)) {
                 return;
             }
-            $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
-            echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+            if (!IiifItems_CollectionUtil::isCollection($collection)) {
+                $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
+                echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+            }
             echo '<div class="panel"><h4>Cache Management</h4>'
                 . '<p>If the content shown in the viewer looks out of date, you can clear the cache to regenerate the manifest.</p>'
                 . '<form action="' . admin_url(array(), 'iiifItemsCleanCache') . '" method="POST"><input type="hidden" name="type" value="Collection"><input type="hidden" name="id" value="' . $collection->id . '"><input type="submit" value="Clean" class="big blue button" style="width: 100%;"></form>'
