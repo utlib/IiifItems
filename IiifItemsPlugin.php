@@ -488,7 +488,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                         . '_parent = _this.parent().parent();'
                         . '_parent.find("td:last a").attr("href", _this.data("newurl")).text(_this.data("newcount"));'
                         . '_parent.find("td:first").prepend(jQuery("<a></a>").addClass("image").attr("href", _this.data("showurl")).prepend(jQuery("<img>").attr("src", ' . js_escape(src('icon_collection', 'img', 'png')) . ')));'
-//                        . '_parent.find("td:first").prepend("<a href=\"" + _this.data("newurl") + "\" class=\"image\"><img src=\"/omeka-uuidtest/plugins/IiifItems/placeholders/iiifitems_mixed.jpg\"></a>");'
                         . '_this.remove();'
                     . '});'
                 . '});</script>';
@@ -511,7 +510,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         public function hookPublicCollectionsBrowseEach($args) {
             $collection = $args['collection'];
             if (IiifItems_CollectionUtil::isCollection($collection)) {
-                if ($collection->totalItems == 0) {
+                if ($collection->getFile() === null) {
                     echo '<a href="' . html_escape(public_url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id')) . '" class="image"><img src="' . html_escape(src('icon_collection', 'img', 'png')) . '"></a>';
                 }
                 echo '<p class="view-members-link"><a href="' . html_escape(public_url(array('id' => $collection->id), 'iiifitems_collection_members')) . '" data-hasmembers="' . $collection->id . '">View Submembers</a></p>';
