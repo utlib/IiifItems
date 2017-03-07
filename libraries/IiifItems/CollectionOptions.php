@@ -96,10 +96,19 @@ class IiifItems_CollectionOptions extends IiifItems_IiifUtil {
         $path = array($thing);
         switch (get_class($thing)) {
             case 'Item':
-                if ($thing->collection_id === null) {
-                    return $path;
+                if ($thing->item_type_id == get_option('iiifitems_annotation_item_type')) {
+                    if ($annotatedItem = IiifItems_AnnotationUtil::findAnnotatedItemFor($thing)) {
+                        $path[] = $annotatedItem;
+                        $currentCollection = get_record_by_id('Collection', $annotatedItem->collection_id);
+                    } else {
+                        return $path;
+                    }
                 } else {
-                    $currentCollection = get_record_by_id('Collection', $thing->collection_id);
+                    if ($thing->collection_id === null) {
+                        return $path;
+                    } else {
+                        $currentCollection = get_record_by_id('Collection', $thing->collection_id);
+                    }
                 }
                 break;
             case 'Collection':
