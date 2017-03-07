@@ -230,7 +230,7 @@ class IiifItems_CollectionOptions extends IiifItems_IiifUtil {
                             . (($linked && !$isLast) ? "</a>" : "") 
                             . "</li><ul>";
                     break;
-                case 'Item';
+                case 'Item':
                     $ulStr .= "<li>" 
                             . (($linked && !$isLast) ? ('<a href="' . url(array('id' => $pathElement->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">') : "") 
                             . metadata($pathElement, array('Dublin Core', 'Title')) 
