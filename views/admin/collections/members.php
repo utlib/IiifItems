@@ -2,20 +2,18 @@
 $pageTitle = __('Browse Collections') . ' ' .  __('(%s total)', $total_results);
 echo head(array('title'=>$pageTitle, 'bodyclass'=>'collections'));
 ?>
-<div id="item-filters"><ul><li class="collection"><a href="<?php echo url('collections'); ?>">Top</a> &raquo; <?php echo IiifItems_CollectionOptions::getPathBreadcrumb($parentCollection, true); ?></li></ul></div>
+<div id="item-filters"><p style="margin-top: 0;"><?php echo IiifItems_CollectionOptions::getPathBreadcrumb($parentCollection, true); ?></p></div>
 <?php
 echo flash();
 ?>
 
 <?php if (total_records('Collection') > 0): ?>
-    <div class="table-actions">
     <?php echo pagination_links(); ?>
     <?php if (is_allowed('Collections', 'add')): ?>
         <a href="<?php echo html_escape(url('collections/add?parent=' . raw_iiif_metadata($parentCollection, 'iiifitems_collection_uuid_element'))); ?>" class="small green button">
             <?php echo __('Add New Sub-Collection'); ?>
         </a>
     <?php endif; ?>
-    </div>
     <?php if (has_loop_records('collections')): ?>
         <table id="collections">
             <thead>
