@@ -511,6 +511,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         public function hookPublicCollectionsBrowseEach($args) {
             $collection = $args['collection'];
             if (IiifItems_CollectionUtil::isCollection($collection)) {
+                if ($collection->totalItems == 0) {
+                    echo '<a href="' . html_escape(public_url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id')) . '" class="image"><img src="' . html_escape(src('icon_collection', 'img', 'png')) . '"></a>';
+                }
                 echo '<p class="view-members-link"><a href="' . html_escape(public_url(array('id' => $collection->id), 'iiifitems_collection_members')) . '" data-hasmembers="' . $collection->id . '">View Submembers</a></p>';
             }
         }
