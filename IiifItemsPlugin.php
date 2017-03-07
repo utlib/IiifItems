@@ -286,6 +286,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             set_option('iiifitems_mirador_path', rtrim($data['iiifitems_mirador_path'], '/'));
         }
         
+        protected function _adminElementTextPair($label, $id, $entry, $html) {
+            echo '<div id="' . $id . '" class="element"><div class="field two columns alpha"><label>' . html_escape($label) . '</label></div><div class="element-text five columns omega">' . ($html ? $entry : ('<p>'. html_escape($entry) .'</p>')) . '</div></div>';
+        }
+        
+        protected function _publicElementTextPair($label, $id, $entry, $html) {
+            echo '<div id="' . $id . '" class="element"><h3>' . html_escape($label) . '</h3><div class="element-text">' . ($html ? $entry : html_escape($entry)) . '</div></div>';
+        }
+        
         public function hookAdminFilesShow($args) {
             if (!isset($args['view'])) {
                 $args['view'] = get_view();
@@ -296,6 +304,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $iiifUrl = public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
             echo '<h2>IIIF File Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_mirador')) . '"></iframe>';
             echo '</div>';
         }
@@ -317,8 +326,11 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 return;
             }
             $iiifUrl = absolute_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
-            echo '<h2>IIIF Manifest</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<div class="element-set">';
+            echo '<h2>IIIF Manifest</h2>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
+            $this->_publicElementTextPair("Manifest URL", "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>', true);
+            echo '</div>'; 
         }
         
         public function hookAdminItemsShow($args) {
@@ -331,8 +343,11 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             }
             $iiifUrl = public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
             echo '<div class="element-set">';
-            echo '<h2>IIIF ' . ($item->item_type_id == get_option('iiifitems_annotation_item_type') ? 'Annotation' : 'Item') . ' Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<h2>IIIF ' . ($item->item_type_id == get_option('iiifitems_annotation_item_type') ? 'Annotation' : 'Item') . ' Information</h2>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
+            $this->_adminElementTextPair('Manifest URL', 'iiif-item-metadata-manifest-url', '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
+            $this->_adminElementTextPair('Original ID', 'iiif-item-metadata-original-id', metadata($item, array('IIIF Item Metadata', 'Original @id')), true);
+            $this->_adminElementTextPair('UUID', 'iiif-item-metadata-uuid', metadata($item, array('IIIF Item Metadata', 'UUID')), true);
             echo '</div>';
         }
         
@@ -355,6 +370,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                     $iiifLabel = __('IIIF Collection');
                     $urlLabel = __('Collection URL');
                     $iiifUrl = absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_collection');
+                    if ($args['collection']->totalItems() == 0) {
+                        echo '<script>jQuery(document).ready(function() { jQuery("#collection-items").remove(); });</script>';
+                    }
                 break;
                 case 'Manifest': default:
                     $iiifLabel = __('IIIF Manifest');
@@ -363,8 +381,12 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 break;
             }
             echo '<div class="element-set">';
-            echo '<h2>' . $iiifLabel . '</h2><p>' . $urlLabel . ': <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<h2>' . $iiifLabel . '</h2>';
+            echo '<p>';
+            echo IiifItems_CollectionOptions::getPathBreadcrumb($args['collection'], true);
+            echo '</p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+            $this->_publicElementTextPair($urlLabel, "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
             echo '</div>';  
         }
         
@@ -393,8 +415,10 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 break;
             }
             echo '<div class="element-set">';
-            echo '<h2>' . $iiifLabel . '</h2><p>' . $urlLabel . ': <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
+            echo '<h2>' . $iiifLabel . '</h2>';
+            echo '<p>' . IiifItems_CollectionOptions::getPathBreadcrumb($args['collection'], true) . '</p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+            $this->_adminElementTextPair("Manifest URL", "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
             echo '</div>';
         }
         
@@ -460,8 +484,11 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             echo '<script>jQuery(document).ready(function() {'
                     . 'jQuery(".not-in-collections").html(' . js_escape($withoutCollectionMessage) . ');'
                     . 'jQuery(".iiifitems-replace-items-link").each(function() {'
-                        . 'var _this = jQuery(this);'
-                        . '_this.parent().parent().find("td:last a").attr("href", _this.data("newurl")).text(_this.data("newcount"));'
+                        . 'var _this = jQuery(this),'
+                        . '_parent = _this.parent().parent();'
+                        . '_parent.find("td:last a").attr("href", _this.data("newurl")).text(_this.data("newcount"));'
+                        . '_parent.find("td:first").prepend(jQuery("<a></a>").addClass("image").attr("href", _this.data("showurl")).prepend(jQuery("<img>").attr("src", ' . js_escape(src('icon_collection', 'img', 'png')) . ')));'
+//                        . '_parent.find("td:first").prepend("<a href=\"" + _this.data("newurl") + "\" class=\"image\"><img src=\"/omeka-uuidtest/plugins/IiifItems/placeholders/iiifitems_mixed.jpg\"></a>");'
                         . '_this.remove();'
                     . '});'
                 . '});</script>';
@@ -474,7 +501,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if (raw_iiif_metadata($args['collection'], 'iiifitems_collection_type_element') == 'Collection') {
                 if ($uuid = raw_iiif_metadata($args['collection'], 'iiifitems_collection_uuid_element')) {
                     $count = IiifItems_CollectionUtil::countSubmembersFor($args['collection']);
-                    echo '<span class="iiifitems-replace-items-link" data-newcount="' . $count . '" data-newurl="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '"></span>';
+                    echo '<span class="iiifitems-replace-items-link" data-newcount="' . $count . '" data-newurl="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '" data-showurl="' . admin_url(array('id' => $args['collection']->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '"></span>';
                 }    
             } else {
                 echo '<a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a>';
@@ -558,9 +585,9 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function filterDisplayElements($elementsBySet) {
             unset($elementsBySet['Annotation Item Type Metadata']['Selector']);
-            unset($elementsBySet['IIIF File Metadata']['JSON Data']);
-            unset($elementsBySet['IIIF Item Metadata']['JSON Data']);
-            unset($elementsBySet['IIIF Collection Metadata']['JSON Data']);
+            unset($elementsBySet['IIIF File Metadata']);
+            unset($elementsBySet['IIIF Item Metadata']);
+            unset($elementsBySet['IIIF Collection Metadata']);
             return $elementsBySet;
         }
         

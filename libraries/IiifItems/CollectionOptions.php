@@ -238,9 +238,10 @@ class IiifItems_CollectionOptions extends IiifItems_IiifUtil {
      * Return HTML string representing a pth to the current collection/item, in linear breadcrumb form
      * @param type $thing
      * @param boolean $linked
+     * @param boolean $includeTop
      * @return string
      */
-    public static function getPathBreadcrumb($thing, $linked) {
+    public static function getPathBreadcrumb($thing, $linked, $includeTop=true) {
         // Get current path
         $path = self::_pathToThing($thing);
         $breadcrumbString = '';
@@ -263,6 +264,9 @@ class IiifItems_CollectionOptions extends IiifItems_IiifUtil {
                     break;
             }
             $first = false;
+        }
+        if ($includeTop) {
+            $breadcrumbString = '<a href="' . url(array('id' => $thing->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">Top</a> &raquo; ' . $breadcrumbString;
         }
         return $breadcrumbString;
     }

@@ -249,7 +249,7 @@ class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
      */
     protected static function _containsNonIiifFile($files) {
         if (empty($files)) {
-            return false;
+            return true;
         }
         foreach ($files as $file) {
             $mime = $file->mime_type;
