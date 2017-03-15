@@ -503,7 +503,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if (raw_iiif_metadata($args['collection'], 'iiifitems_collection_type_element') == 'Collection') {
                 if ($uuid = raw_iiif_metadata($args['collection'], 'iiifitems_collection_uuid_element')) {
                     $count = IiifItems_CollectionUtil::countSubmembersFor($args['collection']);
-                    echo '<span class="iiifitems-replace-items-link" data-newcount="' . $count . '" data-newurl="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '" data-showurl="' . admin_url(array('id' => $args['collection']->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '"></span>';
+                    echo '<span class="iiifitems-replace-items-link" data-newcount="' . $count . '" data-newurl="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '" data-showurl="' . admin_url(array('id' => $args['collection']->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '"></span>'
+                            . '<a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">List Members</a>';
                 }    
             } else {
                 echo '<a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a>';
