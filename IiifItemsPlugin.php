@@ -150,6 +150,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                 `generated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
             // Add media placeholder files
+            include_once(dirname(__FILE__) . '/migrations/0_0_1_7.php');
             $addMediaPlaceholdersMigration = new IiifItems_Migration_0_0_1_7();
             $addMediaPlaceholdersMigration->up();
             // Add UUIDs via a job
@@ -480,7 +481,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $select = $itemsTable->getSelectForCount()->where('items.collection_id IS NULL AND items.item_type_id <> ?', array(get_option('iiifitems_annotation_item_type')));
             $totalItemsWithoutCollection = $db->fetchOne($select);
             if ($totalItemsWithoutCollection) {
-                $withoutCollectionMessage = __(plural('%sOne item%s has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '<a href="' . html_escape(url('items/browse?collection=0')) . '">', $totalItemsWithoutCollection, '</a>');
+                $withoutCollectionMessage = __(plural('%sOne item has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '<a href="' . html_escape(url('items/browse?collection=0')) . '">', $totalItemsWithoutCollection, '</a>');
             } else {
                 $withoutCollectionMessage = __('All items are in a collection.');
             }
