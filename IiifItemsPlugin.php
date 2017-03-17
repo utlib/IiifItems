@@ -52,9 +52,11 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'inputForCollectionIiifType' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'IIIF Type'),
             'inputForCollectionParent' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'Parent Collection'),
             'inputForCollectionUuid' => array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'UUID'),
-            // Exhibits extension
-            'exhibit_layouts',
 	);
+        
+        protected $_integrations = array(
+            'ExhibitBuilder',
+        );
         
         public function hookInstall() {
             // Init
@@ -262,6 +264,13 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             add_filter(array('ElementInput', 'File', 'IIIF File Metadata', 'JSON Data'), 'filter_minimal_input');
             add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'JSON Data'), 'filter_minimal_input');
             add_filter(array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'JSON Data'), 'filter_minimal_input');
+            
+            // Add integrations
+            foreach ($this->_integrations as $integrationName) {
+                $integrationClass = 'IiifItems_Integration_' . $integrationName;
+                $integration = new $integrationClass();
+                $integration->integrate();
+            }
             
             add_shortcode('mirador_file', array($this, 'shortcodeMiradorFile'));
             add_shortcode('mirador_items', array($this, 'shortcodeMiradorItems'));
@@ -776,20 +785,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         public function inputForCollectionUuid($comps, $args) {
             $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
             return filter_minimal_input($comps, $args);
-        }
-        
-        /* Exhibit builder extension */
-        
-        public function filterExhibitLayouts($layouts) {
-            $layouts['iiifitem'] = array(
-                'name' => __('IIIF Items'),
-                'description' => __('Embed a Mirador viewer for one or more items'),
-            );
-            $layouts['iiifmanifest'] = array(
-                'name' => __('IIIF Manifests'),
-                'description' => __('Embed a Mirador viewer for one or more manifests'),
-            );
-            return $layouts;
         }
         
         /* Simple Pages shortcodes */
