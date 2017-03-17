@@ -16,13 +16,13 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             return;
         }
         $uri = $this->getParam('uri');
-        if (!($thing = IiifItems_AnnotationUtil::findAttachmentInContextByUri($contextThing, $uri))) {
+        if (!($thing = IiifItems_Util_Annotation::findAttachmentInContextByUri($contextThing, $uri))) {
             $this->__respondWithJson(null, 400);
             return;
         }
         
         // Pull all annotations that belong to $thing
-        $json = IiifItems_AnnotationUtil::findAnnotationsFor($thing);
+        $json = IiifItems_Util_Annotation::findAnnotationsFor($thing);
         
         // Respond [<anno1>...<annon>]
         $this->__respondWithJson($json);
@@ -62,7 +62,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             unset($params['_dims']);
         }
         // Trace back to the target Item and remember its UUID
-        $originalItem = IiifItems_AnnotationUtil::findAttachmentInContextByUri($contextThing, $on);
+        $originalItem = IiifItems_Util_Annotation::findAttachmentInContextByUri($contextThing, $on);
         if (!$originalItem) {
             $this->__respondWithJson(null, 400);
             return;

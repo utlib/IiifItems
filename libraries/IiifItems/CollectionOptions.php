@@ -97,7 +97,7 @@ class IiifItems_CollectionOptions extends IiifItems_IiifUtil {
         switch (get_class($thing)) {
             case 'Item':
                 if ($thing->item_type_id == get_option('iiifitems_annotation_item_type')) {
-                    if ($annotatedItem = IiifItems_AnnotationUtil::findAnnotatedItemFor($thing)) {
+                    if ($annotatedItem = IiifItems_Util_Annotation::findAnnotatedItemFor($thing)) {
                         $path[] = $annotatedItem;
                         $currentCollection = get_record_by_id('Collection', $annotatedItem->collection_id);
                     } else {

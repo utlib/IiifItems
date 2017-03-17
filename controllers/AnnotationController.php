@@ -10,7 +10,7 @@ class IiifItems_AnnotationController extends IiifItems_BaseController {
         }
         // Respond with JSON
         try {
-            $jsonData = IiifItems_AnnotationUtil::buildList($item);
+            $jsonData = IiifItems_Util_Annotation::buildList($item);
             $this->__respondWithJson($jsonData);
         } catch (Exception $e) {
             $this->__respondWithJson(array(
