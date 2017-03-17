@@ -1,5 +1,5 @@
 <?php
-class IiifItems_CollectionOptions extends IiifItems_IiifUtil {
+class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
     /**
      * Generates the raw tree array for the collection hierarchy
      * @param boolean|null $isPublic

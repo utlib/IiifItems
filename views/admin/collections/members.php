@@ -2,7 +2,7 @@
 $pageTitle = __('Browse Collections') . ' ' .  __('(%s total)', $total_results);
 echo head(array('title'=>$pageTitle, 'bodyclass'=>'collections'));
 ?>
-<div id="item-filters"><p style="margin-top: 0;"><?php echo IiifItems_CollectionOptions::getPathBreadcrumb($parentCollection, true); ?></p></div>
+<div id="item-filters"><p style="margin-top: 0;"><?php echo IiifItems_Util_CollectionOptions::getPathBreadcrumb($parentCollection, true); ?></p></div>
 <?php
 echo flash();
 ?>
