@@ -1,5 +1,5 @@
 <?php
-class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
+class IiifItems_Util_Canvas extends IiifItems_IiifUtil {
     /**
      * Basic template for IIIF Presentation API canvas
      * @param string $atId The unique URI ID for this canvas

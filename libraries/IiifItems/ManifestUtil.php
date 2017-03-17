@@ -95,13 +95,13 @@ class IiifItems_ManifestUtil extends IiifItems_IiifUtil {
         // If it is an annotation, use the special annotation canvas utility
         if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
             $json = self::blankTemplate($atId, $seqId, $label, array(
-                IiifItems_CanvasUtil::buildAnnotationCanvas($item)
+                IiifItems_Util_Canvas::buildAnnotationCanvas($item)
             ));
         }
         // Otherwise, use the standard item-to-canvas utility
         else {
             $json = self::blankTemplate($atId, $seqId, $label, array(
-                IiifItems_CanvasUtil::buildCanvas($item)
+                IiifItems_Util_Canvas::buildCanvas($item)
             ));
         }
         // Override DC metadata
@@ -125,7 +125,7 @@ class IiifItems_ManifestUtil extends IiifItems_IiifUtil {
         $label = metadata($file, 'display_title', array('no_escape' => true));
         // Use standard file-to-canvas utility
         $json = self::blankTemplate($atId, $seqId, $label, array(
-            IiifItems_CanvasUtil::fileCanvasJson($file)
+            IiifItems_Util_Canvas::fileCanvasJson($file)
         ));
         // Override DC metadata
         parent::addDublinCoreMetadata($json, $file);
@@ -154,7 +154,7 @@ class IiifItems_ManifestUtil extends IiifItems_IiifUtil {
     public static function findCanvasesFor($collection) {
         $canvases = array();
         foreach (get_db()->getTable('Item')->findBy(array('collection' => $collection)) as $item) {
-            $canvases[] = IiifItems_CanvasUtil::buildCanvas($item);
+            $canvases[] = IiifItems_Util_Canvas::buildCanvas($item);
         }
         return $canvases;
     }

@@ -356,7 +356,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         protected function _isntIiifDisplayableItem($item) {
-            return ($item->fileCount() == 0 && !$item->hasElementText('IIIF Item Metadata', 'JSON Data')) || IiifItems_CanvasUtil::isNonIiifItem($item);
+            return ($item->fileCount() == 0 && !$item->hasElementText('IIIF Item Metadata', 'JSON Data')) || IiifItems_Util_Canvas::isNonIiifItem($item);
         }
         
         public function hookPublicCollectionsShow($args) {

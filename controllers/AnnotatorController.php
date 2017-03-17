@@ -112,7 +112,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             'text' => json_encode($params, JSON_UNESCAPED_SLASHES),
         ));
         // Attach preview image based on first image
-        if (isset($previewDimensions) && !IiifItems_CanvasUtil::isNonIiifItem($originalItem)) {
+        if (isset($previewDimensions) && !IiifItems_Util_Canvas::isNonIiifItem($originalItem)) {
             Zend_Registry::get('bootstrap')->getResource('jobs')->sendLongRunning('IiifItems_Job_AddAnnotationThumbnail', array(
                 'originalItemId' => $originalItem->id,
                 'annotationItemId' => $newItem->id,
