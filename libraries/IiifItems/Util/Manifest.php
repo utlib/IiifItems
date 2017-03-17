@@ -1,5 +1,5 @@
 <?php
-class IiifItems_ManifestUtil extends IiifItems_IiifUtil {
+class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
     /**
      * Basic template for IIIF Presentation API manifest
      * @param string $atId The unique URI ID for this manifest

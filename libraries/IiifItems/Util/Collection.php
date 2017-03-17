@@ -123,7 +123,7 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
                 else {
                     $atId = public_full_url(array('things' => 'collections', 'id' => $member->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
                     $label = metadata($member, array('Dublin Core', 'Title'), array('no_escape' => true));
-                    $json['manifests'][] = IiifItems_ManifestUtil::bareTemplate($atId, $label);
+                    $json['manifests'][] = IiifItems_Util_Manifest::bareTemplate($atId, $label);
                 }
             }
             // Override the IDs, titles and DC metadata

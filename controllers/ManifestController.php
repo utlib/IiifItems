@@ -15,9 +15,9 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
         //Respond with JSON
         try {
             switch ($class) {
-                case 'Collection': $jsonData = IiifItems_ManifestUtil::buildManifest($thing); break;
-                case 'Item': $jsonData = IiifItems_ManifestUtil::buildItemManifest($thing); break;
-                case 'File': $jsonData = IiifItems_ManifestUtil::buildFileManifest($thing); break;
+                case 'Collection': $jsonData = IiifItems_Util_Manifest::buildManifest($thing); break;
+                case 'Item': $jsonData = IiifItems_Util_Manifest::buildItemManifest($thing); break;
+                case 'File': $jsonData = IiifItems_Util_Manifest::buildFileManifest($thing); break;
             }
             $this->__respondWithJson($jsonData);
         } catch (Exception $e) {
