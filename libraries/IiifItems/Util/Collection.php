@@ -1,5 +1,5 @@
 <?php
-class IiifItems_CollectionUtil extends IiifItems_IiifUtil {
+class IiifItems_Util_Collection extends IiifItems_IiifUtil {
     public static function blankTemplate($atId, $label, $manifests=array(), $collections=array()) {
         return array(
             '@context' => 'http://iiif.io/api/presentation/2/context.json',
@@ -65,12 +65,12 @@ class IiifItems_CollectionUtil extends IiifItems_IiifUtil {
             foreach (self::findSubcollectionsFor($collection) as $subcollection) {
                 $atId = public_full_url(array('things' => 'collections', 'id' => $subcollection->id, 'typeext' => 'collection.json'), 'iiifitems_oa_uri');
                 $label = metadata($subcollection, array('Dublin Core', 'Title'), array('no_escape' => true));
-                $json['collections'][] = IiifItems_CollectionUtil::bareTemplate($atId, $label);
+                $json['collections'][] = IiifItems_Util_Collection::bareTemplate($atId, $label);
             }
             foreach (self::findSubmanifestsFor($collection) as $submanifest) {
                 $atId = public_full_url(array('things' => 'collections', 'id' => $submanifest->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
                 $label = metadata($submanifest, array('Dublin Core', 'Title'), array('no_escape' => true));
-                $json['manifests'][] = IiifItems_CollectionUtil::bareTemplate($atId, $label);
+                $json['manifests'][] = IiifItems_Util_Collection::bareTemplate($atId, $label);
             }
             // Override the IDs, titles and DC metadata
             $json['@id'] = $atId;
@@ -118,7 +118,7 @@ class IiifItems_CollectionUtil extends IiifItems_IiifUtil {
                 if (self::isCollection($member)) {
                     $atId = public_full_url(array('things' => 'collections', 'id' => $member->id, 'typeext' => 'collection.json'), 'iiifitems_oa_uri');
                     $label = metadata($member, array('Dublin Core', 'Title'), array('no_escape' => true));
-                    $json['collections'][] = IiifItems_CollectionUtil::bareTemplate($atId, $label);
+                    $json['collections'][] = IiifItems_Util_Collection::bareTemplate($atId, $label);
                 }
                 else {
                     $atId = public_full_url(array('things' => 'collections', 'id' => $member->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');

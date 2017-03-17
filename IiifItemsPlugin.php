@@ -409,7 +409,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
                     $iiifLabel = __('IIIF Collection Information');
                     $urlLabel = __('Collection URL');
                     $iiifUrl = public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_collection');
-                    $count = IiifItems_CollectionUtil::countSubmembersFor($args['collection']);
+                    $count = IiifItems_Util_Collection::countSubmembersFor($args['collection']);
                     echo '<script>jQuery(document).ready(function() { jQuery(".total-items a:first").attr("href", ' . js_escape(admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members')) . ').text("' . $count . '"); });</script>';
                 break;
                 case 'Manifest': default:
@@ -427,7 +427,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         protected function _isntIiifDisplayableCollection($collection) {
-            return $collection->totalItems() == 0 && !$collection->hasElementText('IIIF Collection Metadata', 'JSON Data') && empty(IiifItems_CollectionUtil::findSubmembersFor($collection));
+            return $collection->totalItems() == 0 && !$collection->hasElementText('IIIF Collection Metadata', 'JSON Data') && empty(IiifItems_Util_Collection::findSubmembersFor($collection));
         }
         
         public function hookItemsBrowseSql($args) {
@@ -503,7 +503,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             }
             if (raw_iiif_metadata($args['collection'], 'iiifitems_collection_type_element') == 'Collection') {
                 if ($uuid = raw_iiif_metadata($args['collection'], 'iiifitems_collection_uuid_element')) {
-                    $count = IiifItems_CollectionUtil::countSubmembersFor($args['collection']);
+                    $count = IiifItems_Util_Collection::countSubmembersFor($args['collection']);
                     echo '<span class="iiifitems-replace-items-link" data-newcount="' . $count . '" data-newurl="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '" data-showurl="' . admin_url(array('id' => $args['collection']->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '"></span>'
                             . '<a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">List Members</a>';
                 }    
@@ -514,7 +514,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function hookPublicCollectionsBrowseEach($args) {
             $collection = $args['collection'];
-            if (IiifItems_CollectionUtil::isCollection($collection)) {
+            if (IiifItems_Util_Collection::isCollection($collection)) {
                 if ($collection->getFile() === null) {
                     echo '<a href="' . html_escape(public_url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id')) . '" class="image"><img src="' . html_escape(src('icon_collection', 'img', 'png')) . '"></a>';
                 }
@@ -655,7 +655,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             if ($this->_isntIiifDisplayableCollection($collection)) {
                 return;
             }
-            if (!IiifItems_CollectionUtil::isCollection($collection)) {
+            if (!IiifItems_Util_Collection::isCollection($collection)) {
                 $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
                 echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
             }
@@ -677,7 +677,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         public function hookBeforeDeleteCollection($args) {
             $db = get_db();
             $collection = $args['record'];
-            if (IiifItems_CollectionUtil::isCollection($collection) && $uuid = raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element')) {
+            if (IiifItems_Util_Collection::isCollection($collection) && $uuid = raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element')) {
                 $db->query("DELETE FROM `{$db->prefix}element_texts` WHERE element_id IN (?, ?) AND text = ?;", array(get_option('iiifitems_collection_parent_element'), get_option('iiifitems_manifest_parent_element'), $uuid));
             }
         }

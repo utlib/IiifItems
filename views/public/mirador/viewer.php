@@ -24,13 +24,13 @@
             "buildPath": "<?php echo html_escape($mirador_path) . '/'; ?>",
             "layout": "1",
             "data": [
-                <?php if ($type != 'collections' || !IiifItems_CollectionUtil::isCollection($thing)) : ?>
+                <?php if ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) : ?>
                 { "manifestUri": "<?php echo absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest'); ?>" }
                 <?php else : ?>
-                <?php foreach (IiifItems_CollectionUtil::findSubcollectionsFor($thing) as $subcollection) : ?>
+                <?php foreach (IiifItems_Util_Collection::findSubcollectionsFor($thing) as $subcollection) : ?>
                 { "collectionUri": "<?php echo absolute_url(array('id' => $subcollection->id), 'iiifitems_collection'); ?>" },
                 <?php endforeach; ?>
-                <?php foreach (IiifItems_CollectionUtil::findSubmanifestsFor($thing) as $submanifest) : ?>
+                <?php foreach (IiifItems_Util_Collection::findSubmanifestsFor($thing) as $submanifest) : ?>
                 { "manifestUri": "<?php echo absolute_url(array('things' => $type, 'id' => $submanifest->id), 'iiifitems_manifest'); ?>" },
                 <?php endforeach; ?>
                 {}
@@ -38,11 +38,11 @@
             ],
             <?php 
                 $defaultManifest = '';
-                if ($type != 'collections' || !IiifItems_CollectionUtil::isCollection($thing)) {
+                if ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) {
                     $defaultManifest = absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest');
                 }
 //                else {
-//                    $submanifests = IiifItems_CollectionUtil::findSubmanifestsFor($thing);
+//                    $submanifests = IiifItems_Util_Collection::findSubmanifestsFor($thing);
 //                    if (count($submanifests) > 0) {
 //                        $defaultManifest = absolute_url(array('things' => $type, 'id' => $submanifests[0]->id), 'iiifitems_manifest');
 //                    }
@@ -53,7 +53,7 @@
                 loadedManifest: "<?php echo $defaultManifest; ?>",
                 slotAddress: "row1.column1",
                 viewType: "ImageView",
-                displayLayout: <?php echo ($type != 'collections' || !IiifItems_CollectionUtil::isCollection($thing)) ? 'false' : 'true'; ?>,
+                displayLayout: <?php echo ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) ? 'false' : 'true'; ?>,
                 sidePanel: true,
                 annotationLayer: true
             }],
@@ -72,7 +72,7 @@
                 show: false
             }
         });
-        <?php if ($type == 'collections' && IiifItems_CollectionUtil::isCollection($thing)) : ?>
+        <?php if ($type == 'collections' && IiifItems_Util_Collection::isCollection($thing)) : ?>
         var interval = setInterval(function() {
             if ($('.addItemLink:first').length > 0) {
                 $('.addItemLink:first').click();
