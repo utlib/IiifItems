@@ -1,5 +1,5 @@
 <?php
-class IiifItems_AnnotationUtil extends IiifItems_IiifUtil {
+class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
     /**
      * Return a bare template for an annotation list
      * @param string $atId The JSON-LD ID to use

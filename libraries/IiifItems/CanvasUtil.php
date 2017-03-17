@@ -132,7 +132,7 @@ class IiifItems_CanvasUtil extends IiifItems_IiifUtil {
      * @return array
      */
     public static function buildAnnotationCanvas($annotation, $canvasId=null, $applyDublin=true) {
-        $base = self::buildCanvas(IiifItems_AnnotationUtil::findAnnotatedItemFor($annotation));
+        $base = self::buildCanvas(IiifItems_Util_Annotation::findAnnotatedItemFor($annotation));
         $base['otherContent'] = array(array(
             '@id' => public_full_url(array(
                 'things' => 'items',
