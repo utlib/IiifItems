@@ -26,11 +26,11 @@ class IiifItems_Job_AddAnnotationThumbnail extends Omeka_Job_AbstractJob {
                 $prefix = $fileJsonData['resource']['service']['@id'];
                 $suffix = $this->__getIiifImageSuffix($fileJsonData);
             } else {
-                $prefix = rtrim(IiifItems_CanvasUtil::fileIiifPrefix($originalFile), '/');
+                $prefix = rtrim(IiifItems_Util_Canvas::fileIiifPrefix($originalFile), '/');
                 $suffix = 'default.jpg';
             }
         } else {
-            $prefix = rtrim(IiifItems_CanvasUtil::fileIiifPrefix($originalFile), '/');
+            $prefix = rtrim(IiifItems_Util_Canvas::fileIiifPrefix($originalFile), '/');
             $suffix = 'default.jpg';
         }
         $this->__downloadIiifImageToItem($annotationItem, $prefix, $dims, $suffix);

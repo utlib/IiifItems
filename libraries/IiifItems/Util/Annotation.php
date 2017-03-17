@@ -118,7 +118,7 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
             return $item;
         }
         // TENTATIVE: Accept annotations on non-IIIF items for now, but seed it with download links annotation.
-        if (IiifItems_CanvasUtil::isNonIiifItem($item) && !is_admin_theme()) {
+        if (IiifItems_Util_Canvas::isNonIiifItem($item) && !is_admin_theme()) {
             $annoItems = self::findAnnotationsForNonIiif($item);
         } else {
             $annoItems = array();
