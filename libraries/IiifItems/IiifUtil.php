@@ -10,7 +10,7 @@ class IiifItems_IiifUtil {
      * @param boolean $raw Whether to return a string (true) or an array (false)
      * @return string or array
      */
-    protected function fetchJsonData($record, $raw=false) {
+    protected static function fetchJsonData($record, $raw=false) {
         try {
             $recordClass = get_class($record);
             switch ($recordClass) {
@@ -45,7 +45,7 @@ class IiifItems_IiifUtil {
      * @param array $jsonData
      * @param Record $record
      */
-    protected function addDublinCoreMetadata(&$jsonData, $record) {
+    protected static function addDublinCoreMetadata(&$jsonData, $record) {
         $elements = all_element_texts($record, array(
             'return_type' => 'array',
             'show_element_set_headings' => true,
@@ -90,7 +90,7 @@ class IiifItems_IiifUtil {
      * @throws InvalidArgumentException
      * @return The original selector passed in
      */
-    protected function attachMetadataToSelect($select, $elements, $primaryType=null, $primaryPrefix=null) {
+    protected static function attachMetadataToSelect($select, $elements, $primaryType=null, $primaryPrefix=null) {
         // Convert all elements to prefix => element ID form
         $theElements = array();
         foreach ($elements as $prefix => $element) {
