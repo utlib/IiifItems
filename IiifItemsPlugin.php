@@ -346,7 +346,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             echo '<div class="element-set">';
             echo '<h2>IIIF ' . ($item->item_type_id == get_option('iiifitems_annotation_item_type') ? 'Annotation' : 'Item') . ' Information</h2>';
             echo '<p>';
-            echo IiifItems_CollectionOptions::getPathBreadcrumb($item, true);
+            echo IiifItems_Util_CollectionOptions::getPathBreadcrumb($item, true);
             echo '</p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
             $this->_adminElementTextPair('Manifest URL', 'iiif-item-metadata-manifest-url', '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
@@ -387,7 +387,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             echo '<div class="element-set">';
             echo '<h2>' . $iiifLabel . '</h2>';
             echo '<p>';
-            echo IiifItems_CollectionOptions::getPathBreadcrumb($args['collection'], true);
+            echo IiifItems_Util_CollectionOptions::getPathBreadcrumb($args['collection'], true);
             echo '</p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
             $this->_publicElementTextPair($urlLabel, "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
@@ -420,7 +420,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             }
             echo '<div class="element-set">';
             echo '<h2>' . $iiifLabel . '</h2>';
-            echo '<p>' . IiifItems_CollectionOptions::getPathBreadcrumb($args['collection'], true) . '</p>';
+            echo '<p>' . IiifItems_Util_CollectionOptions::getPathBreadcrumb($args['collection'], true) . '</p>';
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
             $this->_adminElementTextPair("Manifest URL", "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
             echo '</div>';
@@ -765,7 +765,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function inputForCollectionParent($comps, $args) {
-            $uuidOptions = IiifItems_CollectionOptions::getCollectionOptions();
+            $uuidOptions = IiifItems_Util_CollectionOptions::getCollectionOptions();
             if (isset($_GET['parent']) && find_collection_by_uuid($_GET['parent'])) {
                 $args['value'] = $_GET['parent'];
             }
