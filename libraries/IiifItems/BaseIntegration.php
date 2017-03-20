@@ -24,4 +24,12 @@ abstract class IiifItems_BaseIntegration {
             }
         }
     }
+    
+    protected function _adminElementTextPair($label, $id, $entry, $html) {
+        echo '<div id="' . $id . '" class="element"><div class="field two columns alpha"><label>' . html_escape($label) . '</label></div><div class="element-text five columns omega">' . ($html ? $entry : ('<p>'. html_escape($entry) .'</p>')) . '</div></div>';
+    }
+
+    protected function _publicElementTextPair($label, $id, $entry, $html) {
+        echo '<div id="' . $id . '" class="element"><h3>' . html_escape($label) . '</h3><div class="element-text">' . ($html ? $entry : html_escape($entry)) . '</div></div>';
+    }
 }
