@@ -17,10 +17,10 @@ abstract class IiifItems_BaseIntegration {
             $this->initialize();
             $className = get_called_class();
             foreach ($this->_hooks as $hook) {
-                add_plugin_hook($hook, array($className, 'hook' . Inflector::camelize($hook)));
+                add_plugin_hook($hook, array($this, 'hook' . Inflector::camelize($hook)));
             }
             foreach ($this->_filters as $filter) {
-                add_filter($filter, array($className, 'filter' . Inflector::camelize($filter)));
+                add_filter($filter, array($this, 'filter' . Inflector::camelize($filter)));
             }
         }
     }
