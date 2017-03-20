@@ -17,7 +17,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'admin_items_show',
             'public_collections_show',
             'admin_collections_show',
-            'admin_files_show',
             'items_browse_sql',
             'collections_browse_sql',
             'admin_items_browse_simple_each',
@@ -39,8 +38,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             // Annotation Type Metadata
             'displayForAnnotationOnCanvas' => array('Display', 'Item', 'Item Type Metadata', 'On Canvas'),
             'inputForAnnotationOnCanvas' => array('ElementInput', 'Item', 'Item Type Metadata', 'On Canvas'),
-            // File Metadata
-            'inputForFileOriginalId' => array('ElementInput', 'File', 'IIIF File Metadata', 'Original @id'),
             // Item Metadata
             'inputForItemDisplay' => array('ElementInput', 'Item', 'IIIF Item Metadata', 'Display as IIIF?'),
             'inputForItemOriginalId' => array('ElementInput', 'Item', 'IIIF Item Metadata', 'Original @id'),
@@ -57,6 +54,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         protected $_integrations = array(
             'ExhibitBuilder',
             'SimplePages',
+            'Files',
         );
         
         public function hookInstall() {
@@ -238,19 +236,14 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function hookInitialize() {
-            add_plugin_hook('after_save_file', 'hook_expire_cache');
             add_plugin_hook('after_save_item', 'hook_expire_cache');
             add_plugin_hook('after_save_collection', 'hook_expire_cache');
-            add_plugin_hook('after_delete_file', 'hook_expire_cache');
             add_plugin_hook('after_delete_item', 'hook_expire_cache');
             add_plugin_hook('after_delete_collection', 'hook_expire_cache');
-            
-            add_filter(array('Display', 'File', 'IIIF File Metadata', 'JSON Data'), 'filter_hide_element_display');
+                 
             add_filter(array('Display', 'Item', 'IIIF Item Metadata', 'Parent Collection'), 'filter_hide_element_display');
             add_filter(array('ElementForm', 'Item', 'Item Type Metadata', 'On Canvas'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Item', 'Item Type Metadata', 'Selector'), 'filter_singular_form');
-            add_filter(array('ElementForm', 'File', 'IIIF File Metadata', 'Original @id'), 'filter_singular_form');
-            add_filter(array('ElementForm', 'File', 'IIIF File Metadata', 'JSON Data'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'Display as IIIF?'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'Original @id'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'Parent Collection'), 'filter_singular_form');
@@ -262,7 +255,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'JSON Data'), 'filter_singular_form');
             add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'UUID'), 'filter_singular_form');
             add_filter(array('ElementInput', 'Item', 'Item Type Metadata', 'Selector'), 'filter_minimal_input');
-            add_filter(array('ElementInput', 'File', 'IIIF File Metadata', 'JSON Data'), 'filter_minimal_input');
             add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'JSON Data'), 'filter_minimal_input');
             add_filter(array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'JSON Data'), 'filter_minimal_input');
             
@@ -298,29 +290,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         protected function _publicElementTextPair($label, $id, $entry, $html) {
             echo '<div id="' . $id . '" class="element"><h3>' . html_escape($label) . '</h3><div class="element-text">' . ($html ? $entry : html_escape($entry)) . '</div></div>';
-        }
-        
-        public function hookAdminFilesShow($args) {
-            if (!isset($args['view'])) {
-                $args['view'] = get_view();
-            }
-            if ($this->_isntIiifDisplayableFile($args['view']->file)) {
-                return;
-            }
-            $iiifUrl = public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_manifest');
-            echo '<div class="element-set">';
-            echo '<h2>IIIF File Information</h2><p>Manifest URL: <a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>';
-            
-            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'files', 'id' => $args['view']->file->id), 'iiifitems_mirador')) . '"></iframe>';
-            echo '</div>';
-        }
-        
-        protected function _isntIiifDisplayableFile($file) {
-            switch ($file->mime_type) {
-                case 'image/jpeg': case 'image/png': case 'image/tiff': case 'image/jp2':
-                    return false;
-            }
-            return true;
         }
         
         public function hookPublicItemsShow($args) {
@@ -710,13 +679,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         
         public function inputForAnnotationOnCanvas($comps, $args) {
             $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
-            return filter_minimal_input($comps, $args);
-        }
-        
-        /* File Metadata */
-        
-        public function inputForFileOriginalId($comps, $args) {
-            $comps['input'] = $args['value'] ? $args['value'] : '';
             return filter_minimal_input($comps, $args);
         }
         
