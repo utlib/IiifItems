@@ -17,9 +17,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
 	protected $_filters = array(
             'admin_navigation_main',
             'display_elements',
-            // Annotation Type Metadata
-            'displayForAnnotationOnCanvas' => array('Display', 'Item', 'Item Type Metadata', 'On Canvas'),
-            'inputForAnnotationOnCanvas' => array('ElementInput', 'Item', 'Item Type Metadata', 'On Canvas'),
 	);
         
         protected $_integrations = array(
@@ -28,6 +25,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'Files',
             'Items',
             'Collections',
+            'Annotations',
         );
         
         public function hookInstall() {
@@ -202,9 +200,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
         }
         
         public function hookInitialize() { 
-            add_filter(array('ElementForm', 'Item', 'Item Type Metadata', 'On Canvas'), 'filter_singular_form');
-            add_filter(array('ElementForm', 'Item', 'Item Type Metadata', 'Selector'), 'filter_singular_form');
-            add_filter(array('ElementInput', 'Item', 'Item Type Metadata', 'Selector'), 'filter_minimal_input');
             // Add integrations
             foreach ($this->_integrations as $integrationName) {
                 $integrationClass = 'IiifItems_Integration_' . $integrationName;
@@ -245,32 +240,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             unset($elementsBySet['IIIF Item Metadata']);
             unset($elementsBySet['IIIF Collection Metadata']);
             return $elementsBySet;
-        }
-        
-        /* Annotation Type Metadata */
-        
-        public function displayForAnnotationOnCanvas($comps, $args) {
-            $on = $args['element_text']->text;
-            if (!($target = find_item_by_uuid($on))) {
-                if (!($target = find_item_by_atid($on))) {
-                    return $on;
-                }
-            }
-            $link = url(array('id' => $target->id, 'controller' => 'items', 'action' => 'show'), 'id');
-            $title = metadata($target, array('Dublin Core', 'Title'));
-            $text = "<a href=\"{$link}\">{$title}</a> ({$on})";
-            if ($target->collection_id !== null) {
-                $collection = get_record_by_id('Collection', $target->collection_id);
-                $collectionLink = url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id');
-                $collectionTitle = metadata($collection, array('Dublin Core', 'Title'));
-                $text .= "<p>From collection <a href=\"{$collectionLink}\">{$collectionTitle}</a></p>";
-            }
-            return $text;
-        }
-        
-        public function inputForAnnotationOnCanvas($comps, $args) {
-            $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
-            return filter_minimal_input($comps, $args);
         }
 }
 ?>

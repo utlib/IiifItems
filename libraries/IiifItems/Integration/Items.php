@@ -73,17 +73,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
                 echo '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations</a>';
             }    
         } else {
-            $on = raw_iiif_metadata($args['item'], 'iiifitems_annotation_on_element');
-            if (($attachedItem = find_item_by_uuid($on)) || ($attachedItem = find_item_by_atid($on))) {
-                $text = 'Attached to: <a href="' . url(array('id' => $attachedItem->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">' . metadata($attachedItem, array('Dublin Core', 'Title')) . '</a>';
-                if ($attachedItem->collection_id !== null) {
-                    $collection = get_record_by_id('Collection', $attachedItem->collection_id);
-                    $collectionLink = url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id');
-                    $collectionTitle = metadata($collection, array('Dublin Core', 'Title'));                                                                                                      
-                    $text .= " (<a href=\"{$collectionLink}\">{$collectionTitle}</a>)";    
-                }
-                echo "<p>{$text}</p>";
-            }
+            (new IiifItems_Integration_Annotations)->altHookAdminItemsBrowseSimpleEach($args);
         }
     }
 
@@ -138,24 +128,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
                     . '</form>'
                     . '</div>';
             } else {
-                if ($onCanvasUuid = raw_iiif_metadata($item, 'iiifitems_annotation_on_element')) {
-                    $onCanvasMatches = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ?", array(
-                        get_option('iiifitems_annotation_on_element'),
-                        $onCanvasUuid,
-                    ));
-                    $belongsTo = find_item_by_uuid($onCanvasUuid);
-                    echo '<div class="panel"><h4>Annotations</h4>'
-                        . '<p>This annotation is one of '
-                        . '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $onCanvasUuid . '">'
-                        . count($onCanvasMatches)
-                        . '</a>'
-                        . ' on the canvas "<a href="' . url(array('id' => $belongsTo->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">'
-                        . metadata($belongsTo, array('Dublin Core', 'Title'))
-                        . '</a>".</p>'
-                        // . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
-                        . '</div>';
-                    echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
-                }
+                (new IiifItems_Integration_Annotations)->altHookAdminItemsShowSidebar($args);
             }
         }
     }
