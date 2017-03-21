@@ -26,151 +26,33 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             'Items',
             'Collections',
             'Annotations',
+            'System',
         );
         
         public function hookInstall() {
-            // Init
-            $elementTable = get_db()->getTable('Element');
-            // Add IIIF Metadata for Files
-            $file_metadata = insert_element_set(array(
-                'name' => 'IIIF File Metadata',
-                'description' => '',
-                'record_type' => 'File'
-            ), array(
-                array('name' => 'Original @id', 'description' => ''),
-                array('name' => 'JSON Data', 'description' => ''),
-            ));
-            set_option('iiifitems_file_element_set', $file_metadata->id);
-            set_option('iiifitems_file_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF File Metadata', 'Original @id')->id);
-            set_option('iiifitems_file_json_element', $elementTable->findByElementSetNameAndElementName('IIIF File Metadata', 'JSON Data')->id);
-            // Add Item Metadata element set
-            $item_metadata = insert_element_set(array(
-                'name' => 'IIIF Item Metadata',
-                'description' => '',
-                'record_type' => 'Item'
-            ), array(
-                array('name' => 'Display as IIIF?', 'description' => ''),
-                array('name' => 'Original @id', 'description' => ''),
-                array('name' => 'Parent Collection', 'description' => ''),
-                array('name' => 'JSON Data', 'description' => ''),
-            ));
-            set_option('iiifitems_item_element_set', $item_metadata->id);
-            set_option('iiifitems_item_display_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Display as IIIF?')->id);
-            set_option('iiifitems_item_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Original @id')->id);
-            set_option('iiifitems_item_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Parent Collection')->id);
-            set_option('iiifitems_item_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'JSON Data')->id);
-            // Add Collection Metadata element set
-            $collection_metadata = insert_element_set(array(
-                'name' => 'IIIF Collection Metadata',
-                'description' => '',
-                'record_type' => 'Collection'
-            ), array(
-                array('name' => 'Original @id', 'description' => ''),
-                array('name' => 'IIIF Type', 'description' => ''),
-                array('name' => 'Parent Collection', 'description' => ''),
-                array('name' => 'JSON Data', 'description' => ''),
-            ));
-            set_option('iiifitems_collection_element_set', $collection_metadata->id);
-            set_option('iiifitems_collection_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Original @id')->id);
-            set_option('iiifitems_collection_type_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'IIIF Type')->id);
-            set_option('iiifitems_collection_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Parent Collection')->id);
-            set_option('iiifitems_collection_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
-            // Add Annotation item type elements
-            $annotation_metadata = insert_item_type(array(
-                'name' => 'Annotation',
-                'description' => 'An OA-compliant annotation',
-            ), array(
-                array('name' => 'On Canvas', 'description' => 'URI of the attached canvas'),
-                array('name' => 'Selector', 'description' => 'The SVG boundary area of the annotation'),
-            ));
-            set_option('iiifitems_annotation_item_type', $annotation_metadata->id);
-            set_option('iiifitems_annotation_on_element', $elementTable->findByElementSetNameAndElementName('Item Type Metadata', 'On Canvas')->id);
-            set_option('iiifitems_annotation_selector_element', $elementTable->findByElementSetNameAndElementName('Item Type Metadata', 'Selector')->id);
-            $annotation_metadata_elements = array();
-            foreach (get_db()->getTable('Element')->findByItemType($annotation_metadata->id) as $element) {
-                $annotation_metadata_elements[] = $element->id;
+            // Populate entire library (needed because the plugin isn't loaded)
+            foreach (glob(__DIR__ . "/libraries/IiifItems/**/*.php") as $libUnit) {
+                require_once $libUnit;
             }
-            set_option('iiifitems_annotation_elements', json_encode($annotation_metadata_elements));
-            // Add Annotation item type Text element
-            include_once(dirname(__FILE__) . '/libraries/IiifItems/Migration/0_0_1_5.php');
-            $addTextElementMigration = new IiifItems_Migration_0_0_1_5();
-            $addTextElementMigration->up();
-            // Add IIIF server options
-            set_option('iiifitems_bridge_prefix', '');
-            $serverUrlHelper = new Zend_View_Helper_ServerUrl;
-            set_option('iiifitems_mirador_path', $serverUrlHelper->serverUrl() . public_url('plugins') . '/IiifItems/views/shared/js/mirador');
-            // Add tables
-            $db = $this->_db;
-            $db->query("CREATE TABLE IF NOT EXISTS `{$db->prefix}iiif_items_job_statuses` (
-                `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                `source` varchar(255) NOT NULL,
-                `dones` int(11) NOT NULL,
-                `skips` int(11) NOT NULL,
-                `fails` int(11) NOT NULL,
-                `status` varchar(32) NOT NULL,
-                `progress` int(11) NOT NULL DEFAULT 0,
-                `total` int(11) NOT NULL DEFAULT 100,
-                `added` timestamp DEFAULT '2016-11-01 00:00:00',
-                `modified` timestamp DEFAULT NOW() ON UPDATE NOW()
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-            $db->query("CREATE TABLE IF NOT EXISTS `{$db->prefix}iiif_items_cached_json_data` (
-                `id` int(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                `record_id` int(11) NOT NULL,
-                `record_type` varchar(50) NOT NULL,
-                `url` varchar(255) NOT NULL,
-                `data` mediumtext NOT NULL,
-                `generated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
-            ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
-            // Add media placeholder files
-            include_once(dirname(__FILE__) . '/libraries/IiifItems/Migration/0_0_1_7.php');
-            $addMediaPlaceholdersMigration = new IiifItems_Migration_0_0_1_7();
-            $addMediaPlaceholdersMigration->up();
-            // Add UUIDs via a job
-            include_once(dirname(__FILE__) . '/libraries/IiifItems/Migration/0_0_1_6.php');
-            $addUuidElementMigration = new IiifItems_Migration_0_0_1_6();
-            $addUuidElementMigration->up();
+            // Trigger integrations
+            foreach ($this->_integrations as $integrationName) {
+                $integrationClass = 'IiifItems_Integration_' . $integrationName;
+                $integration = new $integrationClass();
+                $integration->install();
+            }
         }
         
         public function hookUninstall() {
-            $elementSetTable = get_db()->getTable('ElementSet');
-            $itemTypeTable = get_db()->getTable('ItemType');
-            // Remove File Metadata element set
-            $elementSetTable->find(get_option('iiifitems_file_element_set'))->delete();
-            delete_option('iiifitems_file_atid_element');
-            delete_option('iiifitems_file_json_element');
-            // Remove Item Metadata element set
-            $elementSetTable->find(get_option('iiifitems_item_element_set'))->delete();
-            delete_option('iiifitems_item_element_set');
-            delete_option('iiifitems_item_display_element');
-            delete_option('iiifitems_item_atid_element');
-            delete_option('iiifitems_item_parent_element');
-            delete_option('iiifitems_item_json_element');
-            // Remove Collection Metadata element set
-            $elementSetTable->find(get_option('iiifitems_collection_element_set'))->delete();
-            delete_option('iiifitems_collection_element_set');
-            delete_option('iiifitems_collection_atid_element');
-            delete_option('iiifitems_collection_type_element');
-            delete_option('iiifitems_collection_parent_element');
-            delete_option('iiifitems_collection_json_element');
-            // Remove Annotation item type elements
-            $annotationItemType = $itemTypeTable->find(get_option('iiifitems_annotation_item_type'));
-            foreach (json_decode(get_option('iiifitems_annotation_elements')) as $_ => $element_id) {
-                get_db()->getTable('Element')->find($element_id)->delete();
+            // Populate entire library (needed because the plugin isn't loaded)
+            foreach (glob(__DIR__ . "/libraries/IiifItems/**/*.php") as $libUnit) {
+                require_once $libUnit;
             }
-            $annotationItemType->delete();
-            delete_option('iiifitems_annotation_item_type');
-            delete_option('iiifitems_annotation_on_element');
-            delete_option('iiifitems_annotation_selector_element');
-            // Remove IIIF server options
-            delete_option('iiifitems_bridge_prefix');
-            delete_option('iiifitems_mirador_path');
-            // Drop tables
-            $db = $this->_db;
-            $db->query("DROP TABLE IF EXISTS `{$db->prefix}iiif_items_job_statuses`;");
-            $db->query("DROP TABLE IF EXISTS `{$db->prefix}iiif_items_cached_json_data`;");
-            // Remove media placeholder files
-            $addMediaPlaceholdersMigration = new IiifItems_Migration_0_0_1_7();
-            $addMediaPlaceholdersMigration->uninstall();
+            // Trigger integrations
+            foreach ($this->_integrations as $integrationName) {
+                $integrationClass = 'IiifItems_Integration_' . $integrationName;
+                $integration = new $integrationClass();
+                $integration->uninstall();
+            }
         }
         
         public function hookUpgrade($args) {

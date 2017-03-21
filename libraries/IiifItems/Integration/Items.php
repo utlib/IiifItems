@@ -15,6 +15,37 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         return ($item->fileCount() == 0 && !$item->hasElementText('IIIF Item Metadata', 'JSON Data')) || IiifItems_Util_Canvas::isNonIiifItem($item);
     }
     
+    public function install() {
+        $elementTable = get_db()->getTable('Element');
+        // Add Item type metadata elements
+        $item_metadata = insert_element_set(array(
+            'name' => 'IIIF Item Metadata',
+            'description' => '',
+            'record_type' => 'Item'
+        ), array(
+            array('name' => 'Display as IIIF?', 'description' => ''),
+            array('name' => 'Original @id', 'description' => ''),
+            array('name' => 'Parent Collection', 'description' => ''),
+            array('name' => 'JSON Data', 'description' => ''),
+        ));
+        set_option('iiifitems_item_element_set', $item_metadata->id);
+        set_option('iiifitems_item_display_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Display as IIIF?')->id);
+        set_option('iiifitems_item_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Original @id')->id);
+        set_option('iiifitems_item_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Parent Collection')->id);
+        set_option('iiifitems_item_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'JSON Data')->id);
+    }
+    
+    public function uninstall() {
+        $elementSetTable = get_db()->getTable('ElementSet');
+        // Remove Item Metadata element set
+        $elementSetTable->find(get_option('iiifitems_item_element_set'))->delete();
+        delete_option('iiifitems_item_element_set');
+        delete_option('iiifitems_item_display_element');
+        delete_option('iiifitems_item_atid_element');
+        delete_option('iiifitems_item_parent_element');
+        delete_option('iiifitems_item_json_element');
+    }
+    
     public function initialize() {
         add_plugin_hook('after_save_item', 'hook_expire_cache');
         add_plugin_hook('after_delete_item', 'hook_expire_cache');

@@ -1,6 +1,42 @@
 <?php
 
 class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
+    public function install() {
+        $elementTable = get_db()->getTable('Element');
+        // Add Annotation item type elements
+        $annotation_metadata = insert_item_type(array(
+            'name' => 'Annotation',
+            'description' => 'An OA-compliant annotation',
+        ), array(
+            array('name' => 'On Canvas', 'description' => 'URI of the attached canvas'),
+            array('name' => 'Selector', 'description' => 'The SVG boundary area of the annotation'),
+        ));
+        set_option('iiifitems_annotation_item_type', $annotation_metadata->id);
+        set_option('iiifitems_annotation_on_element', $elementTable->findByElementSetNameAndElementName('Item Type Metadata', 'On Canvas')->id);
+        set_option('iiifitems_annotation_selector_element', $elementTable->findByElementSetNameAndElementName('Item Type Metadata', 'Selector')->id);
+        $annotation_metadata_elements = array();
+        foreach (get_db()->getTable('Element')->findByItemType($annotation_metadata->id) as $element) {
+            $annotation_metadata_elements[] = $element->id;
+        }
+        set_option('iiifitems_annotation_elements', json_encode($annotation_metadata_elements));
+        // Add Annotation item type Text element
+        $addTextElementMigration = new IiifItems_Migration_0_0_1_5();
+        $addTextElementMigration->up();
+    }
+    
+    public function uninstall() {
+        $elementSetTable = get_db()->getTable('ElementSet');
+        $itemTypeTable = get_db()->getTable('ItemType');
+        $annotationItemType = $itemTypeTable->find(get_option('iiifitems_annotation_item_type'));
+        foreach (json_decode(get_option('iiifitems_annotation_elements')) as $_ => $element_id) {
+            get_db()->getTable('Element')->find($element_id)->delete();
+        }
+        $annotationItemType->delete();
+        delete_option('iiifitems_annotation_item_type');
+        delete_option('iiifitems_annotation_on_element');
+        delete_option('iiifitems_annotation_selector_element');
+    }
+    
     public function initialize() {
         add_filter(array('Display', 'Item', 'Item Type Metadata', 'On Canvas'), array($this, 'displayForAnnotationOnCanvas'));
         add_filter(array('ElementInput', 'Item', 'Item Type Metadata', 'On Canvas'), array($this, 'inputForAnnotationOnCanvas'));
