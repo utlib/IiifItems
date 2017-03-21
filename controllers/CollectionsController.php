@@ -1,11 +1,22 @@
 <?php
+
+/**
+ * Controller for IIIF collections
+ */
 class IiifItems_CollectionsController extends IiifItems_BaseController {
     protected $_browseRecordsPerPage = self::RECORDS_PER_PAGE_SETTING;
     
+    /**
+     * Marks the default model type for this controller.
+     */
     public function init() {
         $this->_helper->db->setDefaultModelName('Collection');     
     }
     
+    /**
+     * The page for browsing submembers of a collection-type collection.
+     * GET collections/:id/members
+     */
     public function membersAction() {
         $db = get_db();
         $parentUuidElementId = get_option('iiifitems_collection_parent_element');
@@ -53,29 +64,12 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
         }
     }
     
-    public function newSubmembersAction() {
-        $this->__blockPublic();
-        $this->view->form = $this->_getSubmembersForm();
-    }
-    
-    public function addSubmembersAction() {
-        $this->__blockPublic();
-        try {
-            foreach ($_POST['subcollections'] as $subcollectionUuid) {
-                $subcollection = find_collection_by_uuid($subcollectionUuid);
-                // 
-            }
-        } catch (Exception $ex) {
-            $this->view->render('new-submembers');
-        }
-    }
-    
-    protected function _getSubmembersForm() {
-        require_once IIIF_ITEMS_DIRECTORY . '/forms/AddExistingSubcollection.php';
-        $form = new IiifItems_Form_AddExistingSubcollection();
-        return $form;
-    }
-    
+    /**
+     * Renders a IIIF-compliant collection, in collection-manifest form.
+     * GET oa/collections/:id/collection.json
+     * 
+     * @throws Omeka_Controller_Exception_404
+     */
     public function collectionAction() {
         // Get and check the collection's existence
         $collection = get_record_by_id('Collection', $this->getParam('id'));
@@ -93,10 +87,11 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
         }
     }
     
+    /**
+     * Renders the top-level collection for the installation.
+     * GET oa/top.json
+     */
     public function topAction() {
-        $db = get_db();
-        $parentUuidElementId = get_option('iiifitems_collection_parent_element');
-        $iiifTypeElementId = get_option('iiifitems_collection_type_element');
         // Get parent-less collections
         $collections = array();
         foreach (IiifItems_Util_Collection::findTopCollections() as $collection) {

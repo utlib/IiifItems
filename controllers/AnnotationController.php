@@ -1,6 +1,15 @@
 <?php
 
+/**
+ * Controller for displaying annotation lists
+ */
 class IiifItems_AnnotationController extends IiifItems_BaseController {
+    
+    /**
+     * Renders an OA-compliant annotation list.
+     * GET oa/items/:id/annolist.json
+     * @throws Omeka_Controller_Exception_404
+     */
     public function listAction() {
         // Check if the item exists
         $id = $this->getParam('id');
@@ -18,4 +27,5 @@ class IiifItems_AnnotationController extends IiifItems_BaseController {
             ), 500);
         }
     }
+    
 }
