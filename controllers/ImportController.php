@@ -139,7 +139,6 @@ class IiifItems_ImportController extends IiifItems_BaseController {
     }
     
     protected function _getImportForm() {
-        require_once IIIF_ITEMS_DIRECTORY . '/forms/Import.php';
         $form = new IiifItems_Form_Import();
         return $form;
     }
