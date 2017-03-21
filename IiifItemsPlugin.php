@@ -15,8 +15,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
 	);
 	
 	protected $_filters = array(
-            'admin_navigation_main',
-            'display_elements',
 	);
         
         protected $_integrations = array(
@@ -106,22 +104,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin
             $data = $args['post'];
             set_option('iiifitems_bridge_prefix', rtrim($data['iiifitems_bridge_prefix'], '/'));
             set_option('iiifitems_mirador_path', rtrim($data['iiifitems_mirador_path'], '/'));
-        }
-        
-        public function filterAdminNavigationMain($nav) {
-            $nav[] = array(
-                'label' => __('IIIF Items'),
-                'uri' => url('iiif-items/import'),
-            );
-            return $nav;
-        }
-        
-        public function filterDisplayElements($elementsBySet) {
-            unset($elementsBySet['Annotation Item Type Metadata']['Selector']);
-            unset($elementsBySet['IIIF File Metadata']);
-            unset($elementsBySet['IIIF Item Metadata']);
-            unset($elementsBySet['IIIF Collection Metadata']);
-            return $elementsBySet;
         }
 }
 ?>
