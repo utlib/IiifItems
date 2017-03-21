@@ -1,6 +1,11 @@
 <?php
 
 class IiifItems_Integration_System extends IiifItems_BaseIntegration {
+    protected $_filters = array(
+        'admin_navigation_main',
+        'display_elements',
+    );
+    
     public function install() {
         $this->__addTables();
         $this->__addIiif();
@@ -68,5 +73,21 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     private function __removeMediaPlaceholders() {
         $addMediaPlaceholdersMigration = new IiifItems_Migration_0_0_1_7();
         $addMediaPlaceholdersMigration->uninstall();
+    }
+    
+    public function filterAdminNavigationMain($nav) {
+        $nav[] = array(
+            'label' => __('IIIF Items'),
+            'uri' => url('iiif-items/import'),
+        );
+        return $nav;
+    }
+
+    public function filterDisplayElements($elementsBySet) {
+        unset($elementsBySet['Annotation Item Type Metadata']['Selector']);
+        unset($elementsBySet['IIIF File Metadata']);
+        unset($elementsBySet['IIIF Item Metadata']);
+        unset($elementsBySet['IIIF Collection Metadata']);
+        return $elementsBySet;
     }
 }
