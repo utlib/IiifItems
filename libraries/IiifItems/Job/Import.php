@@ -99,40 +99,20 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         }
     }
     
-    protected function _generateTasks($jsonData, $parentCollection=null) {
+    protected function _generateTasks($jsonData) {
         $taskCount = 0;
         switch ($jsonData['@type']) {
             case 'sc:Collection':
-                if (isset($jsonData['collections'])) {
-                    foreach ($jsonData['collections'] as $collection) {
-                        try {
-                            $downloadedData = file_get_contents($collection['@id']);
-                            $subJsonData = json_decode($downloadedData, true);
-                            $taskCount += $this->_generateTasks($subJsonData);
-                        }
-                        catch (Exception $e) {
-                        }
-                    }
-                }
-                if (isset($jsonData['manifests'])) {
-                    foreach ($jsonData['manifests'] as $manifest) {
-                        try {
-                            $downloadedData = file_get_contents($manifest['@id']);
-                            $subJsonData = json_decode($downloadedData, true);
-                            $taskCount += $this->_generateTasks($subJsonData);
-                        }
-                        catch (Exception $e) {
-                        }
-                    }
-                }
-                if (isset($jsonData['members'])) {
-                    foreach ($jsonData['members'] as $member) {
-                        try {
-                            $downloadedData = file_get_contents($member['@id']);
-                            $subJsonData = json_decode($downloadedData, true);
-                            $taskCount += $this->_generateTasks($subJsonData);
-                        }
-                        catch (Exception $e) {
+                foreach (array('collections', 'manifests', 'members') as $subkey) {
+                    if (isset($jsonData[$subkey])) {
+                        foreach ($jsonData[$subkey] as $subthing) {
+                            try {
+                                $downloadedData = file_get_contents($subthing['@id']);
+                                $subJsonData = json_decode($downloadedData, true);
+                                $taskCount += $this->_generateTasks($subJsonData);
+                            }
+                            catch (Exception $e) {
+                            }
                         }
                     }
                 }
@@ -376,57 +356,20 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
     }
     
     protected function _downloadIiifImageToItem($item, $image, $preferredSize='full', $region='full') {
-        $trySizes = array($preferredSize, 512, 96);
+        // Sanity check for image JSON faults
         if (!isset($image['resource']) || !isset($image['resource']['service']) || !isset($image['resource']['height']) || !isset($image['resource']['width'])) {
             debug("Missing stuff?");
             return array('status' => 0);
         }
-        foreach ($trySizes as $trySize) {
-            try {
-                if ($trySize === 'full') {
-                    $theSize = 'full';
-                } else {
-                    if ($region == 'full') {
-                        $theSize = ($image['resource']['width'] >= $image['resource']['height']) ? (','.$trySize) : ($trySize.',');
-                    } else {
-                        $regionComps = split(',', $region);
-                        $theSize = ($regionComps[2] >= $regionComps[3]) ? (','.$trySize) : ($trySize.',');
-                    }
-                }
-                $imageUrl = rtrim($image['resource']['service']['@id'], '/') . '/' . $region . '/' . $theSize . '/0/' . $this->_getIiifImageSuffix($image);
-                debug("Downloading image " . $imageUrl);
-                $downloadedFile = insert_files_for_item($item, 'Url', $imageUrl)[0];
-                debug("Download OK: " . $imageUrl);
-                return array('status' => 1, 'file' => $downloadedFile);
-            } catch (Exception $e) {
-                debug("Download with size " . $trySize . " failed, trying next...");
-            }
+        // Download
+        $downloader = new IiifItems_ImageDownloader($image);
+        $downloadedFile = $downloader->downloadToItem($item, $region, array_unique(array($preferredSize, 'full', 512, 96)));
+        // Download OK
+        if ($downloadedFile) {
+            return array('status' => 1, 'file' => $downloadedFile);
         }
+        // Download failed
         return array('status' => -1);
-    }
-    
-    protected function _getIiifImageSuffix($image) {
-        try {
-            switch ($image['resource']['service']['@context']) {
-                case 'http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
-                case 'http://iiif.io/api/image/1/context.json':
-                case 'https://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
-                case 'https://iiif.io/api/image/1/context.json':
-                    return 'native.jpg';
-                case 'http://iiif.io/api/image/2/context.json':
-                case 'https://iiif.io/api/image/2/context.json':
-                    return 'default.jpg';
-            }
-            switch ($image['resource']['service']['profile']) {
-                case 'http://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
-                case 'https://library.stanford.edu/iiif/image-api/1.1/conformance.html#level1':
-                    return 'native.jpg';
-            }
-        }
-        catch (Exception $e) {
-            return 'native.jpg';
-        }
-        return 'native.jpg';
     }
     
     protected function _buildMetadata($type, $jsonData, $parentCollection=null) {
