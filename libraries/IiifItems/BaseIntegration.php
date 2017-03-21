@@ -8,6 +8,14 @@ abstract class IiifItems_BaseIntegration {
         
     }
     
+    public function install() {
+        
+    }
+    
+    public function uninstall() {
+        
+    }
+    
     public function isActive() {
         return true;
     }

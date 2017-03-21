@@ -25,6 +25,37 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         }
     }
     
+    public function install() {
+        $elementTable = get_db()->getTable('Element');
+        // Add Collection type metadata elements
+        $collection_metadata = insert_element_set(array(
+            'name' => 'IIIF Collection Metadata',
+            'description' => '',
+            'record_type' => 'Collection'
+        ), array(
+            array('name' => 'Original @id', 'description' => ''),
+            array('name' => 'IIIF Type', 'description' => ''),
+            array('name' => 'Parent Collection', 'description' => ''),
+            array('name' => 'JSON Data', 'description' => ''),
+        ));
+        set_option('iiifitems_collection_element_set', $collection_metadata->id);
+        set_option('iiifitems_collection_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Original @id')->id);
+        set_option('iiifitems_collection_type_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'IIIF Type')->id);
+        set_option('iiifitems_collection_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Parent Collection')->id);
+        set_option('iiifitems_collection_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
+    }
+    
+    public function uninstall() {
+        $elementSetTable = get_db()->getTable('ElementSet');
+        // Remove Collection Metadata element set
+        $elementSetTable->find(get_option('iiifitems_collection_element_set'))->delete();
+        delete_option('iiifitems_collection_element_set');
+        delete_option('iiifitems_collection_atid_element');
+        delete_option('iiifitems_collection_type_element');
+        delete_option('iiifitems_collection_parent_element');
+        delete_option('iiifitems_collection_json_element');
+    }
+    
     public function initialize() {
         add_plugin_hook('after_save_collection', 'hook_expire_cache');
         add_plugin_hook('after_delete_collection', 'hook_expire_cache');

@@ -5,6 +5,30 @@ class IiifItems_Integration_Files extends IiifItems_BaseIntegration {
         'admin_files_show',
     );
     
+    public function install() {
+        $elementTable = get_db()->getTable('Element');
+        // Add File type metadata elements
+        $file_metadata = insert_element_set(array(
+            'name' => 'IIIF File Metadata',
+            'description' => '',
+            'record_type' => 'File'
+        ), array(
+            array('name' => 'Original @id', 'description' => ''),
+            array('name' => 'JSON Data', 'description' => ''),
+        ));
+        set_option('iiifitems_file_element_set', $file_metadata->id);
+        set_option('iiifitems_file_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF File Metadata', 'Original @id')->id);
+        set_option('iiifitems_file_json_element', $elementTable->findByElementSetNameAndElementName('IIIF File Metadata', 'JSON Data')->id);
+    }
+    
+    public function uninstall() {
+        $elementSetTable = get_db()->getTable('ElementSet');
+        // Remove File Metadata element set
+        $elementSetTable->find(get_option('iiifitems_file_element_set'))->delete();
+        delete_option('iiifitems_file_atid_element');
+        delete_option('iiifitems_file_json_element');
+    }
+    
     public function initialize() {
         add_plugin_hook('after_save_file', 'hook_expire_cache');
         add_plugin_hook('after_delete_file', 'hook_expire_cache');
