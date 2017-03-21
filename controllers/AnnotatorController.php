@@ -1,6 +1,17 @@
 <?php
 
+/**
+ * Controller for endpoints used by the annotator
+ */
 class IiifItems_AnnotatorController extends IiifItems_BaseController {
+    
+    /**
+     * Renders a JSON array of annotations filed under the given manifest-type collection or non-annotation item.
+     * A "uri" GET parameter must be passed to indicate the canvas ID to list annotations from.
+     * GET iiif-items/annotator/:things/:id/index?uri=...
+     * 
+     * [{ANNOTATION}, {ANNOTATION}, ...]
+     */
     public function indexAction() {
         // Sanity checks
         $this->__blockPublic();
@@ -29,6 +40,12 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         return;
     }
     
+    /**
+     * Processes a POSTed annotation from Mirador and responds with the annotation added to the given manifest-type collection or non-annotation item.
+     * POST iiif-items/annotator/:things/:id
+     * 
+     * {CREATED ANNOTATION}
+     */
     public function createAction() {
         // Sanity check
         $this->__blockPublic();
@@ -122,6 +139,15 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         $this->__respondWithJson($params);
     }
     
+    /**
+     * Deletes the submitted annotation from Mirador as filed under the given manifest-type collection or non-annotation item.
+     * Responds "OK" if successful
+     * DELETE iiif-items/annotator/:things/:id/delete
+     * 
+     * OK
+     * 
+     * @throws Omeka_Controller_Exception_404
+     */
     public function deleteAction() {
         // Sanity check
         $this->__blockPublic();
@@ -148,6 +174,15 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         throw new Omeka_Controller_Exception_404;
     }
     
+    /**
+     * Deletes the submitted annotation from Mirador as filed under the given manifest-type collection or non-annotation item.
+     * Responds with the updated annotation if successful.
+     * PUT iiif-items/annotator/:things/:id/update
+     * 
+     * {UPDATED ANNOTATION}
+     * 
+     * @throws Omeka_Controller_Exception_404
+     */
     public function updateAction() {
         // Sanity check
         $this->__blockPublic();
@@ -210,10 +245,20 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         throw new Omeka_Controller_Exception_404;
     }
     
+    /**
+     * The annotator wrapper page for the given manifest-type collection or non-annotation item.
+     * GET :things/:id/annotate
+     */
     public function annotateAction() {
         $this->__passModelToView();
     }
     
+    /**
+     * Quick helper for retrieving a record by name and ID
+     * @param string $type The type of record to retrieve
+     * @param integer $id The ID to retrieve
+     * @return Record
+     */
     private function __getThing($type, $id) {
         $class = Inflector::titleize(Inflector::singularize($type));
         return get_record_by_id($class, $id);
