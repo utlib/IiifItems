@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * Migration 0.0.1.3: Add string-referenceable options to help reference IIIF Items metadata elements.
+ */
 class IiifItems_Migration_0_0_1_3 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.3';
     
+    /**
+     * Migrate up
+     */
     public function up() {
         set_option('iiifitems_file_atid_element', $this->getElementId('IIIF File Metadata', 'Original @id'));
         set_option('iiifitems_file_json_element', $this->getElementId('IIIF File Metadata', 'JSON Data'));
@@ -18,6 +24,12 @@ class IiifItems_Migration_0_0_1_3 extends IiifItems_BaseMigration {
         set_option('iiifitems_annotation_selector_element', $this->getElementId('Item Type Metadata', 'Selector'));
     }
     
+    /**
+     * Helper for finding the element ID of an ElementSet-Element combination.
+     * @param string $elementSetName Name of the element set
+     * @param string $elementName Name of the element
+     * @return integer
+     */
     private function getElementId($elementSetName, $elementName) {
         return $this->_db->getTable('Element')->findByElementSetNameAndElementName($elementSetName, $elementName)->id;
     }

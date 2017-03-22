@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * Migration 0.0.1.6: Added UUID element and migration job.
+ */
 class IiifItems_Migration_0_0_1_6 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.6';
     
+    /**
+     * Migrate up
+     */
     public function up() {
         // Add elements
         $collectionElementSet = get_record_by_id('ElementSet', get_option('iiifitems_collection_element_set'));

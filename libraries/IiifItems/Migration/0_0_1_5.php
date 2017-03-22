@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * Migration 0.0.1.5: Added Annotation item type and associated Text element
+ */
 class IiifItems_Migration_0_0_1_5 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.5';
     
+    /**
+     * Migrate up
+     */
     public function up() {
         // Find or create text element
         $textElement = $this->_db->getTable('Element')->findBy(array('name' => 'Text'));

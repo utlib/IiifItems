@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * Migration 0.0.1.7: Added placeholder images for non-IIIF-displayable content.
+ */
 class IiifItems_Migration_0_0_1_7 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.7';
     
+    /**
+     * Migrate up
+     */
     public function up() {
         // Copy over placeholder images
         $storage = Zend_Registry::get('storage');
@@ -15,6 +21,9 @@ class IiifItems_Migration_0_0_1_7 extends IiifItems_BaseMigration {
         }
     }
     
+    /**
+     * Uninstall the placeholder images.
+     */
     public function uninstall() {
         // Uninstall placeholder images
         $storage = Zend_Registry::get('storage');
