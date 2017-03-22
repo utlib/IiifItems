@@ -1,6 +1,12 @@
 <?php
 
+/**
+ * The main plugin configuration form.
+ */
 class IiifItems_Form_Config extends Omeka_Form {
+    /**
+     * Sets up elements for this form.
+     */
     public function init() {
         // Top-level parent
         parent::init();
