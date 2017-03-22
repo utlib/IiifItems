@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * Migration 0.0.1.4: Add caching table for regenerated JSON data.
+ */
 class IiifItems_Migration_0_0_1_4 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.4';
     
+    /**
+     * Migrate up
+     */
     public function up() {
         $this->_createTable('iiif_items_cached_json_data', "
             `id` int(10) NOT NULL PRIMARY KEY AUTO_INCREMENT,

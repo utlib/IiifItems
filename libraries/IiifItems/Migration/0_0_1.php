@@ -1,7 +1,14 @@
 <?php
+
+/**
+ * Migration 0.0.1: Add table for IiifItems_JobStatus
+ */
 class IiifItems_Migration_0_0_1 extends IiifItems_BaseMigration {
     public static $version = '0.0.1';
     
+    /**
+     * Migrate up
+     */
     public function up() {
         $this->_createTable('iiif_items_job_statuses', "
             `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
