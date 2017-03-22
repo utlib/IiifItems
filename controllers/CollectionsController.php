@@ -112,7 +112,7 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
             $manifests[] = IiifItems_Util_Collection::bareTemplate($atId, $label);
         }
         // Merge and serve
-        $atId = public_url();
+        $atId = public_full_url();
         $this->__respondWithJson(IiifItems_Util_Collection::blankTemplate($atId, get_option('site_title'), $manifests, $collections));
     }
 }
