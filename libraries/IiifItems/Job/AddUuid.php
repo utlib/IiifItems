@@ -1,8 +1,14 @@
 <?php
 
+/**
+ * Background job for adding UUIDs to existing items.
+ */
 class IiifItems_Job_AddUuid extends Omeka_Job_AbstractJob {
     private $batchSize = 100;
     
+    /**
+     * Main runnable method.
+     */
     public function perform() {
         try {
             $jobStatus = $this->createJobStatus(
@@ -19,10 +25,22 @@ class IiifItems_Job_AddUuid extends Omeka_Job_AbstractJob {
         }
     }
     
+    /**
+     * Return the total number of Records under the given type.
+     * 
+     * @param string $type Name of the type.
+     * @return integer
+     */
     private function countRecords($type) {
         return get_db()->getTable($type)->count();
     }
     
+    /**
+     * Create a new IiifItems_JobStatus for this kind of job.
+     * 
+     * @param integer $total
+     * @return IiifItems_JobStatus
+     */
     private function createJobStatus($total=0) {
         $jobStatusId = $this->_db->insert('IiifItems_JobStatus', array(
             'source' => __('Adding UUID to collections and items'),
@@ -37,6 +55,12 @@ class IiifItems_Job_AddUuid extends Omeka_Job_AbstractJob {
         return $this->_db->getTable('IiifItems_JobStatus')->find($jobStatusId);
     }
     
+    /**
+     * Add UUIDs to all records of the given type.
+     * 
+     * @param string $type Name of the type. "File", "Item" and "Collection" are expected.
+     * @param IiifItems_JobStatus $jobStatus
+     */
     private function addUuidToType($type, $jobStatus) {
         // For each batch of 100
         $page = 1;

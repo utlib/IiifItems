@@ -1,9 +1,16 @@
 <?php
 
+/**
+ * Background job for importing IIIF collection, manifest and canvas data.
+ */
 class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
     private $_importType, $_importSource, $_importSourceBody, $_importPreviewSize, $_isPublic, $_isFeatured, $_isReversed, $_parent;
     private $_statusId;
     
+    /**
+     * Create a new IiifItems_Job_Import.
+     * @param array $options
+     */
     public function __construct(array $options) {
         parent::__construct($options);
         $this->_importType = $options['importType'];
@@ -16,6 +23,9 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $this->_parent = $options['parent'];
     }
     
+    /**
+     * Main runnable method.
+     */
     public function perform() {
         try {
             // Get import task ready
@@ -99,6 +109,12 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         }
     }
     
+    /**
+     * Return the number of items imported as part of this job.
+     * 
+     * @param array $jsonData
+     * @return integer
+     */
     protected function _generateTasks($jsonData) {
         $taskCount = 0;
         switch ($jsonData['@type']) {
@@ -159,6 +175,15 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $taskCount;
     }
     
+    /**
+     * Process a fragment of IIIF collection JSON data.
+     * 
+     * @param array $collectionData The IIIF collection JSON data.
+     * @param IiifItems_JobStatus $jobStatus The job status record to update.
+     * @param Collection|null $parentCollection The collection to place this collection under (if any)
+     * @return Collection
+     * @throws Exception
+     */
     protected function _processCollection($collectionData, $jobStatus, $parentCollection=null) {
         // Check collection type marker
         if ($collectionData['@type'] !== 'sc:Collection') {
@@ -216,6 +241,15 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $collection;
     }
     
+    /**
+     * Process a fragment of IIIF manifest JSON data.
+     * 
+     * @param array $manifestData The IIIF manifest JSON data.
+     * @param IiifItems_JobStatus $jobStatus The job status record to update.
+     * @param Collection|null $parentCollection The collection to place this manifest under (if any)
+     * @return Collection
+     * @throws Exception
+     */
     protected function _processManifest($manifestData, $jobStatus, $parentCollection=null) {
         // Check manifest type marker
         if ($manifestData['@type'] !== 'sc:Manifest') {
@@ -251,6 +285,15 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $manifest;
     }
     
+    /**
+     * Process a fragment of IIIF canvas JSON data.
+     * 
+     * @param array $canvasData The IIIF canvas JSON data.
+     * @param IiifItems_JobStatus $jobStatus The job status record to update.
+     * @param Collection|null $parentCollection The collection to place this canvas under (if any)
+     * @return Item
+     * @throws Exception
+     */
     protected function _processCanvas($canvasData, $jobStatus, $parentCollection=null) {
         // Check canvas type marker
         if ($canvasData['@type'] !== 'sc:Canvas') {
@@ -317,6 +360,17 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $newItem;
     }
     
+    /**
+     * Process a fragment of IIIF OA annotation data.
+     * 
+     * @param array $annotationData The IIIF OA annotation JSON data.
+     * @param IiifItems_JobStatus $jobStatus The job status record to update.
+     * @param array $image The IIIF image JSON data for the picture to cut out of.
+     * @param string $source The source URL where the data cam efrom.
+     * @param Collection|null $parentCollection The collection to place this annotation under (if any).
+     * @param Item $attachItem The Item to attach to.
+     * @return Item
+     */
     protected function _processAnnotation($annotationData, $jobStatus, $image, $source, $parentCollection=null, $attachItem=null) {
         // Set up import options
         $annotationImportOptions = $this->_buildAnnotationImportOptions($annotationData, $parentCollection);
@@ -355,6 +409,15 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $newItem;
     }
     
+    /**
+     * Download a IIIF image crop to an item as a file.
+     * 
+     * @param Item $item
+     * @param array $image The IIIF image JSON data.
+     * @param string|integer $preferredSize The preferred size ('full' or number of pixels)
+     * @param string|array $region The region to trim out ('full' or 4-entry array of x, y, width and height)
+     * @return array ({status: 0} for invalid JSON data, {status: -1} for failed download and {status: 1, file: DOWNLOADEDFILE} for OK)
+     */
     protected function _downloadIiifImageToItem($item, $image, $preferredSize='full', $region='full') {
         // Sanity check for image JSON faults
         if (!isset($image['resource']) || !isset($image['resource']['service']) || !isset($image['resource']['height']) || !isset($image['resource']['width'])) {
@@ -372,6 +435,14 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return array('status' => -1);
     }
     
+    /**
+     * Build the nested metadata array of all elements for this specific IIIF type.
+     * 
+     * @param string $type The kind of Omeka record to work with (collection or items)
+     * @param array $jsonData The JSON data to process.
+     * @param Collection|null $parentCollection The collection to place this manifest under (if any)
+     * @return array
+     */
     protected function _buildMetadata($type, $jsonData, $parentCollection=null) {
         switch ($type) {
             case 'Collection':
@@ -421,6 +492,13 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $metadata;
     }
 
+    /**
+     * Build the public, featured, tags and text elements for this IIIF OA annotation data.
+     * 
+     * @param array $annotationData The IIIF OA annotation data for this annotation.
+     * @param Collection|null $parentCollection The collection to place this manifest under (if any)
+     * @return array
+     */
     protected function _buildAnnotationImportOptions($annotationData, $parentCollection=null) {
         $importOptions = array(
             'public' => $this->_isPublic,
@@ -448,6 +526,15 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $importOptions;
     }
     
+    /**
+     * Build the nested metadata array of all elements for this IIIF OA annotation data.
+     * 
+     * @param array $annotationData The IIIF OA annotation data for this annotation.
+     * @param string $source The source URL where the data cam efrom.
+     * @param Collection|null $parentCollection The collection to place this manifest under (if any)
+     * @param Item $attachItem The Item to attach to.
+     * @return array
+     */
     protected function _buildAnnotationMetadata($annotationData, $source, $parentCollection=null, $attachItem=null) {
         // Set up metadata
         $metadata = array(
@@ -516,6 +603,11 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return $metadata;
     }
     
+    /**
+     * Return the array in the original order if this job is not reversed, in reverse if it is.
+     * @param array $array
+     * @return array
+     */
     protected function _inOrder($array) {
         return ($this->_isReversed) ? array_reverse($array) : $array;
     }

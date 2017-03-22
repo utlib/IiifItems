@@ -1,12 +1,23 @@
 <?php
+
+/**
+ * Background job for removing dependent annotations after an item is removed.
+ */
 class IiifItems_Job_RemoveSubannotations extends Omeka_Job_AbstractJob {
     private $_item_uuid;
     
+    /**
+     * Create a new IiifItems_Job_RemoveSubannotations.
+     * @param array $options
+     */
     public function __construct(array $options) {
         parent::__construct($options);
         $this->_item_uuid = $options['item_uuid'];
     }
     
+    /**
+     * Main runnable method.
+     */
     public function perform() {
         try {
             $onCanvasMatches = get_db()->getTable('ElementText')->findBySql("element_texts.record_type = ? AND element_texts.element_id = ? AND element_texts.text = ?", array(
