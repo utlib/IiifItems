@@ -1,6 +1,6 @@
 <?php
 
-// Validation 
+// TODO: Validation 
 //    - Type must be filled
 //    - If From File is checked, items_import_source_file must be filled
 //    - If From URL is filled, the URL must be correctly formatted and filled
@@ -9,7 +9,13 @@
 //    - If Import Depth is Link-Only and it is from File or JSON, @id must be given in the JSON data
 //    - Local Preview Size must be selected
 
+/**
+ * The IIIF import form.
+ */
 class IiifItems_Form_Import extends Omeka_Form {
+    /**
+     * Sets up elements for this form.
+     */
     public function init() {
         // Form top-level
         parent::init();
