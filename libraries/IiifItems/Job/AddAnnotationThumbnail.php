@@ -1,8 +1,15 @@
 <?php
 
+/**
+ * Background job for adding the thumbnail back onto an annotation-type item
+ */
 class IiifItems_Job_AddAnnotationThumbnail extends Omeka_Job_AbstractJob {
     private $_originalItem, $_annotationItem, $_dims;
     
+    /**
+     * Create a new IiifItems_Job_AddAnnotationThumbnail.
+     * @param array $options
+     */
     public function __construct(array $options) {
         parent::__construct($options);
         $this->_originalItem = get_record_by_id('Item', $options['originalItemId']);
@@ -10,12 +17,22 @@ class IiifItems_Job_AddAnnotationThumbnail extends Omeka_Job_AbstractJob {
         $this->_dims = $options['dims'];
     }
     
+    /**
+     * Main runnable method.
+     */
     public function perform() {
         if ($this->_originalItem && $this->_annotationItem && count($this->_dims) == 4) {
             $this->__attachAnnotationPreview($this->_originalItem, $this->_annotationItem, $this->_dims);
         }
     }
     
+    /**
+     * Attach a preview file to the given annotation item.
+     * 
+     * @param Item $originalItem The item referenced by the annotation item
+     * @param Item $annotationItem The annotation item
+     * @param array $dims 4-entry array with x, y, width and height
+     */
     private function __attachAnnotationPreview($originalItem, $annotationItem, $dims) {
         // Find the first file as a representative
         $originalFile = $originalItem->getFile();
@@ -36,6 +53,14 @@ class IiifItems_Job_AddAnnotationThumbnail extends Omeka_Job_AbstractJob {
         $this->__downloadIiifImageToItem($annotationItem, $prefix, $dims, $suffix);
     }
     
+    /**
+     * Helper for downloading a IIIF image to an Omeka Item.
+     * 
+     * @param Item $item
+     * @param string $prefix The part of the IIIF URL before transformations
+     * @param array $dims 4-entry array with x, y, width, height
+     * @param string $suffix The part of the IIIF URL after transformations (e.g. default.jpg)
+     */
     private function __downloadIiifImageToItem($item, $prefix, $dims, $suffix) {
         $trySizes = array('full', 512, 96);
         foreach ($trySizes as $trySize) {
@@ -56,6 +81,12 @@ class IiifItems_Job_AddAnnotationThumbnail extends Omeka_Job_AbstractJob {
         }
     }
     
+    /**
+     * Helper for returning the correct suffix according to the IIIF version supported.
+     * 
+     * @param array $image IIIF Presentation API of an image
+     * @return string
+     */
     private function __getIiifImageSuffix($image) {
         try {
             switch ($image['resource']['service']['@context']) {
