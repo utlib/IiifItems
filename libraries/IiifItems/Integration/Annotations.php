@@ -60,7 +60,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
     }
     
     public function altHookAdminItemsShowSidebar($args) {
-        if ($onCanvasUuid = raw_iiif_metadata($item, 'iiifitems_annotation_on_element')) {
+        if ($onCanvasUuid = raw_iiif_metadata($args['item'], 'iiifitems_annotation_on_element')) {
             $onCanvasMatches = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ?", array(
                 get_option('iiifitems_annotation_on_element'),
                 $onCanvasUuid,
