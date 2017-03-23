@@ -1,7 +1,16 @@
 <?php
 
+/**
+ * Utility for downloading a IIIF image
+ */
 class IiifItems_ImageDownloader {
     private $prefix, $suffix, $defaultXywh, $originalId, $json;
+    
+    /**
+     * Create a new image downloader.
+     * 
+     * @param array $imageJson IIIF presentation API image JSON data
+     */
     public function __construct($imageJson) {
         $this->prefix = $imageJson['resource']['service']['@id'];
         $this->suffix = $this->__getIiifImageSuffix($imageJson);
@@ -10,6 +19,14 @@ class IiifItems_ImageDownloader {
         $this->json = $imageJson;
     }
     
+    /**
+     * Download to a local file and return whether successful.
+     * 
+     * @param string $filename The full file name to download to
+     * @param array $xywh 4-entry array listing region x, y, width and height in order
+     * @param array $sizes List of sizes to try in order. Can include 'full' and/or integer dimensions
+     * @return boolean Whether the download was successful
+     */
     public function downloadToLocalFile($filename, $xywh='full', $sizes=array('full', 512, 96)) {
         foreach ($sizes as $trySize) {
             $imageUrl = $this->__buildUrl($xywh, $trySize);
@@ -28,6 +45,14 @@ class IiifItems_ImageDownloader {
         return false;
     }
     
+    /**
+     * Download as a file attachment to an Omeka Item and return whether successful.
+     * 
+     * @param Item $item The Omeka Item to attach to
+     * @param array $xywh 4-entry array listing region x, y, width and height in order
+     * @param array $trySizes List of sizes to try in order. Can include 'full' and/or integer dimensions
+     * @return boolean Whether the download was successful
+     */
     public function downloadToItem($item, $xywh='full', $trySizes=array('full', 512, 96)) {
         foreach ($trySizes as $trySize) {
             try {
@@ -50,6 +75,13 @@ class IiifItems_ImageDownloader {
         return null;
     }
     
+    /**
+     * Return the appropriate image URL to use, depending on the version context specified in the image JSON data.
+     * Uses native.jpg for IIIF 1.x, default.jpg for IIIF 2.x and up.
+     * 
+     * @param array $image IIIF presentation API image JSON data
+     * @return string
+     */
     private function __getIiifImageSuffix($image) {
         try {
             switch ($image['resource']['service']['@context']) {
@@ -74,6 +106,13 @@ class IiifItems_ImageDownloader {
         return 'native.jpg';
     }
     
+    /**
+     * Return the full URL to download from, given IIIF region and size parameters.
+     * 
+     * @param array $xywh 4-entry array listing region x, y, width and height in order
+     * @param array $trySizes List of sizes to try in order. Can include 'full' and/or integer dimensions
+     * @return string
+     */
     private function __buildUrl($xywh, $trySize) {
         if (is_string($xywh)) {
             $region = $xywh;
