@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Template for IIIF utility classes.
+ */
 class IiifItems_IiifUtil {
     // Disallow instantiation
     private function __construct() {
