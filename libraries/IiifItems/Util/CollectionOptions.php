@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Utlities for generating UI elements related to nesting IIIF collections.
+ */
 class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
     /**
      * Generates the raw tree array for the collection hierarchy

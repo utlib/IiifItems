@@ -1,5 +1,18 @@
 <?php
+
+/**
+ * Utilities for IIIF collections.
+ */
 class IiifItems_Util_Collection extends IiifItems_IiifUtil {
+    /**
+     * Basic template for IIIF Presentation API Collection, in manifest-collection form.
+     * 
+     * @param string $atId The IIIF ID to attach
+     * @param string $label The label to attach
+     * @param array $manifests List of manifests in IIIF JSON form
+     * @param array $collections List of collections in IIIF JSON form
+     * @return array
+     */
     public static function blankTemplate($atId, $label, $manifests=array(), $collections=array()) {
         return array(
             '@context' => 'http://iiif.io/api/presentation/2/context.json',
@@ -11,6 +24,15 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         );
     }
 
+    /**
+     * Basic template for IIIF Presentation API Collection, in members form.
+     * 
+     * @param string $atId The IIIF ID to attach
+     * @param string $label The label to attach
+     * @param array $manifests List of manifests in IIIF JSON form
+     * @param array $collections List of collections in IIIF JSON form
+     * @return array
+     */
     public static function blankMembersTemplate($atId, $label, $members=array()) {
         return array(
             '@context' => 'http://iiif.io/api/presentation/2/context.json',
@@ -139,6 +161,12 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         return self::blankTemplate($atId, $label);
     }
 
+    /**
+     * Find the parent of the given collection.
+     * 
+     * @param Collection $collection
+     * @return type
+     */
     public static function findParentFor($collection) {
         $parentUuid = raw_iiif_metadata($collection, 'iiifitems_collection_parent_element');
         if (!$parentUuid) {
@@ -147,6 +175,12 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         return find_collection_by_uuid($parentUuid);
     }
 
+    /**
+     * Return a list of collection-type collections under the given collection-type collection.
+     * 
+     * @param Collection $collection
+     * @return Collection[]
+     */
     public static function findSubcollectionsFor($collection) {
         $myUuid = raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element');
         if (!$myUuid) {
@@ -167,6 +201,12 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         return $results;
     }
 
+    /**
+     * Return a list of manifest-type collections under the given collection-type collection.
+     * 
+     * @param Collection $collection
+     * @return Collection[]
+     */
     public static function findSubmanifestsFor($collection) {
         $myUuid = raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element');
         if (!$myUuid) {
@@ -187,6 +227,12 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         return $results;
     }
 
+    /**
+     * Returns a list of collections under the given collection-type collection, regardless of IIIF type.
+     * 
+     * @param Collection $collection
+     * @return Collection[]
+     */
     public static function findSubmembersFor($collection) {
         $myUuid = raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element');
         if (!$myUuid) {
@@ -204,6 +250,12 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         return $results;
     }
     
+    /**
+     * Returns the number of collections under the given collection-type collection, regardless of IIIF type.
+     * 
+     * @param Collection $collection
+     * @return integer
+     */
     public static function countSubmembersFor($collection) {
         $myUuid = raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element');
         if (!$myUuid) {
@@ -217,6 +269,11 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         return $db->fetchOne($select);
     }
     
+    /**
+     * Returns a list of top-level collections, regardless of IIIF type (i.e. those with no parents).
+     * 
+     * @return Collection[]
+     */
     public static function findTopMembers() {
         $db = get_db();
         $collectionsTable = $db->getTable('Collection');
@@ -227,6 +284,11 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         return $collectionsTable->fetchObjects($collectionsSelect);
     }
     
+    /**
+     * Returns a list of top-level collection-type collections (i.e. those with no parents).
+     * 
+     * @return Collection[]
+     */
     public static function findTopCollections() {
         $db = get_db();
         $collectionsTable = $db->getTable('Collection');
@@ -240,6 +302,11 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         return $collectionsTable->fetchObjects($collectionsSelect);
     }
     
+    /**
+     * Returns a list of top-level manifest-type collections (i.e. those with no parents).
+     * 
+     * @return Collection[]
+     */
     public static function findTopManifests() {
         $db = get_db();
         $collectionsTable = $db->getTable('Collection');
@@ -255,7 +322,7 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
     }
     
     /**
-     * Return whether this collection is set to the Collection type
+     * Returns whether the given collection is set to the Collection type
      * @param Collection $collection
      * @return boolean
      */

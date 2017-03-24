@@ -1,4 +1,7 @@
 <?php
+/**
+ * Utilities for IIIF canvases.
+ */
 class IiifItems_Util_Canvas extends IiifItems_IiifUtil {
     /**
      * Basic template for IIIF Presentation API canvas

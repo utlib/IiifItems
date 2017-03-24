@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Utilities for IIIF annotations.
+ */
 class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
     /**
      * Return a bare template for an annotation list
