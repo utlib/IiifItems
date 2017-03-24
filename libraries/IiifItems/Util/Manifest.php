@@ -1,4 +1,8 @@
 <?php
+
+/**
+ * Utilities for IIIF manifests.
+ */
 class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
     /**
      * Basic template for IIIF Presentation API manifest
