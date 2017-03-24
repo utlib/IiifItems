@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Integration for collection-type collections.
+ */
 class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     protected $_hooks = array(
         'collections_browse_sql',
@@ -14,17 +17,20 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         'public_collections_browse_each',
         'public_collections_show',
     );
-        
+    
+    /**
+     * Returns whether a collection can't be displayed in IIIF.
+     * 
+     * @param Collection $collection
+     * @return boolean
+     */
     protected function _isntIiifDisplayableCollection($collection) {
         return $collection->totalItems() == 0 && !$collection->hasElementText('IIIF Collection Metadata', 'JSON Data') && empty(IiifItems_Util_Collection::findSubmembersFor($collection));
     }
     
-    protected function _isCircularCollection($args) {
-        if ($args['post']) {
-
-        }
-    }
-    
+    /**
+     * Install metadata elements for collections.
+     */
     public function install() {
         $elementTable = get_db()->getTable('Element');
         // Add Collection type metadata elements
@@ -45,6 +51,9 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         set_option('iiifitems_collection_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
     }
     
+    /**
+     * Remove metadata elements for collections.
+     */
     public function uninstall() {
         $elementSetTable = get_db()->getTable('ElementSet');
         // Remove Collection Metadata element set
@@ -56,6 +65,9 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         delete_option('iiifitems_collection_json_element');
     }
     
+    /**
+     * Add cache expiration hooks and element filters.
+     */
     public function initialize() {
         add_plugin_hook('after_save_collection', 'hook_expire_cache');
         add_plugin_hook('after_delete_collection', 'hook_expire_cache');
@@ -73,6 +85,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'UUID'), 'filter_singular_form');
     }
         
+    /**
+     * Hook for setting up the browsing SQL for collections.
+     * Removes non-top collections from the "Browse all collections" view.
+     * 
+     * @param array $args
+     */
     public function hookCollectionsBrowseSql($args) {
         $params = $args['params'];
         if (isset($params['controller']) && isset($params['action'])) {
@@ -82,6 +100,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         }
     }
     
+    /**
+     * Hook for when a collection is saved.
+     * Prepares newly saved collections for IIIF presentation.
+     * 
+     * @param array $args
+     */
     public function hookBeforeSaveCollection($args) {
         $uuidElementId = get_option('iiifitems_collection_uuid_element');
         $parentElementId = get_option('iiifitems_collection_parent_element');
@@ -121,6 +145,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         }
     }
     
+    /**
+     * Hook for when a collection is deleted.
+     * Unlink children collections when the parent is deleted.
+     * 
+     * @param array $args
+     */
     public function hookBeforeDeleteCollection($args) {
         $db = get_db();
         $collection = $args['record'];
@@ -129,6 +159,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         }
     }
     
+    /**
+     * Hook for adding ACL entries.
+     * Allow public users to traverse the collection tree and the top-level collection.
+     * 
+     * @param array $args
+     */
     public function hookDefineAcl($args) {
         $acl = $args['acl'];
         // Solve login redirect when viewing submembers or collection.json as public user
@@ -136,6 +172,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         $acl->allow(null, 'Collections', 'collection');
     }
 
+    /**
+     * Hook for the admin-side collection listings.
+     * Use client-side JS to rewrite the "items in a collection" reminder.
+     * 
+     * @param array $args
+     */
     public function hookAdminCollectionsBrowse($args) {
         $db = get_db();
         $itemsTable = $db->getTable('Item');
@@ -158,6 +200,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             . '});</script>';
     }
 
+    /**
+     * Hook for entries in the admin-side collection listings.
+     * Adds the appropriate action links.
+     * 
+     * @param array $args
+     */
     public function hookAdminCollectionsBrowseEach($args) {
         if ($this->_isntIiifDisplayableCollection($args['collection'])) {
             return;
@@ -173,6 +221,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         }
     }
         
+    /**
+     * Hook for viewing a single collection on the admin side.
+     * Adds Mirador viewer and other IIIF info.
+     * 
+     * @param array $args
+     */
     public function hookAdminCollectionsShow($args) {
         if (!isset($args['view'])) {
             $args['view'] = get_view();
@@ -205,6 +259,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         echo '</div>';
     }
     
+    /**
+     * Hook for the sidebar while viewing a single collection on the admin side.
+     * Adds the "Clean" button for refreshing the cache's entry on the collection.
+     * 
+     * @param array $args
+     */
     public function hookAdminCollectionsShowSidebar($args) {
         $collection = $args['collection'];
         if ($this->_isntIiifDisplayableCollection($collection)) {
@@ -220,6 +280,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             . '</div>';
     }
 
+    /**
+     * Hook for each entry of the public collection browsing view.
+     * Add folder icon and submember viewing link for collection-type collections.
+     * 
+     * @param array $args
+     */
     public function hookPublicCollectionsBrowseEach($args) {
         $collection = $args['collection'];
         if (IiifItems_Util_Collection::isCollection($collection)) {
@@ -230,10 +296,22 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         }
     }
 
+    /**
+     * Hook for the public collection browsing view.
+     * Adds a script that hides the "view items" link in collection-type collections.
+     * 
+     * @param array $args
+     */
     public function hookPublicCollectionsBrowse($args) {
         echo '<script>jQuery(document).ready(function() { jQuery("[data-hasmembers]").each(function() { jQuery(this).parent().parent().find(".view-items-link").remove(); }); });</script>';
     }
     
+    /**
+     * Hook for the public view of single collections.
+     * Adds Mirador viewer and other IIIF info.
+     * 
+     * @param array $args
+     */
     public function hookPublicCollectionsShow($args) {
         if (!isset($args['view'])) {
             $args['view'] = get_view();
@@ -269,17 +347,41 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         echo '</div>';  
     }
     
+    /**
+     * Element input filter for collection's original ID.
+     * Replace it with a single static value.
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForCollectionOriginalId($comps, $args) {
         $comps['input'] = $args['value'] ? $args['value'] : '';
         return filter_minimal_input($comps, $args);
     }
 
+    /**
+     * Element input filter for collection's IIIF type.
+     * Replace it with a single dropdown.
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForCollectionIiifType($comps, $args) {
         $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), array(''=>'None','Manifest'=>'Manifest','Collection'=>'Collection'));
         return filter_minimal_input($comps, $args);
     }
 
-    public function displayForCollectionParent($comps, $args) {
+    /**
+     * Display filter for collection's parent.
+     * Replace it with a link to the parent.
+     * 
+     * @param string $text
+     * @param array $args
+     * @return string
+     */
+    public function displayForCollectionParent($text, $args) {
         $uuid = $args['element_text']->text;
         $collection = find_collection_by_uuid($uuid);
         if (!$collection) {
@@ -288,6 +390,14 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         return '<a href="' . url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . metadata($collection, array('Dublin Core', 'Title')) . '</a> (' . $uuid. ')';
     }
 
+    /**
+     * Element input filter for collection parent.
+     * Replace it with a single dropdown for possible parents.
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForCollectionParent($comps, $args) {
         $uuidOptions = IiifItems_Util_CollectionOptions::getCollectionOptions();
         if (isset($_GET['parent']) && find_collection_by_uuid($_GET['parent'])) {
@@ -297,6 +407,14 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         return filter_minimal_input($comps, $args);
     }
 
+    /**
+     * Element input filter for UUID.
+     * Replace it with a single, read-only display.
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForCollectionUuid($comps, $args) {
         $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
         return filter_minimal_input($comps, $args);

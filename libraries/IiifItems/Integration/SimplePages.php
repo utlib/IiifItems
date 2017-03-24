@@ -1,6 +1,13 @@
 <?php
 
+/**
+ * Integration for Simple Pages shortcodes.
+ */
 class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
+    
+    /**
+     * Register the shortcodes.
+     */
     public function initialize() {
         add_shortcode('mirador_file', array($this, 'shortcodeMiradorFile'));
         add_shortcode('mirador_items', array($this, 'shortcodeMiradorItems'));
@@ -8,6 +15,14 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
         add_shortcode('mirador', array($this, 'shortcodeMirador'));
     }
     
+    /**
+     * Renders the mirador_file shortcode as a single-file Mirador viewer.
+     * Supports the same arguments as the standard file shortcode, plus a "style" argument for the embedding iframe's CSS.
+     * 
+     * @param array $args
+     * @param Omeka_View $view
+     * @return string
+     */
     public function shortcodeMiradorFile($args, $view) {
         // Styles
         $styles = isset($args['style']) ? $args['style'] : '';
@@ -23,6 +38,15 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
         return '';
     }
 
+    
+    /**
+     * Renders the mirador_items shortcode as a Mirador viewer.
+     * Supports the same arguments as the standard items shortcode, plus a "style" argument for the embedding iframe's CSS.
+     * 
+     * @param array $args
+     * @param Omeka_View $view
+     * @return string
+     */
     public function shortcodeMiradorItems($args, $view) {
         // Styles
         $styles = isset($args['style']) ? $args['style'] : '';
@@ -81,6 +105,14 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
         return '';
     }
 
+    /**
+     * Renders the mirador_collection shortcode as a Mirador viewer.
+     * Supports the same arguments as the standard collections shortcode, plus a "style" argument for the embedding iframe's CSS.
+     * 
+     * @param array $args
+     * @param Omeka_View $view
+     * @return string
+     */
     public function shortcodeMiradorCollections($args, $view) {
         // Styles
         $styles = isset($args['style']) ? $args['style'] : '';
@@ -124,6 +156,15 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
         return '';
     }
 
+    /**
+     * Renders a Mirador viewer with arbitrary manifest URLs.
+     * The "urls" argument accepts a semicolon-delimited list of manifest URLs.
+     * The "style" argument adds styles to the embedding iframe's CSS.
+     * 
+     * @param array $args
+     * @param Omeka_View $view
+     * @return string
+     */
     public function shortcodeMirador($args, $view) {
         // Styles
         $styles = isset($args['style']) ? $args['style'] : '';

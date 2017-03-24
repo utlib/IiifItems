@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Integration for non-annotation items.
+ */
 class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
     protected $_hooks = array(
         'items_browse_sql',
@@ -11,10 +14,19 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         'public_items_show',    
     );
     
+    /**
+     * Returns whether the given item can be displayed in IIIF.
+     * 
+     * @param Item $item
+     * @return boolean
+     */
     protected function _isntIiifDisplayableItem($item) {
         return ($item->fileCount() == 0 && !$item->hasElementText('IIIF Item Metadata', 'JSON Data')) || IiifItems_Util_Canvas::isNonIiifItem($item);
     }
     
+    /**
+     * Install metadata elements for items.
+     */
     public function install() {
         $elementTable = get_db()->getTable('Element');
         // Add Item type metadata elements
@@ -35,6 +47,9 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         set_option('iiifitems_item_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'JSON Data')->id);
     }
     
+    /**
+     * Remove metadata elements for items.
+     */
     public function uninstall() {
         $elementSetTable = get_db()->getTable('ElementSet');
         // Remove Item Metadata element set
@@ -46,6 +61,9 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         delete_option('iiifitems_item_json_element');
     }
     
+    /**
+     * Add cache expiry hooks and element filters for items.
+     */
     public function initialize() {
         add_plugin_hook('after_save_item', 'hook_expire_cache');
         add_plugin_hook('after_delete_item', 'hook_expire_cache');
@@ -62,6 +80,12 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'JSON Data'), 'filter_singular_form');
     }
     
+    /**
+     * Hook for setting up the browsing SQL for items.
+     * Hides annotation-type items from the "browse all items" view.
+     * 
+     * @param array $args
+     */
     public function hookItemsBrowseSql($args) {
         $params = $args['params'];
         if (isset($params['controller']) && isset($params['action'])) {
@@ -72,6 +96,12 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
     }
     
+    /**
+     * Hook for when an item is being saved.
+     * Assigns items a new UUID if it does not already have one.
+     * 
+     * @param array $args
+     */
     public function hookBeforeSaveItem($args) {
         // Unset sensitive fields
         $uuidElement = get_option('iiifitems_item_uuid_element');
@@ -84,6 +114,12 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
     }
     
+    /**
+     * Hook for when an item is being deleted.
+     * Removes annotations pointing to the deleted item.
+     * 
+     * @param array $args
+     */
     public function hookBeforeDeleteItem($args) {
         $item = $args['record'];
         if ($item->item_type_id != get_option('iiifitems_annotation_item_type')) {
@@ -93,6 +129,13 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
     }
     
+    /**
+     * Hook for entries on the admin-side item browsing page.
+     * Adds action links to each non-annotation entry (Annotate and List Annotations).
+     * Delegates to the annotations integration for annotation-type actions.
+     * 
+     * @param array $args
+     */
     public function hookAdminItemsBrowseSimpleEach($args) {
         if ($this->_isntIiifDisplayableItem($args['item'])) {
             return;
@@ -108,6 +151,12 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
     }
 
+    /**
+     * Hook for displaying a single item on the admin side.
+     * Adds Mirador viewer and IIIF information to IIIF-displayable items.
+     * 
+     * @param array $args
+     */
     public function hookAdminItemsShow($args) {
         if (!isset($args['view'])) {
             $args['view'] = get_view();
@@ -129,6 +178,13 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         echo '</div>';
     }
     
+    /**
+     * Hook for displaying the sidebar in the admin-side individual item view.
+     * Adds panel that displays how many annotations the non-annotation item has.
+     * Delegates to the annotations integration for annotation-type items.
+     * 
+     * @param array $args
+     */
     public function hookAdminItemsShowSidebar($args) {
         $item = $args['item'];
         if ($this->_isntIiifDisplayableItem($item)) {
@@ -164,6 +220,12 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
     }
     
+    /**
+     * Hook for the single-item view in public.
+     * Adds Mirador viewer and IIIF info for IIIF-displayable items.
+     * 
+     * @param array $args
+     */
     public function hookPublicItemsShow($args) {
         if (!isset($args['view'])) {
             $args['view'] = get_view();
@@ -180,27 +242,67 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         echo '</div>'; 
     }
     
+    /**
+     * Element input filter for whether to display the item as IIIF.
+     * Renders a no-yes radio button group.
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForItemDisplay($comps, $args) {
         $comps['input'] = get_view()->formRadio($args['input_name_stem'] . '[text]', $args['value'], array(), array('No', 'Yes'));
         return filter_minimal_input($comps, $args);
     }
 
+    /**
+     * Element input filter for the original IIIF ID.
+     * Renders read-only text for the form input.
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForItemOriginalId($comps, $args) {
         $comps['input'] = $args['value'] ? $args['value'] : '';
         return filter_minimal_input($comps, $args);
     }
 
+    /**
+     * Display filter for parent collection.
+     * @deprecated since version 0.0.1.7
+     * 
+     * @param string $text
+     * @param array $args
+     * @return string
+     */
     public function displayForItemParent($text, $args) {
         $collection = get_db()->getTable('Collection')->find($args['element_text']->text);
         return '<a href="' . url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . metadata($collection, array('Dublin Core', 'Title')) . '</a>';
 
     }
 
+    /**
+     * Element input filter for parent collection.
+     * @deprecated since version 0.0.1.7
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForItemParent($comps, $args) {
         $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), get_table_options('Collection'));
         return filter_minimal_input($comps, $args);
     }
 
+    /**
+     * Element input filter for UUID.
+     * Renders read-only text in its place, TBD if not yet determined.
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForItemUuid($comps, $args) {
         $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
         return filter_minimal_input($comps, $args);
