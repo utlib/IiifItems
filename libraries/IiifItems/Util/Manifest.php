@@ -2,6 +2,8 @@
 
 /**
  * Utilities for IIIF manifests.
+ * @package IiifItems
+ * @subpackage Util
  */
 class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
     /**

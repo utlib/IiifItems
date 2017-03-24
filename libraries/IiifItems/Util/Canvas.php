@@ -1,6 +1,8 @@
 <?php
 /**
  * Utilities for IIIF canvases.
+ * @package IiifItems
+ * @subpackage Util
  */
 class IiifItems_Util_Canvas extends IiifItems_IiifUtil {
     /**

@@ -11,6 +11,8 @@
 
 /**
  * The IIIF import form.
+ * @package IiifItems
+ * @subpackage Form
  */
 class IiifItems_Form_Import extends Omeka_Form {
     /**

@@ -2,6 +2,8 @@
 
 /**
  * Integration for annotations.
+ * @package IiifItems
+ * @subpackage Integration
  */
 class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
     

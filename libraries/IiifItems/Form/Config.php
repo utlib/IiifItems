@@ -2,6 +2,8 @@
 
 /**
  * The main plugin configuration form.
+ * @package IiifItems
+ * @subpackage Form
  */
 class IiifItems_Form_Config extends Omeka_Form {
     /**

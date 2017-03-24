@@ -2,6 +2,7 @@
 
 /**
  * Controller for endpoints used by the annotator
+ * @package controllers
  */
 class IiifItems_AnnotatorController extends IiifItems_BaseController {
     

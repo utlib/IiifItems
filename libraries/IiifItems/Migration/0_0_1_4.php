@@ -2,6 +2,8 @@
 
 /**
  * Migration 0.0.1.4: Add caching table for regenerated JSON data.
+ * @package IiifItems
+ * @subpackage Migration
  */
 class IiifItems_Migration_0_0_1_4 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.4';

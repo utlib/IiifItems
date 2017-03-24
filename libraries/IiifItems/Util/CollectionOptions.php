@@ -2,6 +2,8 @@
 
 /**
  * Utlities for generating UI elements related to nesting IIIF collections.
+ * @package IiifItems
+ * @subpackage Util
  */
 class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
     /**

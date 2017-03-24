@@ -2,6 +2,8 @@
 
 /**
  * Background job for removing dependent annotations after an item is removed.
+ * @package IiifItems
+ * @subpackage Job
  */
 class IiifItems_Job_RemoveSubannotations extends Omeka_Job_AbstractJob {
     private $_item_uuid;

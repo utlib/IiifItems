@@ -2,6 +2,7 @@
 
 /**
  * Controller for pages in the IIIF Items admin menu
+ * @package controllers
  */
 class IiifItems_ImportController extends IiifItems_BaseController {
     

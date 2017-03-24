@@ -2,6 +2,8 @@
 
 /**
  * Utilities for IIIF collections.
+ * @package IiifItems
+ * @subpackage Util
  */
 class IiifItems_Util_Collection extends IiifItems_IiifUtil {
     /**

@@ -2,6 +2,8 @@
 
 /**
  * Mixins for integration with Exhibit Builder
+ * @package IiifItems
+ * @subpackage Integration
  */
 class IiifItems_Integration_ExhibitBuilder extends IiifItems_BaseIntegration {
     protected $_filters = array(

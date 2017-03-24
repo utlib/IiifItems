@@ -2,6 +2,7 @@
 
 /**
  * Controller for IIIF manifests
+ * @package controllers
  */
 class IiifItems_ManifestController extends IiifItems_BaseController {
     protected static $allowedThings = array('Collection', 'Item', 'File');

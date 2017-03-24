@@ -2,6 +2,7 @@
 
 /**
  * Controller for displaying annotation lists
+ * @package controllers
  */
 class IiifItems_AnnotationController extends IiifItems_BaseController {
     

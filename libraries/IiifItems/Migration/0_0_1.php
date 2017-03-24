@@ -2,6 +2,8 @@
 
 /**
  * Migration 0.0.1: Add table for IiifItems_JobStatus
+ * @package IiifItems
+ * @subpackage Migration
  */
 class IiifItems_Migration_0_0_1 extends IiifItems_BaseMigration {
     public static $version = '0.0.1';

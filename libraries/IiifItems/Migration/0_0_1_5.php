@@ -2,6 +2,8 @@
 
 /**
  * Migration 0.0.1.5: Added Annotation item type and associated Text element
+ * @package IiifItems
+ * @subpackage Migration
  */
 class IiifItems_Migration_0_0_1_5 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.5';
