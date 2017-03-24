@@ -2,6 +2,8 @@
 
 /**
  * Integration for non-annotation items.
+ * @package IiifItems
+ * @subpackage Integration
  */
 class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
     protected $_hooks = array(

@@ -2,6 +2,7 @@
 
 /**
  * Controller for IIIF collections
+ * @package controllers
  */
 class IiifItems_CollectionsController extends IiifItems_BaseController {
     protected $_browseRecordsPerPage = self::RECORDS_PER_PAGE_SETTING;

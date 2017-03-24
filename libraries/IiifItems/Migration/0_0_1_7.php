@@ -2,6 +2,8 @@
 
 /**
  * Migration 0.0.1.7: Added placeholder images for non-IIIF-displayable content.
+ * @package IiifItems
+ * @subpackage Migration
  */
 class IiifItems_Migration_0_0_1_7 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.7';

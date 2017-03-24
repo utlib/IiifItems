@@ -2,6 +2,7 @@
 
 /**
  * Controller for Mirador viewers.
+ * @package controllers
  */
 class IiifItems_MiradorController extends IiifItems_BaseController {
     protected static $allowedThings = array('Collection', 'Item', 'File');

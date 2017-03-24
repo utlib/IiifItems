@@ -2,6 +2,7 @@
 
 /**
  * A record for cached IIIF JSON data.
+ * @package models
  */
 class IiifItems_CachedJsonData extends Omeka_Record_AbstractRecord {
     /**

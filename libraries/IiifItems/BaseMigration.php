@@ -3,6 +3,7 @@
 /**
  * Template for migrations.
  * Use this to implement actions that should occur between version updates.
+ * @package IiifItems
  */
 abstract class IiifItems_BaseMigration {
     public static $version; // The plugin version that this migration migrates to

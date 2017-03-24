@@ -2,6 +2,7 @@
 
 /**
  * Template controller with plugin-specific utilities.
+ * @package IiifItems
  */
 abstract class IiifItems_BaseController extends Omeka_Controller_AbstractActionController {
     

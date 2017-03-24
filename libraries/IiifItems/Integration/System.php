@@ -2,6 +2,8 @@
 
 /**
  * Integrations for the general IIIF Items system.
+ * @package IiifItems
+ * @subpackage Integration
  */
 class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     protected $_filters = array(

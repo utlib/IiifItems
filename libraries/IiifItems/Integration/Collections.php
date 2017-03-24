@@ -2,6 +2,8 @@
 
 /**
  * Integration for collection-type collections.
+ * @package IiifItems
+ * @subpackage Integration
  */
 class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     protected $_hooks = array(

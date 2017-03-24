@@ -2,6 +2,7 @@
 
 /**
  * Template for IIIF utility classes.
+ * @package IiifItems
  */
 class IiifItems_IiifUtil {
     // Disallow instantiation

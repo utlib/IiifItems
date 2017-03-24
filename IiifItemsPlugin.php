@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @package IiifItems
+ */
+
 defined('IIIF_ITEMS_DIRECTORY') or define('IIIF_ITEMS_DIRECTORY', dirname(__FILE__));
 require_once dirname(__FILE__) . '/helpers/IiifItemsFunctions.php';
 

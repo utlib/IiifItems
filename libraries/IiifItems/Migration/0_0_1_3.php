@@ -2,6 +2,8 @@
 
 /**
  * Migration 0.0.1.3: Add string-referenceable options to help reference IIIF Items metadata elements.
+ * @package IiifItems
+ * @subpackage Migration
  */
 class IiifItems_Migration_0_0_1_3 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.3';

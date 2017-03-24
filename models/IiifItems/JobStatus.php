@@ -2,6 +2,7 @@
 
 /**
  * A record for the status of background running jobs.
+ * @package models
  */
 class IiifItems_JobStatus extends Omeka_Record_AbstractRecord {
     /**

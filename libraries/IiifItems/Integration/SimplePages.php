@@ -2,6 +2,8 @@
 
 /**
  * Integration for Simple Pages shortcodes.
+ * @package IiifItems
+ * @subpackage Integration
  */
 class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
     

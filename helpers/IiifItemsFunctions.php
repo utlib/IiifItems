@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * @package helpers
+ */
+
+/**
  * Returns a complete URL, including everything up to the domain and protocol.
  * Takes the same arguments as public_url().
  * 

@@ -2,6 +2,8 @@
 
 /**
  * Background job for adding UUIDs to existing items.
+ * @package IiifItems
+ * @subpackage Job
  */
 class IiifItems_Job_AddUuid extends Omeka_Job_AbstractJob {
     private $batchSize = 100;

@@ -2,6 +2,8 @@
 
 /**
  * Background job for adding the thumbnail back onto an annotation-type item
+ * @package IiifItems
+ * @subpackage Job
  */
 class IiifItems_Job_AddAnnotationThumbnail extends Omeka_Job_AbstractJob {
     private $_originalItem, $_annotationItem, $_dims;

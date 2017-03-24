@@ -2,6 +2,8 @@
 
 /**
  * Migration 0.0.1.6: Added UUID element and migration job.
+ * @package IiifItems
+ * @subpackage Migration
  */
 class IiifItems_Migration_0_0_1_6 extends IiifItems_BaseMigration {
     public static $version = '0.0.1.6';

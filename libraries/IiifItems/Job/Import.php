@@ -2,6 +2,8 @@
 
 /**
  * Background job for importing IIIF collection, manifest and canvas data.
+ * @package IiifItems
+ * @subpackage Job
  */
 class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
     private $_importType, $_importSource, $_importSourceBody, $_importPreviewSize, $_isPublic, $_isFeatured, $_isReversed, $_parent;

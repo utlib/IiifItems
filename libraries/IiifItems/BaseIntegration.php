@@ -2,6 +2,7 @@
 
 /**
  * Template for all plugin integrations (mixins for a plugin).
+ * @package IiifItems
  */
 abstract class IiifItems_BaseIntegration {
     protected $_hooks = array();

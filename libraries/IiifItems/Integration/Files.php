@@ -2,6 +2,8 @@
 
 /**
  * Integrations for files.
+ * @package IiifItems
+ * @subpackage Integration
  */
 class IiifItems_Integration_Files extends IiifItems_BaseIntegration {
     protected $_hooks = array(

@@ -2,6 +2,7 @@
 
 /**
  * Utility for downloading a IIIF image
+ * @package IiifItems
  */
 class IiifItems_ImageDownloader {
     private $prefix, $suffix, $defaultXywh, $originalId, $json;

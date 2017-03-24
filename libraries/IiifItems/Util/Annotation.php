@@ -2,6 +2,8 @@
 
 /**
  * Utilities for IIIF annotations.
+ * @package IiifItems
+ * @subpackage Util
  */
 class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
     /**
