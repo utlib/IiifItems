@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * Controller for Mirador viewers.
+ */
 class IiifItems_MiradorController extends IiifItems_BaseController {
     protected static $allowedThings = array('Collection', 'Item', 'File');
     
