@@ -1,6 +1,13 @@
 <?php
 
+/**
+ * Integration for annotations.
+ */
 class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
+    
+    /**
+     * Install metadata elements for the Annotation item type.
+     */
     public function install() {
         $elementTable = get_db()->getTable('Element');
         // Add Annotation item type elements
@@ -24,6 +31,9 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         $addTextElementMigration->up();
     }
     
+    /**
+     * Remove metadata elements and the Annotation item type.
+     */
     public function uninstall() {
         $elementSetTable = get_db()->getTable('ElementSet');
         $itemTypeTable = get_db()->getTable('ItemType');
@@ -35,8 +45,12 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         delete_option('iiifitems_annotation_item_type');
         delete_option('iiifitems_annotation_on_element');
         delete_option('iiifitems_annotation_selector_element');
+        delete_option('iiifitems_annotation_elements');
     }
     
+    /**
+     * Add element filters.
+     */
     public function initialize() {
         add_filter(array('Display', 'Item', 'Item Type Metadata', 'On Canvas'), array($this, 'displayForAnnotationOnCanvas'));
         add_filter(array('ElementInput', 'Item', 'Item Type Metadata', 'On Canvas'), array($this, 'inputForAnnotationOnCanvas'));
@@ -45,6 +59,12 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         add_filter(array('ElementInput', 'Item', 'Item Type Metadata', 'Selector'), 'filter_minimal_input');
     }
     
+    /**
+     * Alternative implementation of the admin-side item listings hook for annotation-type items.
+     * Called from IiifItems_Integration_Items.
+     * 
+     * @param array $args
+     */
     public function altHookAdminItemsBrowseSimpleEach($args) {
         $on = raw_iiif_metadata($args['item'], 'iiifitems_annotation_on_element');
         if (($attachedItem = find_item_by_uuid($on)) || ($attachedItem = find_item_by_atid($on))) {
@@ -59,6 +79,12 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         }
     }
     
+    /**
+     * Alternative implementation of the admin-side sidebar hook for annotation-type items.
+     * Called from IiifItems_Integration_Items.
+     * 
+     * @param array $args
+     */
     public function altHookAdminItemsShowSidebar($args) {
         if ($onCanvasUuid = raw_iiif_metadata($args['item'], 'iiifitems_annotation_on_element')) {
             $onCanvasMatches = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ?", array(
@@ -79,7 +105,15 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         }
     }
     
-    public function displayForAnnotationOnCanvas($comps, $args) {
+    /**
+     * Display filter for the "On Canvas" element.
+     * Renders a link back to the item it's attached to.
+     * 
+     * @param string $comps
+     * @param array $args
+     * @return string
+     */
+    public function displayForAnnotationOnCanvas($string, $args) {
         $on = $args['element_text']->text;
         if (!($target = find_item_by_uuid($on))) {
             if (!($target = find_item_by_atid($on))) {
@@ -98,6 +132,14 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         return $text;
     }
 
+    /**
+     * Input field filter for the "On Canvas" element.
+     * Renders a single text field.
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForAnnotationOnCanvas($comps, $args) {
         $comps['input'] = get_view()->formText($args['input_name_stem'] . '[text]', $args['value'], array('class' => 'five columns'));
         return filter_minimal_input($comps, $args);

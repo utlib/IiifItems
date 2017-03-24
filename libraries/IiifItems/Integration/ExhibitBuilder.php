@@ -1,10 +1,19 @@
 <?php
 
+/**
+ * Mixins for integration with Exhibit Builder
+ */
 class IiifItems_Integration_ExhibitBuilder extends IiifItems_BaseIntegration {
     protected $_filters = array(
         'exhibit_layouts'
     );
     
+    /**
+     * Registers IIIF Items exhibit block types.
+     * 
+     * @param array $layouts
+     * @return array
+     */
     public function filterExhibitLayouts($layouts) {
         $layouts['iiifitem'] = array(
             'name' => __('IIIF Items'),

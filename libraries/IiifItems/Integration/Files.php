@@ -1,10 +1,16 @@
 <?php
 
+/**
+ * Integrations for files.
+ */
 class IiifItems_Integration_Files extends IiifItems_BaseIntegration {
     protected $_hooks = array(
         'admin_files_show',
     );
     
+    /**
+     * Install metadata elements for files.
+     */
     public function install() {
         $elementTable = get_db()->getTable('Element');
         // Add File type metadata elements
@@ -21,14 +27,21 @@ class IiifItems_Integration_Files extends IiifItems_BaseIntegration {
         set_option('iiifitems_file_json_element', $elementTable->findByElementSetNameAndElementName('IIIF File Metadata', 'JSON Data')->id);
     }
     
+    /**
+     * Remove metadata elements for files.
+     */
     public function uninstall() {
         $elementSetTable = get_db()->getTable('ElementSet');
         // Remove File Metadata element set
         $elementSetTable->find(get_option('iiifitems_file_element_set'))->delete();
         delete_option('iiifitems_file_atid_element');
         delete_option('iiifitems_file_json_element');
+        delete_option('iiifitems_file_element_set');
     }
     
+    /**
+     * Add cache expiry hooks and element handling filters.
+     */
     public function initialize() {
         add_plugin_hook('after_save_file', 'hook_expire_cache');
         add_plugin_hook('after_delete_file', 'hook_expire_cache');
@@ -39,6 +52,12 @@ class IiifItems_Integration_Files extends IiifItems_BaseIntegration {
         add_filter(array('ElementInput', 'File', 'IIIF File Metadata', 'Original @id'), array($this, 'inputForFileOriginalId'));
     }
     
+    /**
+     * Hook for displaying single files in the admin view.
+     * Adds Mirador viewer and IIIF info for IIIF-displayable files.
+     * 
+     * @param array $args
+     */
     public function hookAdminFilesShow($args) {
         if (!isset($args['view'])) {
             $args['view'] = get_view();
@@ -54,6 +73,12 @@ class IiifItems_Integration_Files extends IiifItems_BaseIntegration {
         echo '</div>';
     }
 
+    /**
+     * Returns whether the given file can be displayed with IIIF.
+     * 
+     * @param File $file
+     * @return boolean
+     */
     protected function _isntIiifDisplayableFile($file) {
         switch ($file->mime_type) {
             case 'image/jpeg': case 'image/png': case 'image/tiff': case 'image/jp2':
@@ -62,6 +87,14 @@ class IiifItems_Integration_Files extends IiifItems_BaseIntegration {
         return true;
     }
     
+    /**
+     * Element input filter for the file's original IIIF ID.
+     * Make it single and read-only.
+     * 
+     * @param array $comps
+     * @param array $args
+     * @return string
+     */
     public function inputForFileOriginalId($comps, $args) {
         $comps['input'] = $args['value'] ? $args['value'] : '';
         return filter_minimal_input($comps, $args);
