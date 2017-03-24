@@ -1,12 +1,50 @@
 <?php
 
+/**
+ * A record for cached IIIF JSON data.
+ */
 class IiifItems_CachedJsonData extends Omeka_Record_AbstractRecord {
-    public $id, $record_id, $record_type, $url, $data, $generated;
+    /**
+     * The database primary key for this entry.
+     * @var integer
+     */
+    public $id;
     
-    public function getRecord() {
-        return get_db()->getTable($this->record_type)->find($this->record_id);
-    }
+    /**
+     * The ID of the record that this entry is attached to.
+     * @var integer
+     */
+    public $record_id;
     
+    /**
+     * The name of the record type that this entry is attached to.
+     * @var string
+     */
+    public $record_type;
+    
+    /**
+     * Where this entry refers to (e.g. admin_manifest).
+     * @var string
+     */
+    public $url;
+    
+    /**
+     * The cached JSON data in string form.
+     * @var string
+     */
+    public $data;
+    
+    /**
+     * The date and time that this entry was generated.
+     * @var datetime
+     */
+    public $generated;
+    
+    /**
+     * Return the JSON data held by this entry in nested array form.
+     * 
+     * @return array
+     */
     public function getData() {
         return json_decode($this->data, true);
     }
