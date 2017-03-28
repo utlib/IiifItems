@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class IiifItems_AnnotatorController | IiifItems</title>
+
+	<link rel="stylesheet" href="resources/style.css?e99947befd7bf673c6b43ff75e9e0f170c88a60e">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+				<h3>Packages</h3>
+			<ul>
+				<li>
+					<a href="package-controllers.html">
+						controllers					</a>
+
+						</li>
+				<li>
+					<a href="package-helpers.html">
+						helpers					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.html">
+						IiifItems<span></span>
+					</a>
+
+						<ul>
+				<li>
+					<a href="package-IiifItems.Form.html">
+						Form					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Integration.html">
+						Integration					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Job.html">
+						Job					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Migration.html">
+						Migration					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Util.html">
+						Util					</a>
+
+						</li>
+							</ul></li>
+				<li>
+					<a href="package-models.html">
+						models					</a>
+
+						</li>
+			</ul>
+		</div>
+
+		<hr>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-IiifItems_AnnotationController.html">IiifItems_AnnotationController</a></li>
+				<li class="active"><a href="class-IiifItems_AnnotatorController.html">IiifItems_AnnotatorController</a></li>
+				<li><a href="class-IiifItems_CollectionsController.html">IiifItems_CollectionsController</a></li>
+				<li><a href="class-IiifItems_ImportController.html">IiifItems_ImportController</a></li>
+				<li><a href="class-IiifItems_ManifestController.html">IiifItems_ManifestController</a></li>
+				<li><a href="class-IiifItems_MiradorController.html">IiifItems_MiradorController</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text" placeholder="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+<span>Package</span>			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class IiifItems_AnnotatorController</h1>
+
+
+	<div class="description">
+	<p>Controller for endpoints used by the annotator</p>
+	</div>
+
+	<dl class="tree">
+		<dd style="padding-left:0px">
+Omeka_Controller_AbstractActionController
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by">
+			<a href="class-IiifItems_BaseController.html"><span>IiifItems_BaseController</span></a>
+			
+			
+			
+		</dd>
+		<dd style="padding-left:60px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>IiifItems_AnnotatorController</span></b>			
+			
+			
+		</dd>
+	</dl>
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		
+		<b>Package:</b> <a href="package-controllers.html">controllers</a><br>
+
+			<b>Located at</b> <a href="source-class-IiifItems_AnnotatorController.html#3-267" title="Go to source code">controllers/AnnotatorController.php</a>
+		<br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="indexAction" id="_indexAction">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_indexAction">#</a>
+		<code><a href="source-class-IiifItems_AnnotatorController.html#9-42" title="Go to source code">indexAction</a>( )</code>
+
+		<div class="description short">
+			<p>Renders a JSON array of annotations filed under the given manifest-type collection or non-annotation item.
+A "uri" GET parameter must be passed to indicate the canvas ID to list annotations from.
+GET iiif-items/annotator/:things/:id/index?uri=...</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Renders a JSON array of annotations filed under the given manifest-type collection or non-annotation item.
+A "uri" GET parameter must be passed to indicate the canvas ID to list annotations from.
+GET iiif-items/annotator/:things/:id/index?uri=...</p>
+
+<p>[{ANNOTATION}, {ANNOTATION}, ...]</p>
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="createAction" id="_createAction">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_createAction">#</a>
+		<code><a href="source-class-IiifItems_AnnotatorController.html#44-141" title="Go to source code">createAction</a>( )</code>
+
+		<div class="description short">
+			<p>Processes a POSTed annotation from Mirador and responds with the annotation added to the given manifest-type collection or non-annotation item.
+POST iiif-items/annotator/:things/:id</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Processes a POSTed annotation from Mirador and responds with the annotation added to the given manifest-type collection or non-annotation item.
+POST iiif-items/annotator/:things/:id</p>
+
+<p>{CREATED ANNOTATION}</p>
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="deleteAction" id="_deleteAction">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_deleteAction">#</a>
+		<code><a href="source-class-IiifItems_AnnotatorController.html#143-176" title="Go to source code">deleteAction</a>( )</code>
+
+		<div class="description short">
+			<p>Deletes the submitted annotation from Mirador as filed under the given manifest-type collection or non-annotation item.
+Responds "OK" if successful
+DELETE iiif-items/annotator/:things/:id/delete</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Deletes the submitted annotation from Mirador as filed under the given manifest-type collection or non-annotation item.
+Responds "OK" if successful
+DELETE iiif-items/annotator/:things/:id/delete</p>
+
+<p>OK</p>
+
+
+
+
+				<h4>Throws</h4>
+				<div class="list">
+					Omeka_Controller_Exception_404
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="updateAction" id="_updateAction">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_updateAction">#</a>
+		<code><a href="source-class-IiifItems_AnnotatorController.html#178-247" title="Go to source code">updateAction</a>( )</code>
+
+		<div class="description short">
+			<p>Deletes the submitted annotation from Mirador as filed under the given manifest-type collection or non-annotation item.
+Responds with the updated annotation if successful.
+PUT iiif-items/annotator/:things/:id/update</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Deletes the submitted annotation from Mirador as filed under the given manifest-type collection or non-annotation item.
+Responds with the updated annotation if successful.
+PUT iiif-items/annotator/:things/:id/update</p>
+
+<p>{UPDATED ANNOTATION}</p>
+
+
+
+
+				<h4>Throws</h4>
+				<div class="list">
+					Omeka_Controller_Exception_404
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="annotateAction" id="_annotateAction">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_annotateAction">#</a>
+		<code><a href="source-class-IiifItems_AnnotatorController.html#249-255" title="Go to source code">annotateAction</a>( )</code>
+
+		<div class="description short">
+			<p>The annotator wrapper page for the given manifest-type collection or non-annotation item.
+GET :things/:id/annotate</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>The annotator wrapper page for the given manifest-type collection or non-annotation item.
+GET :things/:id/annotate</p>
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+	<table class="summary inherited">
+	<caption>Methods inherited from <a href="class-IiifItems_BaseController.html#methods">IiifItems_BaseController</a></caption>
+	<tr>
+		<td><code>
+			<a href="class-IiifItems_BaseController.html#___blockPublic">__blockPublic()</a>, 
+			<a href="class-IiifItems_BaseController.html#___data_oa">__data_oa()</a>, 
+			<a href="class-IiifItems_BaseController.html#___data_wa">__data_wa()</a>, 
+			<a href="class-IiifItems_BaseController.html#___dissect_oa">__dissect_oa()</a>, 
+			<a href="class-IiifItems_BaseController.html#___json_encode">__json_encode()</a>, 
+			<a href="class-IiifItems_BaseController.html#___json_oa">__json_oa()</a>, 
+			<a href="class-IiifItems_BaseController.html#___json_wa">__json_wa()</a>, 
+			<a href="class-IiifItems_BaseController.html#___passModelToView">__passModelToView()</a>, 
+			<a href="class-IiifItems_BaseController.html#___respondWithJson">__respondWithJson()</a>, 
+			<a href="class-IiifItems_BaseController.html#___respondWithRaw">__respondWithRaw()</a>, 
+			<a href="class-IiifItems_BaseController.html#___restrictVerb">__restrictVerb()</a>
+		</code></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		IiifItems API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>

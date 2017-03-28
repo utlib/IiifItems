@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class IiifItems_BaseController | IiifItems</title>
+
+	<link rel="stylesheet" href="resources/style.css?e99947befd7bf673c6b43ff75e9e0f170c88a60e">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+				<h3>Packages</h3>
+			<ul>
+				<li>
+					<a href="package-controllers.html">
+						controllers					</a>
+
+						</li>
+				<li>
+					<a href="package-helpers.html">
+						helpers					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.html">
+						IiifItems<span></span>
+					</a>
+
+						<ul>
+				<li>
+					<a href="package-IiifItems.Form.html">
+						Form					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Integration.html">
+						Integration					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Job.html">
+						Job					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Migration.html">
+						Migration					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Util.html">
+						Util					</a>
+
+						</li>
+							</ul></li>
+				<li>
+					<a href="package-models.html">
+						models					</a>
+
+						</li>
+			</ul>
+		</div>
+
+		<hr>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li class="active"><a href="class-IiifItems_BaseController.html">IiifItems_BaseController</a></li>
+				<li><a href="class-IiifItems_BaseIntegration.html">IiifItems_BaseIntegration</a></li>
+				<li><a href="class-IiifItems_BaseMigration.html">IiifItems_BaseMigration</a></li>
+				<li><a href="class-IiifItems_IiifUtil.html">IiifItems_IiifUtil</a></li>
+				<li><a href="class-IiifItems_ImageDownloader.html">IiifItems_ImageDownloader</a></li>
+				<li><a href="class-IiifItemsPlugin.html">IiifItemsPlugin</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text" placeholder="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+<span>Package</span>			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class IiifItems_BaseController</h1>
+
+
+	<div class="description">
+	<p>Template controller with plugin-specific utilities.</p>
+	</div>
+
+	<dl class="tree">
+		<dd style="padding-left:0px">
+Omeka_Controller_AbstractActionController
+			
+			
+		</dd>
+		<dd style="padding-left:30px">
+			<img src="resources/inherit.png" alt="Extended by">
+<b><span>IiifItems_BaseController</span></b>			
+			
+			
+		</dd>
+	</dl>
+
+
+	<div>
+		<h4>Direct known subclasses</h4>
+			<a href="class-IiifItems_AnnotationController.html">IiifItems_AnnotationController</a>, 
+			<a href="class-IiifItems_AnnotatorController.html">IiifItems_AnnotatorController</a>, 
+			<a href="class-IiifItems_CollectionsController.html">IiifItems_CollectionsController</a>, 
+			<a href="class-IiifItems_ImportController.html">IiifItems_ImportController</a>, 
+			<a href="class-IiifItems_ManifestController.html">IiifItems_ManifestController</a>, 
+			<a href="class-IiifItems_MiradorController.html">IiifItems_MiradorController</a>
+	</div>
+
+
+
+
+
+
+	<div class="info">
+		<b>Abstract</b><br>
+		
+		
+		<b>Package:</b> <a href="package-IiifItems.html">IiifItems</a><br>
+
+			<b>Located at</b> <a href="source-class-IiifItems_BaseController.html#3-233" title="Go to source code">libraries/IiifItems/BaseController.php</a>
+		<br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="__passModelToView" id="___passModelToView">
+
+		<td class="attributes"><code>
+			 protected 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___passModelToView">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#9-29" title="Go to source code">__passModelToView</a>( )</code>
+
+		<div class="description short">
+			<p>Retrieves a record from the parameter-given ID (id) and type (things) and passes it to the view.
+Renders 404 automatically if the given record is not found.
+For use in routed actions only.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Retrieves a record from the parameter-given ID (id) and type (things) and passes it to the view.
+Renders 404 automatically if the given record is not found.
+For use in routed actions only.</p>
+
+
+
+
+				<h4>Throws</h4>
+				<div class="list">
+					Omeka_Controller_Exception_404
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__dissect_oa" id="___dissect_oa">
+
+		<td class="attributes"><code>
+			 protected 
+
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___dissect_oa">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#31-51" title="Go to source code">__dissect_oa</a>( <span>array <var>$json</var></span> )</code>
+
+		<div class="description short">
+			<p>Helper for decomposing a IIIF OA annotation JSON into metadata-friendly parts.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Helper for decomposing a IIIF OA annotation JSON into metadata-friendly parts.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$json</var></dt>
+					<dd>The IIIF OA annotation JSON</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					array<br>5-entry array with ID, attachment, SVG selector, body and array of tags
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__data_oa" id="___data_oa">
+
+		<td class="attributes"><code>
+			 protected 
+
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___data_oa">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#53-92" title="Go to source code">__data_oa</a>( <span>string <var>$id</var></span>, <span>string <var>$uri</var></span>, <span>string <var>$selector</var></span>, <span>string <var>$body</var></span>, <span>string[] <var>$tags</var></span> )</code>
+
+		<div class="description short">
+			<p>Assembles metadata into IIIF OA annotation JSON data.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Assembles metadata into IIIF OA annotation JSON data.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$id</var></dt>
+					<dd>The ID of the annotation</dd>
+					<dt><var>$uri</var></dt>
+					<dd>The URI of the annotation</dd>
+					<dt><var>$selector</var></dt>
+					<dd>The SVG selector of the annotation</dd>
+					<dt><var>$body</var></dt>
+					<dd>Text in the body of the annotation.</dd>
+					<dt><var>$tags</var></dt>
+					<dd>List of tags of the annotation.</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					array<br>The reassembled OA annotation.
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__json_oa" id="___json_oa">
+
+		<td class="attributes"><code>
+			 protected 
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___json_oa">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#94-106" title="Go to source code">__json_oa</a>( <span>string <var>$id</var></span>, <span>string <var>$uri</var></span>, <span>string <var>$selector</var></span>, <span>string <var>$body</var></span>, <span>string[] <var>$tags</var></span> )</code>
+
+		<div class="description short">
+			<p>Assembles metadata into IIIF OA annotation JSON string form.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Assembles metadata into IIIF OA annotation JSON string form.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$id</var></dt>
+					<dd>The ID of the annotation</dd>
+					<dt><var>$uri</var></dt>
+					<dd>The URI of the annotation</dd>
+					<dt><var>$selector</var></dt>
+					<dd>The SVG selector of the annotation</dd>
+					<dt><var>$body</var></dt>
+					<dd>Text in the body of the annotation.</dd>
+					<dt><var>$tags</var></dt>
+					<dd>List of tags of the annotation.</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string<br>The reassembled OA annotation string.
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__data_wa" id="___data_wa">
+
+		<td class="attributes"><code>
+			 protected 
+
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___data_wa">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#108-148" title="Go to source code">__data_wa</a>( <span>string <var>$id</var></span>, <span>string <var>$uri</var></span>, <span>string <var>$selector</var></span>, <span>string <var>$body</var></span>, <span>string[] <var>$tags</var></span> )</code>
+
+		<div class="description short">
+			<p>Assembles metadata into IIIF WA annotation JSON data.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Assembles metadata into IIIF WA annotation JSON data.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$id</var></dt>
+					<dd>The ID of the annotation</dd>
+					<dt><var>$uri</var></dt>
+					<dd>The URI of the annotation</dd>
+					<dt><var>$selector</var></dt>
+					<dd>The SVG selector of the annotation</dd>
+					<dt><var>$body</var></dt>
+					<dd>Text in the body of the annotation.</dd>
+					<dt><var>$tags</var></dt>
+					<dd>List of tags of the annotation.</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					array<br>The reassembled WA annotation.
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__json_wa" id="___json_wa">
+
+		<td class="attributes"><code>
+			 protected 
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___json_wa">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#150-162" title="Go to source code">__json_wa</a>( <span>string <var>$id</var></span>, <span>string <var>$uri</var></span>, <span>string <var>$selector</var></span>, <span>string <var>$body</var></span>, <span>string[] <var>$tags</var></span> )</code>
+
+		<div class="description short">
+			<p>Assembles metadata into IIIF WA annotation JSON string form.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Assembles metadata into IIIF WA annotation JSON string form.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$id</var></dt>
+					<dd>The ID of the annotation</dd>
+					<dt><var>$uri</var></dt>
+					<dd>The URI of the annotation</dd>
+					<dt><var>$selector</var></dt>
+					<dd>The SVG selector of the annotation</dd>
+					<dt><var>$body</var></dt>
+					<dd>Text in the body of the annotation.</dd>
+					<dt><var>$tags</var></dt>
+					<dd>List of tags of the annotation.</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string<br>The reassembled WA annotation string.
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__respondWithJson" id="___respondWithJson">
+
+		<td class="attributes"><code>
+			 protected 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___respondWithJson">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#164-178" title="Go to source code">__respondWithJson</a>( <span>array <var>$jsonData</var></span>, <span>integer <var>$status</var> = <span class="php-num">200</span></span> )</code>
+
+		<div class="description short">
+			<p>Respond with JSON data (no layout).</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Respond with JSON data (no layout).</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$jsonData</var></dt>
+					<dd>JSON data in nested array form</dd>
+					<dt><var>$status</var></dt>
+					<dd>The HTTP response code</dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__respondWithRaw" id="___respondWithRaw">
+
+		<td class="attributes"><code>
+			 protected 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___respondWithRaw">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#180-195" title="Go to source code">__respondWithRaw</a>( <span>string <var>$data</var></span>, <span>integer <var>$status</var> = <span class="php-num">200</span></span>, <span>string <var>$mime</var> = <span class="php-quote">'application/json'</span></span> )</code>
+
+		<div class="description short">
+			<p>Respond with raw data.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Respond with raw data.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$data</var></dt>
+					<dd>Response data</dd>
+					<dt><var>$status</var></dt>
+					<dd>The HTTP response code</dd>
+					<dt><var>$mime</var></dt>
+					<dd>The MIME type</dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__json_encode" id="___json_encode">
+
+		<td class="attributes"><code>
+			 protected 
+
+			array
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___json_encode">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#197-208" title="Go to source code">__json_encode</a>( <span>mixed <var>$mixed</var></span> )</code>
+
+		<div class="description short">
+			<p>Encodes the argument in JSON.
+Adds the unescaped slashes and unicode argument on PHP 5.4.0+</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Encodes the argument in JSON.
+Adds the unescaped slashes and unicode argument on PHP 5.4.0+</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$mixed</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					array
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__blockPublic" id="___blockPublic">
+
+		<td class="attributes"><code>
+			 protected 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___blockPublic">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#210-219" title="Go to source code">__blockPublic</a>( )</code>
+
+		<div class="description short">
+			<p>Call this at the beginning of a controller action method to block unauthenticated users.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Call this at the beginning of a controller action method to block unauthenticated users.</p>
+
+
+
+
+				<h4>Throws</h4>
+				<div class="list">
+					Omeka_Controller_Exception_404
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="__restrictVerb" id="___restrictVerb">
+
+		<td class="attributes"><code>
+			 protected 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___restrictVerb">#</a>
+		<code><a href="source-class-IiifItems_BaseController.html#221-232" title="Go to source code">__restrictVerb</a>( <span>string <var>$verb</var></span> )</code>
+
+		<div class="description short">
+			<p>Call this at the beginning of a controller action to block requests not made with the specified verb.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Call this at the beginning of a controller action to block requests not made with the specified verb.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$verb</var></dt>
+					<dd>The allowed HTTP verb</dd>
+				</dl></div>
+
+
+				<h4>Throws</h4>
+				<div class="list">
+					Omeka_Controller_Exception_404
+				</div>
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		IiifItems API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>
