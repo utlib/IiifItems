@@ -139,12 +139,18 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
                 $limit = 10; 
             }
             $collections = get_records('Collection', $params, $limit);
+            $manifest_urls = array();
             $collection_urls = array();
             foreach ($collections as $collection) {
-                $collection_urls[] = public_full_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_manifest');
+                if (IiifItems_Util_Collection::isCollection($collection)) {
+                    $collection_urls[] = public_full_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_collection');
+                } else {
+                    $manifest_urls[] = public_full_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_manifest');
+                }
             }
+            $popup = isset($args['popup']) || (empty($manifest_urls) && !empty($collection_urls));
             // Add iframe
-            return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $collection_urls)) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
+            return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $manifest_urls, 'c' => $collection_urls, 'p' => $popup)) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
         }
         // Single: View quick-view manifest of the collection
         if (isset($args['id'])) {
