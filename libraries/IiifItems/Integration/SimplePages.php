@@ -172,7 +172,9 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
         $styles = isset($args['style']) ? $args['style'] : '';
         // Grab URL arguments
         $urls = isset($args['urls']) ? explode(';', $args['urls']) : array();
+        $collections = isset($args['collections']) ? explode(';', $args['collections']) : array();
+        $popup = isset($args['popup']) || (empty($urls) && !empty($collections));
         // Add iframe
-        return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $urls)) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
+        return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $urls, 'c' => $collections, 'p' => $popup)) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
     }
 }
