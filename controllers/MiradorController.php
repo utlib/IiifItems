@@ -34,6 +34,8 @@ class IiifItems_MiradorController extends IiifItems_BaseController {
             $this->view->item_ids = explode(',', $this->getParam('items'));
         }
         $this->view->manifests = $this->getParam('u');
+        $this->view->collections = $this->getParam('c');
+        $this->view->popup = $this->getParam('p');
     }
     
     /**
