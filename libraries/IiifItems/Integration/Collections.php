@@ -275,6 +275,11 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         if (!IiifItems_Util_Collection::isCollection($collection)) {
             $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
             echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+            if ($annotationCount = IiifItems_Util_Manifest::countAnnotationsFor($collection)) {
+                echo '<div class="panel">'
+                    . '<h4>Annotations</h4>'
+                    . '<p>This manifest contains ' . __(plural('1 annotation', '%s%d annotations', $annotationCount), '', $annotationCount, '') . '.</p>';
+            }
         }
         echo '<div class="panel"><h4>Cache Management</h4>'
             . '<p>If the content shown in the viewer looks out of date, you can clear the cache to regenerate the manifest.</p>'

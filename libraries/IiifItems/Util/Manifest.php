@@ -166,6 +166,26 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
     }
     
     /**
+     * Return the number of annotations among items within this manifest.
+     * @param Collection $manifest
+     * @return integer
+     */
+    public static function countAnnotationsFor($manifest) {
+        $db = get_db();
+        $itemsTable = $db->getTable('Item');
+        $itemsSelect = $itemsTable->getSelectForCount();
+        $annotationTypeId = get_option('iiifitems_annotation_item_type');
+        $itemsSelect->where('items.item_type_id = ?', array($annotationTypeId));
+        $uuidElementId = get_option('iiifitems_item_uuid_element');
+        $onCanvasElementId = get_option('iiifitems_annotation_on_element');
+        $itemsSelect->joinLeft(array('element_texts' => $db->ElementText), "element_texts.record_id = items.id AND element_texts.element_id = {$onCanvasElementId} AND element_texts.record_type = 'Item'", array('text'));
+        $itemsSelect->join(array('element_texts2' => $db->ElementText), "element_texts.text = element_texts2.text AND element_texts2.element_id = {$uuidElementId} AND element_texts2.record_type = 'Item'", array('text'));
+        $itemsSelect->join(array('items2' => $db->Item), "element_texts2.record_type = 'Item' AND element_texts2.record_id = items2.id");
+        $itemsSelect->where('items2.collection_id = ?', $manifest->id);
+        return $db->fetchOne($itemsSelect);
+    }
+    
+    /**
      * Return whether this collection is set to the Manifest type
      * @param Collection $collection
      * @return boolean

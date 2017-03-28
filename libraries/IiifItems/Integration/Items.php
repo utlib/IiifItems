@@ -145,8 +145,10 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         if ($args['item']->item_type_id != get_option('iiifitems_annotation_item_type')) {
             if ($uuid = raw_iiif_metadata($args['item'], 'iiifitems_item_uuid_element')) {
                 echo '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a>';
-                echo '<br />';
-                echo '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations</a>';
+                if ($annotations = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_annotation_on_element'), $uuid))) {
+                    echo '<br />';
+                    echo '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations (' . count($annotations) . ')</a>';
+                }
             }    
         } else {
             (new IiifItems_Integration_Annotations)->altHookAdminItemsBrowseSimpleEach($args);
