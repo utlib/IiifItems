@@ -3,15 +3,26 @@
     $urlJs = $mirador_path . '/mirador.js';
     $urlCss = $mirador_path . '/css/mirador-combined.css';
     $urls = array();
+    $types = array();
     if (!empty($item_ids)) {
         foreach ($item_ids as $item_id) {
+            $types[] = 'Manifest';
             $urls[] = js_escape(public_full_url(array('things' => 'items', 'id' => $item_id), 'iiifitems_manifest'));
         }
     }
     if (!empty($manifests)) {
         foreach ($manifests as $manifest) {
             if (trim($manifest)) {
+                $types[] = 'Manifest';
                 $urls[] = js_escape($manifest);
+            }
+        }
+    }
+    if (!empty($collections)) {
+        foreach ($collections as $collection) {
+            if (trim($collection)) {
+                $types[] = 'Collection';
+                $urls[] = js_escape($collection);
             }
         }
     }
@@ -38,12 +49,12 @@
             "layout": "1",
             "data": [
                 <?php foreach ($urls as $i => $url): ?>
-                <?php if ($i > 0) echo ','; ?>{ "manifestUri": <?php echo $url; ?> }
+                <?php if ($i > 0) echo ','; ?>{ "<?php echo ($types[$i] == 'Collection') ? 'collectionUri' : 'manifestUri' ?>": <?php echo $url; ?> }
                 <?php endforeach; ?>
             ],
             "windowObjects": [{
                 imageMode: "ImageView",
-                <?php if (!empty($urls)): ?>
+                <?php if (!empty($urls) && !$popup): ?>
                 loadedManifest: <?php echo $urls[0]; ?>,
                 <?php endif; ?>
                 sidePanel: true,
@@ -66,6 +77,14 @@
                 show: false
             }
         });
+        <?php if ($popup) : ?>
+        var interval = setInterval(function() {
+            if ($('.addItemLink:first').length > 0) {
+                $('.addItemLink:first').click();
+                clearInterval(interval);
+            }
+        }, 100);
+        <?php endif; ?>
     });
     </script>
 </body>

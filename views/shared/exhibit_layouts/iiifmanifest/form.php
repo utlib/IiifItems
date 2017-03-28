@@ -2,7 +2,8 @@
 $formStem = $block->getFormStem();
 $options  = $block->getOptions();
 $template = '<div class="mirador-manifest-row">'
-        . $this->formText("{$formStem}[options][manifests][]", '', array('style' => 'width:100%;', 'placeholder' => 'Manifest URL'))
+        . $this->formSelect("{$formStem}[options][types][]", 'Manifest', array('style' => 'width: 18%; margin-right: 2%; height: 30px; margin-bottom: 10px;', 'multiple' => false), array('Manifest' => 'Manifest', 'Collection' => 'Collection'))
+        . $this->formText("{$formStem}[options][manifests][]", '', array('style' => 'width:80%;', 'placeholder' => 'URL'))
         . '<button class="add-manifest">Add Another</button>'
         . '<button class="red remove-manifest">Remove</button>'
         . '</div>';
@@ -52,9 +53,13 @@ $template = '<div class="mirador-manifest-row">'
     if (empty(@$options['manifests'])) {
         @$options['manifests'] = array('');
     }
-    foreach (@$options['manifests'] as $manifest) {
+    if (empty(@$options['types'])) {
+        @$options['types'] = array_fill(0, count(@$options['manifests']), 'Manifest');
+    }
+    foreach (@$options['manifests'] as $i => $manifest) {
         echo '<div class="mirador-manifest-row">';
-        echo $this->formText("{$formStem}[options][manifests][]", $manifest, array('style' => 'width:100%;', 'placeholder' => 'Manifest URL'));
+        echo $this->formSelect("{$formStem}[options][types][]", @$options['types'][$i], array('style' => 'width: 18%; margin-right: 2%; height: 30px; margin-bottom: 10px;', 'multiple' => false), array('Manifest' => 'Manifest', 'Collection' => 'Collection'));
+        echo $this->formText("{$formStem}[options][manifests][]", $manifest, array('style' => 'width:80%;', 'placeholder' => 'URL'));
         echo '<button class="add-manifest">Add Another</button>';
         echo '<button class="red remove-manifest">Remove</button>';
         echo '</div>';
