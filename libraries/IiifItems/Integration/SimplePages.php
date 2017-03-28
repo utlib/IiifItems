@@ -33,7 +33,7 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
             $id = $args['id'];
             $file = get_record_by_id('File', $id);
             if ($file) {
-                return '<iframe src="' . public_full_url(array('things' => 'files', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:400px;' . $styles . '"></iframe>';
+                return '<iframe src="' . public_full_url(array('things' => 'files', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:480px;' . $styles . '"></iframe>';
             }
         }
         // Fail
@@ -93,14 +93,14 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
                 $item_ids[] = $item->id;
             }
             // Add iframe
-            return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('items' => join(',', $item_ids))) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
+            return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('items' => join(',', $item_ids))) . '" style="width:100%;height:480px;' . $styles . '" allowfullscreen="true"></iframe>';
         }
         // Single: View quick-view manifest of the item
         if (isset($args['id'])) {
             $id = $args['id'];
             $item = get_record_by_id('Item', $id);
             if ($item) {
-                return '<iframe src="' . public_full_url(array('things' => 'items', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
+                return '<iframe src="' . public_full_url(array('things' => 'items', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:480px;' . $styles . '" allowfullscreen="true"></iframe>';
             }
         }
         // Fail
@@ -150,14 +150,14 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
             }
             $popup = isset($args['popup']) || (empty($manifest_urls) && !empty($collection_urls));
             // Add iframe
-            return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $manifest_urls, 'c' => $collection_urls, 'p' => $popup)) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
+            return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $manifest_urls, 'c' => $collection_urls, 'p' => $popup)) . '" style="width:100%;height:480px;' . $styles . '" allowfullscreen="true"></iframe>';
         }
         // Single: View quick-view manifest of the collection
         if (isset($args['id'])) {
             $id = $args['id'];
             $collection = get_record_by_id('Collection', $id);
             if ($collection) {
-                return '<iframe src="' . public_full_url(array('things' => 'collections', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
+                return '<iframe src="' . public_full_url(array('things' => 'collections', 'id' => $id), 'iiifitems_mirador') . '" style="width:100%;height:480px;' . $styles . '" allowfullscreen="true"></iframe>';
             }
         }
         // Fail
@@ -181,6 +181,6 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
         $collections = isset($args['collections']) ? explode(';', $args['collections']) : array();
         $popup = isset($args['popup']) || (empty($urls) && !empty($collections));
         // Add iframe
-        return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $urls, 'c' => $collections, 'p' => $popup)) . '" style="width:100%;height:400px;' . $styles . '" allowfullscreen="true"></iframe>';
+        return '<iframe src="' . public_full_url(array(), 'iiifitems_exhibit_mirador', array('u' => $urls, 'c' => $collections, 'p' => $popup)) . '" style="width:100%;height:480px;' . $styles . '" allowfullscreen="true"></iframe>';
     }
 }
