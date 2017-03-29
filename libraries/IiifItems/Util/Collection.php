@@ -94,7 +94,7 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
             foreach (self::findSubmanifestsFor($collection) as $submanifest) {
                 $atId = public_full_url(array('things' => 'collections', 'id' => $submanifest->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
                 $label = metadata($submanifest, array('Dublin Core', 'Title'), array('no_escape' => true));
-                $json['manifests'][] = IiifItems_Util_Collection::bareTemplate($atId, $label);
+                $json['manifests'][] = IiifItems_Util_Manifest::bareTemplate($atId, $label);
             }
             // Override the IDs, titles and DC metadata
             $json['@id'] = $atId;
