@@ -89,6 +89,22 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
     }
     
     /**
+     * Renders a IIIF explorer view for the subtree starting at this collection.
+     * GET collections/:id/explorer
+     * 
+     * @throws Omeka_Controller_Exception_404
+     */
+    public function explorerAction() {
+        // Get and check the collection's existence
+        $collection = get_record_by_id('Collection', $this->getParam('id'));
+        if (empty($collection) || raw_iiif_metadata($collection, 'iiifitems_collection_type_element') != 'Collection') {
+            throw new Omeka_Controller_Exception_404;
+        }
+        // Pass collection to view
+        $this->view->collection = $collection;
+    }
+    
+    /**
      * Renders the top-level collection for the installation.
      * GET oa/top.json
      */
@@ -105,7 +121,7 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
         foreach (IiifItems_Util_Collection::findTopManifests() as $manifest) {
             $atId = public_full_url(array('things' => 'collections', 'id' => $manifest->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
             $label = metadata($manifest, array('Dublin Core', 'Title'), array('no_escape' => true));
-            $manifests[] = IiifItems_Util_Collection::bareTemplate($atId, $label);
+            $manifests[] = IiifItems_Util_Manifest::bareTemplate($atId, $label);
         }
         // Merge and serve
         $atId = public_full_url();
