@@ -236,7 +236,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         if ($this->_isntIiifDisplayableCollection($args['collection'])) {
             return;
         }
-        switch (raw_iiif_metadata($args['view']->collection, 'iiifitems_collection_type_element')) {
+        switch ($collectionType = raw_iiif_metadata($args['view']->collection, 'iiifitems_collection_type_element')) {
             case 'None':
                 return;
             break;
@@ -259,6 +259,11 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
         $this->_adminElementTextPair("Manifest URL", "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
         echo '</div>';
+        if ($collectionType == 'Collection') {
+            echo '<div class="element-set">';
+            echo '<iframe src="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_explorer') . '" style="width:100%;"></iframe>';
+            echo '</div>';
+        }
     }
     
     /**
@@ -326,7 +331,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         if ($this->_isntIiifDisplayableCollection($args['collection'])) {
             return;
         }
-        switch (raw_iiif_metadata($args['view']->collection, 'iiifitems_collection_type_element')) {
+        switch ($collectionType = raw_iiif_metadata($args['view']->collection, 'iiifitems_collection_type_element')) {
             case 'None':
                 return;
             break;
@@ -351,7 +356,12 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         echo '</p>';
         echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
         $this->_publicElementTextPair($urlLabel, "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
-        echo '</div>';  
+        echo '</div>';
+        if ($collectionType == 'Collection') {
+            echo '<div class="element-set">';
+            echo '<iframe src="' . public_url(array('id' => $args['collection']->id), 'iiifitems_collection_explorer') . '" style="width:100%;"></iframe>';
+            echo '</div>';
+        }
     }
     
     /**
