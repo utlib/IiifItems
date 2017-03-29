@@ -10,7 +10,6 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         'collections_browse_sql',
         'before_save_collection',
         'before_delete_collection',
-        'define_acl',
         'admin_collections_browse',
         'admin_collections_browse_each',
         'admin_collections_show',
@@ -159,19 +158,6 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         if (IiifItems_Util_Collection::isCollection($collection) && $uuid = raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element')) {
             $db->query("DELETE FROM `{$db->prefix}element_texts` WHERE element_id IN (?, ?) AND text = ?;", array(get_option('iiifitems_collection_parent_element'), get_option('iiifitems_manifest_parent_element'), $uuid));
         }
-    }
-    
-    /**
-     * Hook for adding ACL entries.
-     * Allow public users to traverse the collection tree and the top-level collection.
-     * 
-     * @param array $args
-     */
-    public function hookDefineAcl($args) {
-        $acl = $args['acl'];
-        // Solve login redirect when viewing submembers or collection.json as public user
-        $acl->allow(null, 'Collections', 'members');
-        $acl->allow(null, 'Collections', 'collection');
     }
 
     /**
