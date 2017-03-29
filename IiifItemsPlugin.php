@@ -103,6 +103,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
         // Solve login redirect when viewing submembers or collection.json as public user
         $acl->allow(null, 'Collections', 'members');
         $acl->allow(null, 'Collections', 'collection');
+        $acl->allow(null, 'Collections', 'explorer');
     }
 
     public function hookDefineRoutes($args) {
