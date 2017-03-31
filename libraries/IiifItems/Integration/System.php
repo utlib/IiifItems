@@ -130,6 +130,14 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
      * @return array
      */
     public function filterDisplayElements($elementsBySet) {
+        // Hack for hiding the preview from the standard Item view
+        // The standard Item view has a non-empty action context (i.e. list of exports)
+        if ($item = get_current_record('item', false)) {
+            if (empty(get_current_action_contexts()) && !IiifItems_Util_Canvas::isNonIiifItem($item)) {
+                $elementsBySet = array_merge(array('IIIF Preview' => array('' => $elementsBySet['IIIF Item Metadata']['UUID'])), $elementsBySet);
+            }
+        }
+        // Hide all IIIF-specific metadata for manual rendering later
         unset($elementsBySet['Annotation Item Type Metadata']['Selector']);
         unset($elementsBySet['IIIF File Metadata']);
         unset($elementsBySet['IIIF Item Metadata']);
