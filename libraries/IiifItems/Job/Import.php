@@ -549,6 +549,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
                 'Text' => array(),
                 'On Canvas' => array(),
                 'Selector' => array(),
+                'Annotated Region' => array(),
             ),
             'IIIF Item Metadata' => array(
                 'Display as IIIF?' => array(array('text' => 0, 'html' => false)),
@@ -601,6 +602,24 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         // Set title based on snippet of first available text
         if (!empty($metadata['Item Type Metadata']['Text'])) {
             $metadata['Dublin Core']['Title'][] = array('text' => 'Annotation: "' . snippet_by_word_count($metadata['Item Type Metadata']['Text'][0]['text']) . '"', 'html' => false);
+        }
+        // Set annotation region
+        // Simple xywh case: Extract xywh from on
+        if (is_string($annotationData['on'])) {
+            $metadata['Item Type Metadata']['Annotated Region'][] = array('text' => substr($annotationData['on'], strpos($annotationData['on'], '#xywh=')+6), 'html' => false);
+        }
+        // Non-simple selector case
+        elseif (is_array($annotationData['on']) && isset($annotationData['on']['selector'])) {
+            $selector = $annotationData['on']['selector'];
+            // Mirador 2.2- format: Extract SVG from value
+            if ($selector['@type'] === 'oa:SvgSelector') {
+                $metadata['Item Type Metadata']['Selector'][] = array('text' => json_encode($selector['value'], JSON_UNESCAPED_SLASHES) , 'html' => false);
+            }
+            // Mirador 2.3+ format: Extract xywh and SVG from default/value and item/value 
+            elseif ($selector['@type'] == 'oa:Choice') {
+                $metadata['Item Type Metadata']['Selector'][] = array('text' => json_encode($selector['item']['value'], JSON_UNESCAPED_SLASHES), 'html' => false);
+                $metadata['Item Type Metadata']['Annotated Region'][] = array('text' => substr($selector['default']['value'], 5), 'html' => false);
+            }
         }
         return $metadata;
     }
