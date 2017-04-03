@@ -63,6 +63,8 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         add_filter(array('ElementForm', 'Item', 'Item Type Metadata', 'On Canvas'), 'filter_singular_form');
         add_filter(array('ElementForm', 'Item', 'Item Type Metadata', 'Selector'), 'filter_singular_form');
         add_filter(array('ElementInput', 'Item', 'Item Type Metadata', 'Selector'), 'filter_minimal_input');
+        add_filter(array('ElementForm', 'Item', 'Item Type Metadata', 'Annotated Region'), 'filter_singular_form');
+        add_filter(array('ElementInput', 'Item', 'Item Type Metadata', 'Annotated Region'), 'filter_minimal_input');
     }
     
     /**
