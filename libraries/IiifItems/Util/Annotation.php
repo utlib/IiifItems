@@ -111,6 +111,49 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
                 'chars' => $tag->name,
             );
         }
+        if ($attachedItem = IiifItems_Util_Annotation::findAnnotatedItemFor($annoItem)) {
+            if (!($canvasId = raw_iiif_metadata($attachedItem, 'iiifitems_item_atid_element'))) {
+                $canvasId = public_full_url(array('things' => 'items', 'id' => $attachedItem->id, 'typeext' => 'canvas.json'), 'iiifitems_oa_uri');
+            }
+            $svgSelector = raw_iiif_metadata($annoItem, 'iiifitems_annotation_selector_element');
+            $xywhSelector = raw_iiif_metadata($annoItem, 'iiifitems_annotation_xywh_element');
+            if ($svgSelector || $xywhSelector) {
+                unset($currentAnnotationJson['on']);
+                // Mirador 2.3+ format
+                if ($svgSelector && $xywhSelector) {
+                    $currentAnnotationJson['on'] = array(array(
+                        '@type' => 'oa:SpecificResource',
+                        'full' => $canvasId,
+                        'selector' => array(
+                            '@type' => 'oa:Choice',
+                            'default' => array(
+                                '@type' => 'oa:FragmentSelector',
+                                'value' => 'xywh=' . $xywhSelector,
+                            ),
+                            'item' => array(
+                                '@type' => 'oa:SvgSelector',
+                                'value' => json_decode($svgSelector),
+                            ),
+                        ),
+                    ));
+                }
+                // xywh-only format
+                elseif ($xywhSelector) {
+                    $currentAnnotationJson['on'] = $canvasId . '#xywh=' . $xywhSelector;
+                }
+                // Mirador 2.2- format
+                else {
+                    $currentAnnotationJson['on'] = array(
+                        '@type' => 'oa:SpecificResource',
+                        'full' => $canvasId,
+                        'selector' => array(
+                            '@type' => 'oa:SvgSelector',
+                            'value' => json_decode($svgSelector),
+                        ),
+                    );
+                }
+            }
+        }
         return $currentAnnotationJson;
     }
     
