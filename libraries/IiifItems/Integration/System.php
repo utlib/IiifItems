@@ -131,6 +131,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
      */
     public function filterDisplayElements($elementsBySet) {
         unset($elementsBySet['Annotation Item Type Metadata']['Selector']);
+        unset($elementsBySet['Annotation Item Type Metadata']['Annotated Region']);
         unset($elementsBySet['IIIF File Metadata']);
         unset($elementsBySet['IIIF Item Metadata']);
         unset($elementsBySet['IIIF Collection Metadata']);
