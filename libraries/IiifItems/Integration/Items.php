@@ -329,6 +329,6 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
         // Render the viewer
         $item = find_item_by_uuid($args['element_text']->text);
-        return '<iframe style="width:100%; min-height:480px;" allowfullscreen="allowfullscreen" src="' . public_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador') . '"></iframe>';
+        return '<iframe style="width:100%; min-height:480px;" allowfullscreen="allowfullscreen" src="' . public_url(array('id' => $item->id), 'iiifitems_neatline_mirador') . '"></iframe>';
     }
 }

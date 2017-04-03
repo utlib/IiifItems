@@ -39,6 +39,15 @@ class IiifItems_MiradorController extends IiifItems_BaseController {
     }
     
     /**
+     * Renders a minimal Mirador viewer for embedding in Neatline.
+     * 
+     * GET iiif-items/nlmirador/:id
+     */
+    public function neatlineAction() {
+        $this->view->itemId = $this->getParam('id');
+    }
+    
+    /**
      * Renders an annotation-enabled Mirador viewer for the given manifest-type collection or non-annotation item.
      * GET: :things/:id/annotator
      * 
