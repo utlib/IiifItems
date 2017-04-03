@@ -31,6 +31,9 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         // Add Annotation item type Text element
         $addTextElementMigration = new IiifItems_Migration_0_0_1_5();
         $addTextElementMigration->up();
+        // Add Annotation item type Annotated Region element
+        $addXywhElementMigration = new IiifItems_Migration_0_0_1_8();
+        $addXywhElementMigration->up();
     }
     
     /**
@@ -47,6 +50,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         delete_option('iiifitems_annotation_item_type');
         delete_option('iiifitems_annotation_on_element');
         delete_option('iiifitems_annotation_selector_element');
+        delete_option('iiifitems_annotation_xywh_element');
         delete_option('iiifitems_annotation_elements');
     }
     
