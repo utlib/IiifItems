@@ -139,6 +139,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         }
         // Hide all IIIF-specific metadata for manual rendering later
         unset($elementsBySet['Annotation Item Type Metadata']['Selector']);
+        unset($elementsBySet['Annotation Item Type Metadata']['Annotated Region']);
         unset($elementsBySet['IIIF File Metadata']);
         unset($elementsBySet['IIIF Item Metadata']);
         unset($elementsBySet['IIIF Collection Metadata']);
