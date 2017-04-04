@@ -17,7 +17,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         // Sanity checks
         $this->__blockPublic();
         $this->__restrictVerb('GET');
-        if (empty($_GET['uri'])) {
+        if (empty($this->getParam('uri'))) {
             $this->__respondWithJson(null, 400);
             return;
         }
