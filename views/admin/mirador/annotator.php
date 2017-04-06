@@ -9,7 +9,7 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 	<link rel="stylesheet" type="text/css" href="<?php echo $urlCss; ?>">
 	<style type="text/css">
-		body { padding: 0; margin: 0; overflow: hidden; font-size: 70%; }
+		body { padding: 0; margin: 0; overflow: hidden; }
 		#viewer { background: #333; width: 100%; height: 100%; position: fixed; }
 	</style>
         <title>Mirador Viewer</title>
