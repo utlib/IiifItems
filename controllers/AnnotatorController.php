@@ -62,9 +62,11 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         $params = json_decode($paramStr, true);
         unset($params['@id']);
         // Extract on canvas
-        $on = $params['on']['full'];
+        $on = $this->__extractOn($params);
         // Extract selector
-        $selector = $params['on']['selector']['value'];
+        $selector = $this->__extractSvg($params);
+        // Extract preview dimensions (xywh tuple)
+        $previewDimensions = $this->__extractXywh($params);
         // Extract main text and tags
         $body = "";
         $tags = array();
@@ -74,9 +76,9 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                 case 'oa:Tag': $tags[] = $resource['chars']; break;
             }
         }
-        // Extract and strip proprietary _dims attribute from rigged endpoint
+        // Strip proprietary _dims attribute from rigged endpoint
+        // This comes from Mirador 2.2 and below
         if (isset($params['_dims'])) {
-            $previewDimensions = $params['_dims'];
             unset($params['_dims']);
         }
         // Trace back to the target Item and remember its UUID
@@ -200,9 +202,9 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         $json = json_decode($jsonStr, true);
         $atid = $json['@id'];
         // Extract on canvas
-        $on = $json['on']['full'];
+        $on = $this->__extractOn($json);
         // Extract selector
-        $selector = $json['on']['selector']['value'];
+        $selector = $this->__extractSvg($json);
         // Extract main text and tags
         $text = '';
         $textIsHtml = false;
@@ -219,25 +221,22 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             }
         }
         // Save
-        // TODO: Find a way not to overwrite metadata
         if ($annoTexts = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $atid))) {
             if ($annoItem = get_record_by_id('Item', $annoTexts[0]->record_id)) {
                 $annoItem->applyTagString(join(',', $tags));
-                $annoItem->setReplaceElementTexts(true);
-                $annoItem->addElementTextsByArray(array(
-                    'Dublin Core' => array(
-                        'Title' => array(array('text' => 'Annotation: "' . html_entity_decode(snippet_by_word_count($text)) . '"', 'html' => false)),
-                    ),
+                $newTextsArray = array(
                     'Item Type Metadata' => array(
-                        'On Canvas' => array(array('text' => raw_iiif_metadata($annoItem, 'iiifitems_annotation_on_element'), 'html' => false)),
-                        'Selector' => array(array('text' => json_encode($selector, JSON_UNESCAPED_SLASHES), 'html' => false)),
-                        'Text' => array(array('text' => $text, 'html' => true)), // Mirador bug?
+                        'Text' => array(array('text' => $text, 'html' => true)),
                     ),
                     'IIIF Item Metadata' => array(
-                        'Original @id' => array(array('text' => $atid, 'html' => false)),
                         'JSON Data' => array(array('text' => $jsonStr, 'html' => false)),
                     ),
+                );
+                $annoItem->deleteElementTextsByElementId(array(
+                    get_option('iiifitems_annotation_text_element'),
+                    get_option('iiifitems_item_json_element'),
                 ));
+                $annoItem->addElementTextsByArray($newTextsArray);
                 $annoItem->save();
                 $this->__respondWithRaw($jsonStr);
                 return;
@@ -264,5 +263,50 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
     private function __getThing($type, $id) {
         $class = Inflector::titleize(Inflector::singularize($type));
         return get_record_by_id($class, $id);
+    }
+    
+    /**
+     * Return the canvas that the annotation is attached on.
+     * @param array $params OA annotation JSON array data
+     * @return string
+     */
+    private function __extractOn($params) {
+        if (isset($params['on']['full'])) {
+            return $params['on']['full'];
+        }
+        if (isset($params['on'][0]['full'])) {
+            return $params['on'][0]['full'];
+        }
+        return null;
+    }
+    
+    /**
+     * Return the xywh selector of the annotation.
+     * @param array $params OA annotation JSON array data
+     * @return array 4-entry array of x, y, width, height
+     */
+    private function __extractXywh($params) {
+        if (isset($params['_dims'])) {
+            return $params['_dims'];
+        }
+        if (isset($params['on'][0]['selector']['default']['value'])) {
+            return explode(',', substr($params['on'][0]['selector']['default']['value'], 5));
+        } 
+        return null;
+    }
+    
+    /**
+     * Return the SVG selector of the annotation.
+     * @param array $params OA annotation JSON array data
+     * @return string
+     */
+    private function __extractSvg($params) {
+        if (isset($params['on']['selector']['value'])) {
+            return $params['on']['selector']['value'];
+        }
+        if (isset($params['on'][0]['selector']['item']['value'])) {
+            return $params['on'][0]['selector']['item']['value'];
+        } 
+        return null;
     }
 }
