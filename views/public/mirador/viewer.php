@@ -48,6 +48,9 @@
 //                    }
 //                }
             ?>
+            <?php if ($type == 'collections' && IiifItems_Util_Collection::isCollection($thing)) : ?>
+            "openManifestsPage": true,
+            <?php else: ?>
             "windowObjects": [{
                 imageMode: "ImageView",
                 loadedManifest: "<?php echo $defaultManifest; ?>",
@@ -57,6 +60,7 @@
                 sidePanel: true,
                 annotationLayer: true
             }],
+            <?php endif; ?>
             "windowSettings": {
                 canvasControls: {
                     annotations: {
@@ -72,14 +76,6 @@
                 show: false
             }
         });
-        <?php if ($type == 'collections' && IiifItems_Util_Collection::isCollection($thing)) : ?>
-        var interval = setInterval(function() {
-            if ($('.addItemLink:first').length > 0) {
-                $('.addItemLink:first').click();
-                clearInterval(interval);
-            }
-        }, 100);
-        <?php endif; ?>
     });
     </script>
 </body>
