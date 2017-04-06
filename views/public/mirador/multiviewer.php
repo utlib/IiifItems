@@ -52,6 +52,9 @@
                 <?php if ($i > 0) echo ','; ?>{ "<?php echo ($types[$i] == 'Collection') ? 'collectionUri' : 'manifestUri' ?>": <?php echo $url; ?> }
                 <?php endforeach; ?>
             ],
+            <?php if ($popup) : ?>
+            "openManifestsPage": true,
+            <?php else: ?>
             "windowObjects": [{
                 imageMode: "ImageView",
                 <?php if (!empty($urls) && !$popup): ?>
@@ -62,6 +65,7 @@
                 viewType: "ImageView",
                 annotationLayer: true
             }],
+            <?php endif; ?>
             "windowSettings": {
                 canvasControls: {
                     annotations: {
@@ -77,14 +81,6 @@
                 show: false
             }
         });
-        <?php if ($popup) : ?>
-        var interval = setInterval(function() {
-            if ($('.addItemLink:first').length > 0) {
-                $('.addItemLink:first').click();
-                clearInterval(interval);
-            }
-        }, 100);
-        <?php endif; ?>
     });
     </script>
 </body>
