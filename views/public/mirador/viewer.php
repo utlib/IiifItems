@@ -1,7 +1,8 @@
 <?php
     $mirador_path = get_option('iiifitems_mirador_path');
-    $urlJs = $mirador_path . '/mirador.js';
-    $urlCss = $mirador_path . '/css/mirador-combined.css';
+    $css_path = get_option('iiifitems_mirador_css');
+    $urlJs = $mirador_path . '/' . get_option('iiifitems_mirador_js');
+    $urlCss = (strpos($css_path, 'http://') === 0 || strpos($css_path, 'https://') === 0) ? $css_path : ($mirador_path . '/' . $css_path);
 ?>
 <!DOCTYPE html>
 <head>
