@@ -222,10 +222,27 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         // Try to repair item
         $originalFiles = $item->getFiles();
         try {
-            $jsonData = json_decode($jsonStr, true);
-            foreach ($jsonData['images'] as $image) { 
-                $downloader = new IiifItems_ImageDownloader($image);
-                $file = $downloader->downloadToItem($item, 'full');
+            // Annotation item
+            if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
+                if ($xywhBounds = raw_iiif_metadata($item, 'iiifitems_annotation_xywh_element')) {
+                    $attachedItem = IiifItems_Util_Annotation::findAnnotatedItemFor($item);
+                    $addAnnotationThumbnailJob = new IiifItems_Job_AddAnnotationThumbnail(array(
+                        'originalItemId' => $attachedItem->id,
+                        'annotationItemId' => $item->id,
+                        'dims' => explode(',', $xywhBounds, 4),
+                    ));
+                    $addAnnotationThumbnailJob->perform();
+                } else {
+                    throw new Exception("No xywh bounds found on annotation.");
+                }
+            }
+            // Non-annotation item
+            else {
+                $jsonData = json_decode($jsonStr, true);
+                foreach ($jsonData['images'] as $image) { 
+                    $downloader = new IiifItems_ImageDownloader($image);
+                    $file = $downloader->downloadToItem($item, 'full');
+                }
             }
         } catch (Exception $ex) {
             $this->_helper->flashMessenger(__("Unable to repair item."));
