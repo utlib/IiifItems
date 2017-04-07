@@ -55,6 +55,8 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         set_option('iiifitems_bridge_prefix', '');
         $serverUrlHelper = new Zend_View_Helper_ServerUrl;
         set_option('iiifitems_mirador_path', $serverUrlHelper->serverUrl() . public_url('plugins') . '/IiifItems/views/shared/js/mirador');
+        $addCssAndJsMigration = new IiifItems_Migration_0_0_1_9();
+        $addCssAndJsMigration->up();
     }
     
     /**
@@ -97,6 +99,8 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     private function __removeIiif() {
         delete_option('iiifitems_bridge_prefix');
         delete_option('iiifitems_mirador_path');
+        delete_option('iiifitems_mirador_css');
+        delete_option('iiifitems_mirador_js');
     }
     
     /**
