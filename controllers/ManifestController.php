@@ -20,8 +20,16 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
         //Respond with JSON
         try {
             switch ($class) {
-                case 'Collection': $jsonData = IiifItems_Util_Manifest::buildManifest($thing, is_admin_theme()); break;
-                case 'Item': $jsonData = IiifItems_Util_Manifest::buildItemManifest($thing); break;
+                case 'Collection': 
+                    $jsonData = IiifItems_Util_Manifest::buildManifest($thing); 
+                    IiifItems_Util_Search::insertSearchApiFor($thing, $jsonData);
+                break;
+                case 'Item': 
+                    $jsonData = IiifItems_Util_Manifest::buildItemManifest($thing);
+                    if ($thing->item_type_id != get_option('iiifitems_annotation_item_type')) {
+                        IiifItems_Util_Search::insertSearchApiFor($thing, $jsonData); 
+                    }
+                break;
                 case 'File': $jsonData = IiifItems_Util_Manifest::buildFileManifest($thing); break;
                 case 'ExhibitPageBlock': $jsonData = IiifItems_Util_Manifest::buildExhibitPageBlockManifest($thing); break;
             }
