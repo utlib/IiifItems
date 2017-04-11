@@ -76,6 +76,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'Parent Collection'), array($this, 'inputForItemParent'));
         add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'Parent Collection'), 'filter_singular_form');
         add_filter(array('Display', 'Item', 'IIIF Item Metadata', 'Parent Collection'), 'filter_hide_element_display');
+        add_filter(array('Display', 'Item', 'IIIF Item Metadata', 'UUID'), array($this, 'displayPreview'));
         add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'UUID'), array($this, 'inputForItemUuid'));
         add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'UUID'), 'filter_singular_form');
         add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'JSON Data'), 'filter_minimal_input');
@@ -178,7 +179,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
         $this->_adminElementTextPair('Manifest URL', 'iiif-item-metadata-manifest-url', '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
         $this->_adminElementTextPair('Original ID', 'iiif-item-metadata-original-id', metadata($item, array('IIIF Item Metadata', 'Original @id')), true);
-        $this->_adminElementTextPair('UUID', 'iiif-item-metadata-uuid', metadata($item, array('IIIF Item Metadata', 'UUID')), true);
+        $this->_adminElementTextPair('UUID', 'iiif-item-metadata-uuid', metadata($item, array('IIIF Item Metadata', 'UUID'), array('no_filter' => true)), true);
         echo '</div>';
     }
     
@@ -310,5 +311,24 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
     public function inputForItemUuid($comps, $args) {
         $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
         return filter_minimal_input($comps, $args);
+    }
+    
+    /**
+     * Display filter for UUID.
+     * Add hacked Mirador Viewer.
+     * 
+     * @param string $text
+     * @param array $args
+     * @return string
+     */
+    public function displayPreview($text, $args) {
+        // Don't show preview on standard Omeka views
+        // Note: This is in fact a hack that depends on non-Omeka views not having export actions.
+        if (!empty(get_current_action_contexts())) {
+            return $text;
+        }
+        // Render the viewer
+        $item = find_item_by_uuid($args['element_text']->text);
+        return '<iframe style="width:100%; min-height:480px;" allowfullscreen="allowfullscreen" src="' . public_url(array('id' => $item->id), 'iiifitems_neatline_mirador') . '"></iframe>';
     }
 }
