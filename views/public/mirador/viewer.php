@@ -70,6 +70,7 @@
                         annotationRefresh: true
                     }
                 },
+                bottomPanelVisible: false,
                 sidePanelVisible: false
             },
             "autoHideControls": false,
