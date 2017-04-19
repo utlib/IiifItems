@@ -199,13 +199,15 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
                     'chars' => $currentText->text,
                 ),
             );
-            foreach (get_record_by_id('Item', $onCanvasMatch->record_id)->getTags() as $tag) {
-                $currentAnnotationJson['resource'][] = array(
-                    '@type' => 'oa:Tag',
-                    'chars' => $tag->name,
-                );
+            if ($matchedItem = get_record_by_id('Item', $onCanvasMatch->record_id)) {
+                foreach ($matchedItem->getTags() as $tag) {
+                    $currentAnnotationJson['resource'][] = array(
+                        '@type' => 'oa:Tag',
+                        'chars' => $tag->name,
+                    );
+                }
+                $annoItems[] = $currentAnnotationJson;
             }
-            $annoItems[] = $currentAnnotationJson;
         }
         return $annoItems;
     }
