@@ -20,7 +20,7 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
         //Respond with JSON
         try {
             switch ($class) {
-                case 'Collection': $jsonData = IiifItems_Util_Manifest::buildManifest($thing); break;
+                case 'Collection': $jsonData = IiifItems_Util_Manifest::buildManifest($thing, is_admin_theme()); break;
                 case 'Item': $jsonData = IiifItems_Util_Manifest::buildItemManifest($thing); break;
                 case 'File': $jsonData = IiifItems_Util_Manifest::buildFileManifest($thing); break;
             }
