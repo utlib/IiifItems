@@ -13,8 +13,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      * @throws Omeka_Controller_Exception_404
      */
     public function formAction() {
-        // Admins only
-        if (!is_admin_theme()) {
+        // Qualified admins only
+        if (!is_admin_theme() || current_user()->role == 'researcher') {
             throw new Omeka_Controller_Exception_404;
         }
         
@@ -143,8 +143,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      * @throws Omeka_Controller_Exception_404
      */
     public function statusAction() {
-        // Admins only
-        if (!is_admin_theme()) {
+        // Qualified admins only
+        if (!is_admin_theme() || current_user()->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
         // Select all jobs
@@ -163,6 +163,11 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      * @throws Omeka_Controller_Exception_404
      */
     public function statusUpdateAction() {
+        // Qualified admins only
+        if (!is_admin_theme() || current_user()->role == 'researcher') {
+            throw new Omeka_Controller_Exception_404();
+        }
+        
         if (!isset($_GET['t'])) {
             throw new Omeka_Controller_Exception_404();
         }
@@ -192,8 +197,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      * @throws Omeka_Controller_Exception_404
      */
     public function repairItemAction() {
-        // Admins only via POST
-        if (!is_admin_theme()) {
+        // Qualified admins only via POST
+        if (!is_admin_theme() || current_user()->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
         $request = $this->getRequest();
@@ -263,6 +268,9 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      */
     public function maintenanceAction() {
         $this->__blockPublic();
+        if (current_user()->role == 'researcher') {
+            throw new Omeka_Controller_Exception_404();
+        }
     }
     
     /**
@@ -275,6 +283,9 @@ class IiifItems_ImportController extends IiifItems_BaseController {
     public function cleanCacheAction() {
         // Block unwanted people
         $this->__blockPublic();
+        if (current_user()->role == 'researcher') {
+            throw new Omeka_Controller_Exception_404();
+        }
         $this->__restrictVerb('POST');
         
         // Set up request
