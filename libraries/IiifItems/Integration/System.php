@@ -119,10 +119,12 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
      * @return array
      */
     public function filterAdminNavigationMain($nav) {
-        $nav[] = array(
-            'label' => __('IIIF Items'),
-            'uri' => url('iiif-items/import'),
-        );
+        if (current_user()->role != 'researcher') {
+            $nav[] = array(
+                'label' => __('IIIF Items'),
+                'uri' => url('iiif-items/import'),
+            );
+        }
         return $nav;
     }
 
