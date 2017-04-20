@@ -194,10 +194,11 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         );
         $results = array();
         foreach ($matches as $match) {
-            $candidate = get_record_by_id($match->record_type, $match->record_id);
-            $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
-            if ($type == 'Collection') {
-                $results[] = $candidate;
+            if ($candidate = get_record_by_id($match->record_type, $match->record_id)) {
+                $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
+                if ($type == 'Collection') {
+                    $results[] = $candidate;
+                }
             }
         }
         return $results;
@@ -220,10 +221,11 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         );
         $results = array();
         foreach ($matches as $match) {
-            $candidate = get_record_by_id($match->record_type, $match->record_id);
-            $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
-            if ($type != 'Collection' && $type != 'None') {
-                $results[] = $candidate;
+            if ($candidate = get_record_by_id($match->record_type, $match->record_id)) {
+                $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
+                if ($type != 'Collection' && $type != 'None') {
+                    $results[] = $candidate;
+                }
             }
         }
         return $results;
@@ -246,8 +248,9 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         );
         $results = array();
         foreach ($matches as $match) {
-            $candidate = get_record_by_id($match->record_type, $match->record_id);
-            $results[] = $candidate;
+            if ($candidate = get_record_by_id($match->record_type, $match->record_id)) {
+                $results[] = $candidate;
+            }
         }
         return $results;
     }
