@@ -169,7 +169,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     public function hookAdminCollectionsBrowse($args) {
         $db = get_db();
         $itemsTable = $db->getTable('Item');
-        $select = $itemsTable->getSelectForCount()->where('items.collection_id IS NULL AND items.item_type_id <> ?', array(get_option('iiifitems_annotation_item_type')));
+        $select = $itemsTable->getSelectForCount()->where('items.collection_id IS NULL AND (items.item_type_id IS NULL OR items.item_type_id <> ?)', array(get_option('iiifitems_annotation_item_type')));
         $totalItemsWithoutCollection = $db->fetchOne($select);
         if ($totalItemsWithoutCollection) {
             $withoutCollectionMessage = __(plural('%sOne item has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '<a href="' . html_escape(url('items/browse?collection=0')) . '">', $totalItemsWithoutCollection, '</a>');
