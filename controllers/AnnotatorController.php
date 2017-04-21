@@ -34,7 +34,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         }
         
         // Pull all annotations that belong to $thing
-        $json = IiifItems_Util_Annotation::findAnnotationsFor($thing);
+        // Include access permissions
+        $json = IiifItems_Util_Annotation::findAnnotationsFor($thing, true);
         
         // Respond [<anno1>...<annon>]
         $this->__respondWithJson($json);
@@ -81,6 +82,15 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         if (isset($params['_dims'])) {
             unset($params['_dims']);
         }
+        // Read and strip proprietary _iiifitems_access attribute
+        if (isset($params['_iiifitems_access']) && in_array(current_user()->role, array('super', 'admin'))) {
+            $isPublic = !!$params['_iiifitems_access']['public'];
+            $isFeatured = !!$params['_iiifitems_access']['featured'];
+        } else {
+            $isPublic = false;
+            $isFeatured = false;
+        }
+        unset($params['_iiifitems_access']);
         // Trace back to the target Item and remember its UUID
         $originalItem = IiifItems_Util_Annotation::findAttachmentInContextByUri($contextThing, $on);
         if (!$originalItem) {
@@ -99,7 +109,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         }
         // Save
         $newItem = insert_item(array(
-            'public' => true,
+            'public' => $isPublic,
+            'featured' => $isFeatured,
             'item_type_id' => get_option('iiifitems_annotation_item_type'),
             'tags' => join(',', $tags),
         ), array(
@@ -140,6 +151,12 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                 'dims' => $previewDimensions,
             ));
         }
+        // Tack back the proprietary _iiifitems_access attribute
+        $params['_iiifitems_access'] = array(
+            'public' => $newItem->public,
+            'featured' => $newItem->featured,
+            'owner' => $newItem->owner_id,
+        );
         $this->__respondWithJson($params);
     }
     
@@ -170,6 +187,20 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         // Find the annotation by that ID and delete it
         if ($annoTexts = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $id))) {
             if ($annoItem = get_record_by_id('Item', $annoTexts[0]->record_id)) {
+                // Check permissions
+                $user = current_user();
+                switch ($user->role) {
+                    case 'contributor':
+                        if ($user->id != $annoItem->owner_id) {
+                            $this->__respondWithJson(null, 403);
+                            return;
+                        }
+                    break;
+                    case 'researcher':
+                        $this->__respondWithJson(null, 403);
+                        return;
+                }
+                // Delete the annotation
                 $annoItem->delete();
                 $this->__respondWithJson(array("status" => "OK"));
                 return;
@@ -223,13 +254,34 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         // Save
         if ($annoTexts = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $atid))) {
             if ($annoItem = get_record_by_id('Item', $annoTexts[0]->record_id)) {
+                // Check permissions
+                $user = current_user();
+                switch ($user->role) {
+                    case 'super': case 'admin':
+                        $isPublic = !!$json['_iiifitems_access']['public'];
+                        $isFeatured = !!$json['_iiifitems_access']['featured'];
+                    break;
+                    case 'contributor':
+                        $isPublic = $annoItem->public;
+                        $isFeatured = $annoItem->featured;
+                        if ($user->id != $annoItem->owner_id) {
+                            $this->__respondWithJson(null, 403);
+                            return;
+                        }
+                    break;
+                    case 'researcher':
+                        $this->__respondWithJson(null, 403);
+                        return;
+                }
+                unset($json['_iiifitems_access']);
+                // Apply changes
                 $annoItem->applyTagString(join(',', $tags));
                 $newTextsArray = array(
                     'Item Type Metadata' => array(
                         'Text' => array(array('text' => $text, 'html' => true)),
                     ),
                     'IIIF Item Metadata' => array(
-                        'JSON Data' => array(array('text' => $jsonStr, 'html' => false)),
+                        'JSON Data' => array(array('text' => $this->__json_encode($json), 'html' => false)),
                     ),
                 );
                 $annoItem->deleteElementTextsByElementId(array(
@@ -237,8 +289,11 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                     get_option('iiifitems_item_json_element'),
                 ));
                 $annoItem->addElementTextsByArray($newTextsArray);
+                $annoItem->public = $isPublic;
+                $annoItem->featured = $isFeatured;
                 $annoItem->save();
-                $this->__respondWithRaw($jsonStr);
+                $this->__insertIiifItemsAccess($json, $annoItem);
+                $this->__respondWithJson($json);
                 return;
             }
         }
@@ -308,5 +363,19 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             return $params['on'][0]['selector']['item']['value'];
         } 
         return null;
+    }
+    
+    /**
+     * Inserts the proprietary _iiifitems_access property into the given JSON data.
+     * @param array $json The JSON array data
+     * @param Item $annoItem The annotation-type item that this is based on
+     */
+    private function __insertIiifItemsAccess(&$json, $annoItem) {
+        // Tack back the proprietary _iiifitems_access attribute
+        $json['_iiifitems_access'] = array(
+            'public' => $annoItem->public,
+            'featured' => $annoItem->featured,
+            'owner' => $annoItem->owner_id,
+        );
     }
 }

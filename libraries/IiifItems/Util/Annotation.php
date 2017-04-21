@@ -159,10 +159,11 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
     
     /**
      * Return an array of annotations for an item, as JSON objects.
-     * @param type $item
+     * @param Item $item
+     * @param boolean $withAccess Whether to attach access permission info
      * @return array
      */
-    public static function findAnnotationsFor($item) {
+    public static function findAnnotationsFor($item, $withAccess=false) {
         if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
             return $item;
         }
@@ -204,6 +205,13 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
                     $currentAnnotationJson['resource'][] = array(
                         '@type' => 'oa:Tag',
                         'chars' => $tag->name,
+                    );
+                }
+                if ($withAccess) {
+                    $currentAnnotationJson['_iiifitems_access'] = array(
+                        'public' => $matchedItem->public,
+                        'featured' => $matchedItem->featured,
+                        'owner' => $matchedItem->owner_id,
                     );
                 }
                 $annoItems[] = $currentAnnotationJson;

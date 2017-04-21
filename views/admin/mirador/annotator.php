@@ -1,6 +1,7 @@
 <?php
 	$urlJs = src('mirador', 'js/mirador', 'js');
 	$endpointJs = src('mirador_endpoint', 'js', 'js');
+        $tinymceJs = src('omeka_tinymce', 'js', 'js');
 	$urlCss = src('mirador-combined', 'js/mirador/css', 'css');
 ?>
 <!DOCTYPE html>
@@ -18,6 +19,7 @@
 	<div id="viewer"></div>
 	<script src="<?php echo $urlJs; ?>"></script>
 	<script src="<?php echo $endpointJs; ?>"></script>
+        <script src="<?php echo $tinymceJs; ?>"></script>
 	<script type="text/javascript">
 	$(function() {
 		var anno_token;
@@ -32,9 +34,21 @@
 				name: 'IiifItemsAnnotations',
 				module: 'IiifItemsAnnotations',
 				options: {
-					'prefix': '<?php echo absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_annotator_create') ?>'
+					'prefix': '<?php echo absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_annotator_create') ?>',
+                                        admin: <?php echo in_array(current_user()->role, array('super', 'admin')) ? 'true' : 'false'; ?>,
+                                        userId: <?php echo current_user()->id; ?>
 				}
 			},
+                        'annotationBodyEditor': {
+                            'module': 'OmekaAnnotationEditor',
+                            'options': {
+                                config: {
+                                    plugins: "image link media lists directionality",
+                                    toolbar: "bold italic underline | bullist numlist | link image | removeformat | ltr rtl",
+                                    admin: <?php echo in_array(current_user()->role, array('super', 'admin')) ? 'true' : 'false'; ?>
+                                }
+                            }
+                        },
 			"windowObjects": [{
 				imageMode: "ImageView",
 				loadedManifest: "<?php echo absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest'); ?>",
