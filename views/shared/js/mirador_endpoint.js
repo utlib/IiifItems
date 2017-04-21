@@ -5,6 +5,8 @@
             token:     null,
             prefix:    null,
             dfd:       null,
+            admin:     false,
+            userId:    null,
             annotationsList: [],        
             windowID: null,
             eventEmitter: null
@@ -155,7 +157,7 @@
         },
 
         userAuthorize: function(action, annotation) {
-            return true;
+            return this.admin || (annotation._iiifitems_access.owner == this.userId);
         }
     };
 }(Mirador));
