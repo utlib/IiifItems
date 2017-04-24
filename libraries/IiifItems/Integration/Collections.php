@@ -130,6 +130,11 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                 if (raw_iiif_metadata($parent, 'iiifitems_collection_type_element') != 'Collection') {
                     $record->addError('Parent Collection', __('A collection can only have collection-type collections as its parent.'));
                 }
+                // User must have permission to use a new parent
+                $currentUser = current_user();
+                if ($currentUser == 'contributor' && $parent->owner_id != $currentUser->id && $parentUuid != raw_iiif_metadata($record, 'iiifitems_collection_parent_element')) {
+                    $record->addError('Parent Collection', __('You do not have the permission reassign this parent as a contributor.'));
+                }
                 // Anti-loop check if is collection has a parent
                 $visitedUuids = array($record->getElementTextsByRecord($uuidElement)[0]->text => true);
                 $current = $parent;
@@ -409,11 +414,17 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
      * @return string
      */
     public function inputForCollectionParent($comps, $args) {
-        $uuidOptions = IiifItems_Util_CollectionOptions::getCollectionOptions();
+        $currentUser = current_user();
+        $uuidOptions = IiifItems_Util_CollectionOptions::getCollectionOptions(null, ($currentUser->role == 'contributor') ? $currentUser : null);
         if (isset($_GET['parent']) && find_collection_by_uuid($_GET['parent'])) {
             $args['value'] = $_GET['parent'];
         }
-        $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), $uuidOptions);
+        $parent = find_collection_by_uuid($args['value']);
+        if ($currentUser->role == 'contributor' && $args['value'] && $parent && $parent->owner_id != $currentUser->owner_id) {
+            $comps['input'] = metadata($parent, array('Dublin Core', 'Title'));
+        } else {
+            $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), $uuidOptions);
+        }
         return filter_minimal_input($comps, $args);
     }
 

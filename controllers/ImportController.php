@@ -39,24 +39,49 @@ class IiifItems_ImportController extends IiifItems_BaseController {
     protected function processSubmission() {
         try {
             $form = $this->_getImportForm();
+            $currentUser = current_user();
             // Check CSRF token
             if (!$form->isValid($this->getRequest()->getPost())) {
                 $this->_helper->flashMessenger(__('Invalid CSRF token. Please refresh the form and retry.'), 'error');
+                return false;
+            }
+            // Check parent
+            $parentUuid = $form->getValue('items_import_to_parent');
+            $parentCollection = find_collection_by_uuid($parentUuid);
+            if ($parentUuid && !$parentCollection) {
+                $this->_helper->flashMessenger(__('Inaccessible parent.'), 'error');
+                return false;
+            }
+            if ($currentUser->role == 'contributor' && $parentUuid && $parentCollection->owner_id != $currentUser->id) {
+                $this->_helper->flashMessenger(__("You may not import into another user's collections as a contributor."), 'error');
                 return false;
             }
             // Grab and verify the submitted source
             switch ($form->getValue('items_import_type')) {
                 case 0:
                     $importType = 'Collection';
+                    if ($parentUuid && !IiifItems_Util_Collection::isCollection($parentCollection)) {
+                        $this->_helper->flashMessenger(__('Only collections can be the parent of a collection.'), 'error');
+                        return false;
+                    }
                 break;
                 case 1:
                     $importType = 'Manifest';
+                    if ($parentUuid && !IiifItems_Util_Collection::isCollection($parentCollection)) {
+                        $this->_helper->flashMessenger(__('Only collections can be the parent of a manifest.'), 'error');
+                        return false;
+                    }
                 break;
                 case 2:
                     $importType = 'Canvas';
+                    if ($parentUuid && !IiifItems_Util_Manifest::isManifest($parentCollection)) {
+                        $this->_helper->flashMessenger(__('Only manifests can be the parent of a canvas.'), 'error');
+                        return false;
+                    }
                 break;
                 default:
                     $this->_helper->flashMessenger(__('Invalid import type.'), 'error');
+                    return false;
                 break;
             }
             switch ($form->getValue('items_import_source')) {
@@ -103,7 +128,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 'importSourceBody' => $importSourceBody,
                 'importPreviewSize' => $importPreviewSize,
                 'isReversed' => $form->getValue('items_are_reversed') ? 1 : 0,
-                'parent' => $form->getValue('items_import_to_parent'),
+                'parent' => $parentUuid,
             ));
             // OK
             return true;
