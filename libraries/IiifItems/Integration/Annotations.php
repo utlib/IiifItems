@@ -100,6 +100,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
                 $onCanvasUuid,
             ));
             $belongsTo = find_item_by_uuid($onCanvasUuid);
+            $allowEdit = is_allowed($args['item'], 'edit');
             echo '<div class="panel"><h4>Annotations</h4>'
                 . '<p>This annotation is one of '
                 . '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $onCanvasUuid . '">'
@@ -109,15 +110,17 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
                 . metadata($belongsTo, array('Dublin Core', 'Title'))
                 . '</a>".</p>'
                 . '</div>';
-            echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
-            echo '<div class="panel"><h4>Repair</h4>'
-                . '<p>If this annotation is missing its preview thumbnail, you '
-                . 'can repair it below. All preview files attached to this item '
-                . 'will be deleted and then reloaded.</p>'
-                . '<form action="' . admin_url(array('id' => $args['item']->id), 'iiifitems_repair_item') . '" method="POST">'
-                . '<input type="submit" value="Repair" class="big blue button" style="width:100%"/>'
-                . '</form>'
-                . '</div>';
+            if ($allowEdit) {
+                echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+                echo '<div class="panel"><h4>Repair</h4>'
+                    . '<p>If this annotation is missing its preview thumbnail, you '
+                    . 'can repair it below. All preview files attached to this item '
+                    . 'will be deleted and then reloaded.</p>'
+                    . '<form action="' . admin_url(array('id' => $args['item']->id), 'iiifitems_repair_item') . '" method="POST">'
+                    . '<input type="submit" value="Repair" class="big blue button" style="width:100%"/>'
+                    . '</form>'
+                    . '</div>';
+            }
         }
     }
     
