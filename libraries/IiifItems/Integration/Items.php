@@ -10,6 +10,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         'items_browse_sql',
         'before_save_item',
         'before_delete_item',
+        'admin_items_browse',
         'admin_items_browse_simple_each',
         'admin_items_show',
         'admin_items_show_sidebar',
@@ -133,6 +134,15 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
     }
     
     /**
+     * Hook for the admin-side item browsing page.
+     * 
+     * @param array $args
+     */
+    public function hookAdminItemsBrowse($args) {
+        echo '<style>.iiifitems-action-links { list-style-type: none; margin: 0; padding: 0; }</style>';
+    }
+    
+    /**
      * Hook for entries on the admin-side item browsing page.
      * Adds action links to each non-annotation entry (Annotate and List Annotations).
      * Delegates to the annotations integration for annotation-type actions.
@@ -143,12 +153,19 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         if ($this->_isntIiifDisplayableItem($args['item'])) {
             return;
         }
+        $allowEdit = is_allowed($args['item'], 'edit');
         if ($args['item']->item_type_id != get_option('iiifitems_annotation_item_type')) {
             if ($uuid = raw_iiif_metadata($args['item'], 'iiifitems_item_uuid_element')) {
-                echo '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a>';
-                if ($annotations = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_annotation_on_element'), $uuid))) {
-                    echo '<br />';
-                    echo '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations (' . count($annotations) . ')</a>';
+                $annotations = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_annotation_on_element'), $uuid));
+                if ($allowEdit || $annotations) {
+                    echo '<ul class="iiifitems-action-links">';
+                    if ($allowEdit) {
+                        echo '<li><a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a></li>';
+                    }
+                    if ($annotations) {
+                        echo '<li><a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations (' . count($annotations) . ')</a></li>';
+                    }
+                    echo '</ul>';
                 }
             }    
         } else {
@@ -195,6 +212,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         if ($this->_isntIiifDisplayableItem($item)) {
             return;
         }
+        $allowEdit = is_allowed($item, 'edit');
         if ($uuid = raw_iiif_metadata($item, 'iiifitems_item_uuid_element')) {
             if ($item->item_type_id != get_option('iiifitems_annotation_item_type')) {
                 $onCanvasMatches = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ?", array(
@@ -209,16 +227,18 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
                     . ' annotation(s).</p>'
                     // . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
                     . '</div>';
-                echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
-                echo '<div class="panel"><h4>Repair</h4>'
-                    . '<p>If this item is imported via IIIF Items and the files are '
-                    . 'missing/corrupted, you can repair it below. All '
-                    . 'files belonging to this item will be deleted and '
-                    . 'then reloaded.</p>'
-                    . '<form action="' . admin_url(array('id' => $item->id), 'iiifitems_repair_item') . '" method="POST">'
-                    . '<input type="submit" value="Repair" class="big blue button" style="width:100%"/>'
-                    . '</form>'
-                    . '</div>';
+                if ($allowEdit) {
+                    echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+                    echo '<div class="panel"><h4>Repair</h4>'
+                        . '<p>If this item is imported via IIIF Items and the files are '
+                        . 'missing/corrupted, you can repair it below. All '
+                        . 'files belonging to this item will be deleted and '
+                        . 'then reloaded.</p>'
+                        . '<form action="' . admin_url(array('id' => $item->id), 'iiifitems_repair_item') . '" method="POST">'
+                        . '<input type="submit" value="Repair" class="big blue button" style="width:100%"/>'
+                        . '</form>'
+                        . '</div>';
+                }
             } else {
                 (new IiifItems_Integration_Annotations)->altHookAdminItemsShowSidebar($args);
             }
