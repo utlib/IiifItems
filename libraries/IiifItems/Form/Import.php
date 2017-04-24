@@ -52,7 +52,7 @@ class IiifItems_Form_Import extends Omeka_Form {
         // Parent
         $this->addElement('select', 'items_import_to_parent', array(
             'label' => __('Parent'),
-            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(),
+            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(null, (current_user()->role == 'contributor') ? current_user() : null),
         ));
         // Set to Public?
         $this->addElement('checkbox', 'items_are_public', array(
