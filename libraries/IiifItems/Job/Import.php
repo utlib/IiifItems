@@ -459,7 +459,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         }
         $metadata = array(
             'Dublin Core' => array(
-                'Title' => array(array('text' => $jsonData['label'], 'html' => false)),
+                'Title' => array(array('text' => $jsonData['label'], 'html' => $this->_hasHtml($jsonData['label']))),
                 'Source' => array(),
             ),
             $metadataPrefix => array(
@@ -480,13 +480,13 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             break;
         }
         if (isset($jsonData['description'])) {
-            $metadata['Dublin Core']['Description'] = array(array('text' => $jsonData['description'], 'html' => false));
+            $metadata['Dublin Core']['Description'] = array(array('text' => $jsonData['description'], 'html' => $this->_hasHtml($jsonData['description'])));
         }
         if (isset($jsonData['attribution'])) {
-            $metadata['Dublin Core']['Publisher'] = array(array('text' => $jsonData['attribution'], 'html' => false));
+            $metadata['Dublin Core']['Publisher'] = array(array('text' => $jsonData['attribution'], 'html' => $this->_hasHtml($jsonData['attribution'])));
         }
         if (isset($jsonData['license'])) {
-            $metadata['Dublin Core']['Rights'] = array(array('text' => $jsonData['license'], 'html' => false));
+            $metadata['Dublin Core']['Rights'] = array(array('text' => $jsonData['license'], 'html' => $this->_hasHtml($jsonData['license'])));
         }
         if ($parentCollection !== null && $type != 'Item') {
             $metadata[$metadataPrefix]['Parent Collection'] = array(array('text' => metadata($parentCollection, array($metadataPrefix, 'UUID'), array('no_escape' => true, 'no_filter' => true)), 'html' => false));
@@ -633,4 +633,12 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         return ($this->_isReversed) ? array_reverse($array) : $array;
     }
     
+    /**
+     * Return whether the given string contains HTML tags.
+     * @param string $str
+     * @return boolean
+     */
+    protected function _hasHtml($str) {
+        return !!preg_match('#(</b>)|(</i>)|(</span>)|(</p>)|(<img)|(<hr)|(</li>)|(</ul>)|(</ol>)#i', $str);
+    }
 }
