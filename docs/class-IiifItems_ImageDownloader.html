@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+
+	<title>Class IiifItems_ImageDownloader | IiifItems</title>
+
+	<link rel="stylesheet" href="resources/style.css?e99947befd7bf673c6b43ff75e9e0f170c88a60e">
+
+</head>
+
+<body>
+<div id="left">
+	<div id="menu">
+		<a href="index.html" title="Overview"><span>Overview</span></a>
+
+
+		<div id="groups">
+				<h3>Packages</h3>
+			<ul>
+				<li>
+					<a href="package-controllers.html">
+						controllers					</a>
+
+						</li>
+				<li>
+					<a href="package-helpers.html">
+						helpers					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.html">
+						IiifItems<span></span>
+					</a>
+
+						<ul>
+				<li>
+					<a href="package-IiifItems.Form.html">
+						Form					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Integration.html">
+						Integration					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Job.html">
+						Job					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Migration.html">
+						Migration					</a>
+
+						</li>
+				<li>
+					<a href="package-IiifItems.Util.html">
+						Util					</a>
+
+						</li>
+							</ul></li>
+				<li>
+					<a href="package-models.html">
+						models					</a>
+
+						</li>
+			</ul>
+		</div>
+
+		<hr>
+
+
+		<div id="elements">
+			<h3>Classes</h3>
+			<ul>
+				<li><a href="class-IiifItems_BaseController.html">IiifItems_BaseController</a></li>
+				<li><a href="class-IiifItems_BaseIntegration.html">IiifItems_BaseIntegration</a></li>
+				<li><a href="class-IiifItems_BaseMigration.html">IiifItems_BaseMigration</a></li>
+				<li><a href="class-IiifItems_IiifUtil.html">IiifItems_IiifUtil</a></li>
+				<li class="active"><a href="class-IiifItems_ImageDownloader.html">IiifItems_ImageDownloader</a></li>
+				<li><a href="class-IiifItemsPlugin.html">IiifItemsPlugin</a></li>
+			</ul>
+
+
+
+
+
+		</div>
+	</div>
+</div>
+
+<div id="splitter"></div>
+
+<div id="right">
+<div id="rightInner">
+	<form id="search">
+		<input type="hidden" name="cx" value="">
+		<input type="hidden" name="ie" value="UTF-8">
+		<input type="text" name="q" class="text" placeholder="Search">
+	</form>
+
+	<div id="navigation">
+		<ul>
+			<li>
+				<a href="index.html" title="Overview"><span>Overview</span></a>
+			</li>
+			<li>
+<span>Package</span>			</li>
+			<li class="active">
+<span>Class</span>			</li>
+		</ul>
+		<ul>
+			<li>
+				<a href="tree.html" title="Tree view of classes, interfaces, traits and exceptions"><span>Tree</span></a>
+			</li>
+		</ul>
+		<ul>
+		</ul>
+	</div>
+
+<div id="content" class="class">
+	<h1>Class IiifItems_ImageDownloader</h1>
+
+
+	<div class="description">
+	<p>Utility for downloading a IIIF image</p>
+	</div>
+
+
+
+
+
+
+
+
+
+	<div class="info">
+		
+		
+		
+		<b>Package:</b> <a href="package-IiifItems.html">IiifItems</a><br>
+
+			<b>Located at</b> <a href="source-class-IiifItems_ImageDownloader.html#3-132" title="Go to source code">libraries/IiifItems/ImageDownloader.php</a>
+		<br>
+	</div>
+
+
+
+	<table class="summary methods" id="methods">
+	<caption>Methods summary</caption>
+	<tr data-order="__construct" id="___construct">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#___construct">#</a>
+		<code><a href="source-class-IiifItems_ImageDownloader.html#10-21" title="Go to source code">__construct</a>( <span>array <var>$imageJson</var></span> )</code>
+
+		<div class="description short">
+			<p>Create a new image downloader.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Create a new image downloader.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$imageJson</var></dt>
+					<dd>IIIF presentation API image JSON data</dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="downloadToLocalFile" id="_downloadToLocalFile">
+
+		<td class="attributes"><code>
+			 public 
+
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_downloadToLocalFile">#</a>
+		<code><a href="source-class-IiifItems_ImageDownloader.html#23-47" title="Go to source code">downloadToLocalFile</a>( <span>string <var>$filename</var></span>, <span>array <var>$xywh</var> = <span class="php-quote">'full'</span></span>, <span>array <var>$sizes</var> = <span class="php-keyword1">array</span>(<span class="php-quote">'full'</span>, <span class="php-num">512</span>, <span class="php-num">96</span>)</span> )</code>
+
+		<div class="description short">
+			<p>Download to a local file and return whether successful.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Download to a local file and return whether successful.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$filename</var></dt>
+					<dd>The full file name to download to</dd>
+					<dt><var>$xywh</var></dt>
+					<dd>4-entry array listing region x, y, width and height in order</dd>
+					<dt><var>$sizes</var></dt>
+					<dd>List of sizes to try in order. Can include 'full' and/or integer dimensions</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					boolean<br>Whether the download was successful
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="downloadToItem" id="_downloadToItem">
+
+		<td class="attributes"><code>
+			 public 
+
+			boolean
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_downloadToItem">#</a>
+		<code><a href="source-class-IiifItems_ImageDownloader.html#49-77" title="Go to source code">downloadToItem</a>( <span>Item <var>$item</var></span>, <span>array <var>$xywh</var> = <span class="php-quote">'full'</span></span>, <span>array <var>$trySizes</var> = <span class="php-keyword1">array</span>(<span class="php-quote">'full'</span>, <span class="php-num">512</span>, <span class="php-num">96</span>)</span> )</code>
+
+		<div class="description short">
+			<p>Download as a file attachment to an Omeka Item and return whether successful.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Download as a file attachment to an Omeka Item and return whether successful.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$item</var></dt>
+					<dd>The Omeka Item to attach to</dd>
+					<dt><var>$xywh</var></dt>
+					<dd>4-entry array listing region x, y, width and height in order</dd>
+					<dt><var>$trySizes</var></dt>
+					<dd>List of sizes to try in order. Can include 'full' and/or integer dimensions</dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					boolean<br>Whether the download was successful
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</div>
+
+	<div id="footer">
+		IiifItems API documentation generated by <a href="http://apigen.org">ApiGen</a>
+	</div>
+</div>
+</div>
+<script src="resources/combined.js"></script>
+<script src="elementlist.js"></script>
+</body>
+</html>
