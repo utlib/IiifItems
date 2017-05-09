@@ -57,7 +57,7 @@ class IiifItems_IiifUtil {
         ));
         if (isset($elements['Dublin Core'])) {
             if (isset($elements['Dublin Core']['Title'])) {
-                $jsonData['label'] = join($elements['Dublin Core']['Title'], '<br>');
+                $jsonData['label'] = join($elements['Dublin Core']['Title'], ' ');
                 unset($elements['Dublin Core']['Title']);
             }
             if (isset($elements['Dublin Core']['Description'])) {
