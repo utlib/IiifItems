@@ -276,7 +276,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
      * @return string
      */
     public function inputForItemDisplay($comps, $args) {
-        $comps['input'] = get_view()->formRadio($args['input_name_stem'] . '[text]', $args['value'], array(), array('No', 'Yes'));
+        $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), array('' => __('Default'), 'Always' => __('Always'), 'Never' => __('Never')));
         return filter_minimal_input($comps, $args);
     }
 
