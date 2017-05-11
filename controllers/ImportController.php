@@ -120,6 +120,23 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                     $this->_helper->flashMessenger(__('Invalid import source.'), 'error');
                 break;
             }
+            switch ($form->getValue('items_annotation_size')) {
+                case 0:
+                    $annoPreviewSize = null;
+                break;
+                case 1:
+                    $annoPreviewSize = 96;
+                break;
+                case 2:
+                    $annoPreviewSize = 512;
+                break;
+                case 3:
+                    $annoPreviewSize = 'full';
+                break;
+                default:
+                    $this->_helper->flashMessenger(__('Invalid import source.'), 'error');
+                break;
+            }
             Zend_Registry::get('bootstrap')->getResource('jobs')->sendLongRunning('IiifItems_Job_Import', array(
                 'isPublic' => $form->getValue('items_are_public') ? 1 : 0,
                 'isFeatured' => $form->getValue('items_are_featured') ? 1 : 0,
@@ -127,6 +144,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 'importSource' => $importSource,
                 'importSourceBody' => $importSourceBody,
                 'importPreviewSize' => $importPreviewSize,
+                'importAnnoSize' => $annoPreviewSize,
                 'isReversed' => $form->getValue('items_are_reversed') ? 1 : 0,
                 'parent' => $parentUuid,
             ));
