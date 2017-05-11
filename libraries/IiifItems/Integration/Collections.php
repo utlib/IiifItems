@@ -205,13 +205,14 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             return;
         }
         $allowEdit = is_allowed($args['collection'], 'edit');
-        if (raw_iiif_metadata($args['collection'], 'iiifitems_collection_type_element') == 'Collection') {
+        $type = raw_iiif_metadata($args['collection'], 'iiifitems_collection_type_element');
+        if ($type == 'Collection') {
             if ($uuid = raw_iiif_metadata($args['collection'], 'iiifitems_collection_uuid_element')) {
                 $count = IiifItems_Util_Collection::countSubmembersFor($args['collection']);
                 echo '<span class="iiifitems-replace-items-link" data-newcount="' . $count . '" data-newurl="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '" data-showurl="' . admin_url(array('id' => $args['collection']->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '"></span>'
                         . '<ul class="iiifitems-action-links"><li><a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">List Members</a></li></ul>';
             }    
-        } else {
+        } else if ($type != 'None') {
             if ($allowEdit && IiifItems_Util_Manifest::isManifest($args['collection'])) {
                 echo '<ul class="iiifitems-action-links"><li><a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a></li></ul>';
             }
@@ -243,6 +244,9 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                 echo '<script>jQuery(document).ready(function() { jQuery(".total-items a:first").attr("href", ' . js_escape(admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members')) . ').text("' . $count . '"); });</script>';
             break;
             case 'Manifest': default:
+                if ($args['view']->collection->totalItems() == 0) {
+                    return;
+                }
                 $iiifLabel = __('IIIF Manifest Information');
                 $urlLabel = __('Manifest URL');
                 $iiifUrl = public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_manifest');
@@ -274,6 +278,9 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         }
         $allowEdit = is_allowed($collection, 'edit');
         if (!IiifItems_Util_Collection::isCollection($collection) && IiifItems_Util_Manifest::isManifest($collection) && $allowEdit) {
+            if ($collection->totalItems() == 0) {
+                return;
+            }
             $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
             echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
             if ($annotationCount = IiifItems_Util_Manifest::countAnnotationsFor($collection)) {
