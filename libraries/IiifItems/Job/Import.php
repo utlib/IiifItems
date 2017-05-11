@@ -6,7 +6,7 @@
  * @subpackage Job
  */
 class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
-    private $_importType, $_importSource, $_importSourceBody, $_importPreviewSize, $_isPublic, $_isFeatured, $_isReversed, $_parent;
+    private $_importType, $_importSource, $_importSourceBody, $_importPreviewSize, $_annoPreviewSize, $_isPublic, $_isFeatured, $_isReversed, $_parent;
     private $_statusId;
     
     /**
@@ -19,6 +19,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $this->_importSource = $options['importSource'];
         $this->_importSourceBody = $options['importSourceBody'];
         $this->_importPreviewSize = $options['importPreviewSize'];
+        $this->_annoPreviewSize = $options['importAnnoSize'];
         $this->_isPublic = $options['isPublic'];
         $this->_isFeatured = $options['isFeatured'];
         $this->_isReversed = $options['isReversed'];
@@ -377,21 +378,24 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         
         // Add preview image if xywh selector is available
         if (is_string($annotationData['on'])) {
-            $xywhPosition = strstr($annotationData['on'], '#xywh=');
-            if ($xywhPosition !== false) {
-                $xywhPosition = substr($xywhPosition, 6);
+            if (isset($annotationMetadata['Item Type Metadata']['Annotated Region'][0]['text'])) {
+                $xywhPosition = $annotationMetadata['Item Type Metadata']['Annotated Region'][0]['text'];
                 debug($xywhPosition);
-                $downloadResult = $this->_downloadIiifImageToItem($newItem, $image, $this->_importPreviewSize, $xywhPosition);
-                switch ($downloadResult['status']) {
-                    case 1:
-                        $jobStatus->dones++;
-                    break;
-                    case 0:
-                        $jobStatus->skips++;
-                    break;
-                    default:
-                        $jobStatus->fails++;
-                    break;
+                if ($this->_annoPreviewSize) {
+                    $downloadResult = $this->_downloadIiifImageToItem($newItem, $image, $this->_annoPreviewSize, ($xywhPosition == 'full') ? 'full' : explode(',', $xywhPosition));
+                    switch ($downloadResult['status']) {
+                        case 1:
+                            $jobStatus->dones++;
+                        break;
+                        case 0:
+                            $jobStatus->skips++;
+                        break;
+                        default:
+                            $jobStatus->fails++;
+                        break;
+                    }
+                } else {
+                    $jobStatus->dones++;
                 }
             }
         }
@@ -552,7 +556,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         );
         // Determine type in 'on'
         if ($attachItem) {
-            $metadata['Item Type Metadata']['On Canvas'][] = array('text' => metadata($attachItem, array('IIIF Item Metadata', 'UUID')), 'html' => false);
+            $metadata['Item Type Metadata']['On Canvas'][] = array('text' => raw_iiif_metadata($attachItem, 'iiifitems_item_uuid_element'), 'html' => false);
         } else {
             if (is_string($annotationData['on'])) {
                 $metadata['Item Type Metadata']['On Canvas'][] = array('text' => $annotationData['on'], 'html' => false);

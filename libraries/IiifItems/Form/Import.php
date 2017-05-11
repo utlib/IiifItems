@@ -81,6 +81,11 @@ class IiifItems_Form_Import extends Omeka_Form {
             'label' => __('Local Preview Size'),
             'multiOptions' => array('96x96', '512x512', 'Maximum'),
         ));
+        // Annotation Preview Size
+        $this->addElement('radio', 'items_annotation_size', array(
+            'label' => __('Annotation Preview Size'),
+            'multiOptions' => array('None', '96x96', '512x512', 'Maximum'),
+        ));
         // Submit button
         $submit = $this->createElement('submit', 'submit', array(
             'label' => __('Import'),
