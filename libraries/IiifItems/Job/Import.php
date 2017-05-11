@@ -318,13 +318,6 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             switch ($downloadResult['status']) {
                 case 1:
                     $jobStatus->dones++;
-                    $downloadResult['file']->addElementTextsByArray(array(
-                        'IIIF File Metadata' => array(
-                            'Original @id' => array(array('text' => $image['@id'], 'html' => false)),
-                            'JSON Data' => array(array('text' => json_encode($image, JSON_UNESCAPED_SLASHES), 'html' => false)),
-                        ),
-                    ));
-                    $downloadResult['file']->saveElementTexts();
                 break;
                 case 0:
                     $jobStatus->skips++;
