@@ -256,7 +256,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         echo '<h2>' . $iiifLabel . '</h2>';
         echo '<p>' . IiifItems_Util_CollectionOptions::getPathBreadcrumb($args['collection'], true) . '</p>';
         echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
-        $this->_adminElementTextPair("Manifest URL", "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
+        $this->_adminElementTextPair($urlLabel, "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
         echo '</div>';
         if ($collectionType == 'Collection') {
             echo '<div class="element-set">';
