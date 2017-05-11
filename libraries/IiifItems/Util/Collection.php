@@ -99,6 +99,12 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
             // Override the IDs, titles and DC metadata
             $json['@id'] = $atId;
             parent::addDublinCoreMetadata($json, $collection);
+            // Override within
+            if ($parentCollection = IiifItems_Util_Collection::findParentFor($collection)) {
+                $json['within'] = public_full_url(array('things' => 'collections', 'id' => $parentCollection->id, 'typeext' => 'collection.json'), 'iiifitems_oa_uri');
+            } else if (isset($json['within'])) {
+                unset($json['within']);
+            }
             // Cache accordingly
             if ($cacheAs !== null) {
                 cache_iiifitems_value_for($collection, $json, $cacheAs);
