@@ -244,7 +244,7 @@ class IiifItems_Util_Canvas extends IiifItems_IiifUtil {
      * @return boolean
      */
     public static function isNonIiifItem($item) {
-        return $item->item_type_id != get_option('iiifitems_annotation_item_type') && self::_containsNonIiifFile($item->getFiles());
+        return ($item->item_type_id != get_option('iiifitems_annotation_item_type') && self::_containsNonIiifFile($item->getFiles())) || raw_iiif_metadata($item, 'iiifitems_item_display_element') == 'Never';
     }
     
     /**

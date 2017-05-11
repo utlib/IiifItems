@@ -212,7 +212,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                         . '<ul class="iiifitems-action-links"><li><a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">List Members</a></li></ul>';
             }    
         } else {
-            if ($allowEdit) {
+            if ($allowEdit && IiifItems_Util_Manifest::isManifest($args['collection'])) {
                 echo '<ul class="iiifitems-action-links"><li><a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a></li></ul>';
             }
         }
@@ -273,7 +273,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             return;
         }
         $allowEdit = is_allowed($collection, 'edit');
-        if (!IiifItems_Util_Collection::isCollection($collection) && $allowEdit) {
+        if (!IiifItems_Util_Collection::isCollection($collection) && IiifItems_Util_Manifest::isManifest($collection) && $allowEdit) {
             $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
             echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
             if ($annotationCount = IiifItems_Util_Manifest::countAnnotationsFor($collection)) {
@@ -384,7 +384,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
      * @return string
      */
     public function inputForCollectionIiifType($comps, $args) {
-        $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), array(''=>'None','Manifest'=>'Manifest','Collection'=>'Collection'));
+        $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), array(''=>__('Default'),'Manifest'=>__('Manifest'),'Collection'=>__('Collection'),'None'=>__('Hidden')));
         return filter_minimal_input($comps, $args);
     }
 

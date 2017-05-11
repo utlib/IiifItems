@@ -249,7 +249,10 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         $results = array();
         foreach ($matches as $match) {
             if ($candidate = get_record_by_id($match->record_type, $match->record_id)) {
-                $results[] = $candidate;
+                $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
+                if ($type != 'None') {
+                    $results[] = $candidate;
+                }
             }
         }
         return $results;
@@ -320,7 +323,7 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         $typeElement = get_option('iiifitems_collection_type_element');
         $collectionsSelect->joinLeft(array('element_textsA' => $db->ElementText), "element_textsA.record_id = collections.id AND element_textsA.record_type = 'Collection' AND element_textsA.element_id = {$typeElement}", array('text'));
         $collectionsSelect->joinLeft(array('element_textsB' => $db->ElementText), "element_textsB.record_id = collections.id AND element_textsB.record_type = 'Collection' AND element_textsB.element_id = {$parentUuidElement}", array('text'));
-        $collectionsSelect->where("element_textsA.text != 'Collection'");
+        $collectionsSelect->where("element_textsA.text NOT IN ('Collection', 'None')");
         $collectionsSelect->where("element_textsB.text IS NULL OR element_textsB.text = ''");
         $collectionsTable->applySorting($collectionsSelect, 'Dublin Core,Title', 'ASC');
         return $collectionsTable->fetchObjects($collectionsSelect);

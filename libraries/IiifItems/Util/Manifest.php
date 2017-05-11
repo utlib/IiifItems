@@ -152,7 +152,9 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
     public static function findCanvasesFor($collection) {
         $canvases = array();
         foreach (get_db()->getTable('Item')->findBy(array('collection' => $collection)) as $item) {
-            $canvases[] = IiifItems_Util_Canvas::buildCanvas($item);
+            if (raw_iiif_metadata($item, 'iiifitems_item_display_element') != 'Never') {
+                $canvases[] = IiifItems_Util_Canvas::buildCanvas($item);
+            }
         }
         return $canvases;
     }
@@ -187,7 +189,7 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
             $iiifMetadataSlug = 'iiifitems_collection_type_element';
             $iiifTypeText = raw_iiif_metadata($collection, $iiifMetadataSlug);
             if ($iiifTypeText) {
-                return $iiifTypeText == 'Manifest';
+                return $iiifTypeText != 'Collection' && $iiifTypeText != 'Hidden';
             }
         } catch (Exception $ex) {
         }
