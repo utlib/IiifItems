@@ -75,8 +75,8 @@ function hook_expire_cache($args) {
  * @return string
  */
 function raw_iiif_metadata($record, $optionSlug) {
-    if ($elementText = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.record_type = ? AND element_texts.record_id = ?', array(get_option($optionSlug), get_class($record), $record->id))) {
-        return $elementText[0]->text;
+    if ($elementText = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.record_type = ? AND element_texts.record_id = ?', array(get_option($optionSlug), get_class($record), $record->id), true)) {
+        return $elementText->text;
     } else {
         return '';
     }
@@ -122,8 +122,8 @@ function clear_iiifitems_cache_values_for($record, $bubble=true) {
  * @return array|null
  */
 function get_cached_iiifitems_value_for($record, $url='') {
-    if ($entry = (get_db()->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url)))) {
-        return json_decode($entry[0]->data, true);
+    if ($entry = (get_db()->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url), true))) {
+        return json_decode($entry->data, true);
     } else {
         return null;
     }
@@ -140,9 +140,9 @@ function get_cached_iiifitems_value_for($record, $url='') {
 function cache_iiifitems_value_for($record, $jsonData, $url='') {
     $db = get_db();
     $jsonStr = json_encode($jsonData, JSON_UNESCAPED_SLASHES);
-    if ($cacheRecord = $db->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url))) {
-        $cacheRecord[0]->data = $jsonStr;
-        $cacheRecord[0]->save();
+    if ($cacheRecord = $db->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url), true)) {
+        $cacheRecord->data = $jsonStr;
+        $cacheRecord->save();
     } else {
         $cacheRecordId = $db->insert('IiifItems_CachedJsonData', array(
             'record_id' => $record->id,
@@ -178,8 +178,8 @@ function generate_uuid() {
  */
 function find_item_by_uuid($uuid) {
     $db = get_db();
-    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_uuid_element'), $uuid))) {
-        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_uuid_element'), $uuid), true)) {
+        return get_record_by_id($matchingTexts->record_type, $matchingTexts->record_id);
     }
     return null;
 }
@@ -192,8 +192,8 @@ function find_item_by_uuid($uuid) {
  */
 function find_collection_by_uuid($uuid) {
     $db = get_db();
-    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_collection_uuid_element'), $uuid))) {
-        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_collection_uuid_element'), $uuid), true)) {
+        return get_record_by_id($matchingTexts->record_type, $matchingTexts->record_id);
     }
     return null;
 }
