@@ -75,7 +75,8 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
      */
     public function altHookAdminItemsBrowseSimpleEach($args) {
         $on = raw_iiif_metadata($args['item'], 'iiifitems_annotation_on_element');
-        if (($attachedItem = find_item_by_uuid($on)) || ($attachedItem = find_item_by_atid($on))) {
+        
+        if ($attachedItem = IiifItems_Util_Annotation::findAnnotatedItemFor($args['item'])) {
             $text = 'Attached to: <a href="' . url(array('id' => $attachedItem->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">' . metadata($attachedItem, array('Dublin Core', 'Title')) . '</a>';
             if ($attachedItem->collection_id !== null) {
                 $collection = get_record_by_id('Collection', $attachedItem->collection_id);
@@ -135,9 +136,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
     public function displayForAnnotationOnCanvas($string, $args) {
         $on = $args['element_text']->text;
         if (!($target = find_item_by_uuid($on))) {
-            if (!($target = find_item_by_atid($on))) {
-                return $on;
-            }
+            return $on;
         }
         $link = url(array('id' => $target->id, 'controller' => 'items', 'action' => 'show'), 'id');
         $title = metadata($target, array('Dublin Core', 'Title'));
