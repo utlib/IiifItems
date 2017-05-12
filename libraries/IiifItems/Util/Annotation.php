@@ -132,7 +132,7 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
                             ),
                             'item' => array(
                                 '@type' => 'oa:SvgSelector',
-                                'value' => json_decode($svgSelector),
+                                'value' => $svgSelector,
                             ),
                         ),
                     ));
@@ -148,7 +148,7 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
                         'full' => $canvasId,
                         'selector' => array(
                             '@type' => 'oa:SvgSelector',
-                            'value' => json_decode($svgSelector),
+                            'value' => $svgSelector,
                         ),
                     );
                 }

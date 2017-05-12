@@ -565,7 +565,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
                     $metadata['Item Type Metadata']['On Canvas'][] = array('text' => $annotationData['on']['full'], 'html' => false);
                 }
                 if (isset($annotationData['selector'])) {
-                    $metadata['Item Type Metadata']['Selector'][] = array('text' => json_encode($annotationData['selector'], JSON_UNESCAPED_SLASHES) , 'html' => false);
+                    $metadata['Item Type Metadata']['Selector'][] = array('text' => $annotationData['selector'] , 'html' => false);
                 }
             }
         }
@@ -610,11 +610,11 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             $selector = $annotationData['on']['selector'];
             // Mirador 2.2- format: Extract SVG from value
             if ($selector['@type'] === 'oa:SvgSelector') {
-                $metadata['Item Type Metadata']['Selector'][] = array('text' => json_encode($selector['value'], JSON_UNESCAPED_SLASHES) , 'html' => false);
+                $metadata['Item Type Metadata']['Selector'][] = array('text' => $selector['value'] , 'html' => false);
             }
             // Mirador 2.3+ format: Extract xywh and SVG from default/value and item/value 
             elseif ($selector['@type'] == 'oa:Choice') {
-                $metadata['Item Type Metadata']['Selector'][] = array('text' => json_encode($selector['item']['value'], JSON_UNESCAPED_SLASHES), 'html' => false);
+                $metadata['Item Type Metadata']['Selector'][] = array('text' => $selector['item']['value'], 'html' => false);
                 $metadata['Item Type Metadata']['Annotated Region'][] = array('text' => substr($selector['default']['value'], 5), 'html' => false);
             }
         }

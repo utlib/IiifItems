@@ -119,7 +119,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             ),
             'Item Type Metadata' => array(
                 'On Canvas' => array(array('text' => $uuid, 'html' => false)),
-                'Selector' => array(array('text' => json_encode($selector, JSON_UNESCAPED_SLASHES), 'html' => false)),
+                'Selector' => array(array('text' => $selector, 'html' => false)),
                 'Annotated Region' => array(array('text' => join(',', $previewDimensions), 'html' => false)),
                 'Text' => array(array('text' => $body, 'html' => true)),
             ),
