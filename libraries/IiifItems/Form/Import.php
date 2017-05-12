@@ -44,11 +44,6 @@ class IiifItems_Form_Import extends Omeka_Form {
         $this->addElement('textarea', 'items_import_source_json', array(
             'label' => __('JSON Data'),
         ));
-        // Import Depth (Link Only/File Only/Full)
-//        $this->addElement('radio', 'items_import_depth', array(
-//            'label' => __('Import Depth'),
-//            'multiOptions' => array('Full', 'Link Only'),
-//        ));
         // Parent
         $this->addElement('select', 'items_import_to_parent', array(
             'label' => __('Parent'),

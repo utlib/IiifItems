@@ -40,13 +40,11 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         ), array(
             array('name' => 'Display as IIIF?', 'description' => ''),
             array('name' => 'Original @id', 'description' => ''),
-            array('name' => 'Parent Collection', 'description' => ''),
             array('name' => 'JSON Data', 'description' => ''),
         ));
         set_option('iiifitems_item_element_set', $item_metadata->id);
         set_option('iiifitems_item_display_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Display as IIIF?')->id);
         set_option('iiifitems_item_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Original @id')->id);
-        set_option('iiifitems_item_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'Parent Collection')->id);
         set_option('iiifitems_item_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Item Metadata', 'JSON Data')->id);
     }
     
@@ -60,7 +58,6 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         delete_option('iiifitems_item_element_set');
         delete_option('iiifitems_item_display_element');
         delete_option('iiifitems_item_atid_element');
-        delete_option('iiifitems_item_parent_element');
         delete_option('iiifitems_item_json_element');
     }
     
@@ -74,9 +71,6 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'Display as IIIF?'), 'filter_singular_form');
         add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'Original @id'), array($this, 'inputForItemOriginalId'));
         add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'Original @id'), 'filter_singular_form');
-        add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'Parent Collection'), array($this, 'inputForItemParent'));
-        add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'Parent Collection'), 'filter_singular_form');
-        add_filter(array('Display', 'Item', 'IIIF Item Metadata', 'Parent Collection'), 'filter_hide_element_display');
         add_filter(array('Display', 'Item', 'IIIF Item Metadata', 'UUID'), array($this, 'displayPreview'));
         add_filter(array('ElementInput', 'Item', 'IIIF Item Metadata', 'UUID'), array($this, 'inputForItemUuid'));
         add_filter(array('ElementForm', 'Item', 'IIIF Item Metadata', 'UUID'), 'filter_singular_form');
@@ -290,33 +284,6 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
      */
     public function inputForItemOriginalId($comps, $args) {
         $comps['input'] = $args['value'] ? $args['value'] : '';
-        return filter_minimal_input($comps, $args);
-    }
-
-    /**
-     * Display filter for parent collection.
-     * @deprecated since version 0.0.1.7
-     * 
-     * @param string $text
-     * @param array $args
-     * @return string
-     */
-    public function displayForItemParent($text, $args) {
-        $collection = get_db()->getTable('Collection')->find($args['element_text']->text);
-        return '<a href="' . url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . metadata($collection, array('Dublin Core', 'Title')) . '</a>';
-
-    }
-
-    /**
-     * Element input filter for parent collection.
-     * @deprecated since version 0.0.1.7
-     * 
-     * @param array $comps
-     * @param array $args
-     * @return string
-     */
-    public function inputForItemParent($comps, $args) {
-        $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), get_table_options('Collection'));
         return filter_minimal_input($comps, $args);
     }
 
