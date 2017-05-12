@@ -88,16 +88,11 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
         $currentAnnotationJson = json_decode($elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
             get_option('iiifitems_item_json_element'),
             $annoItem->id,
-        ))[0], true);
+        ), true), true);
         $currentText = $elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
             get_option('iiifitems_annotation_text_element'),
             $annoItem->id,
-        ));
-        if ($currentText) {
-            $currentText = $currentText[0];
-        } else {
-            $currentText = "";
-        }
+        ), true);
         $currentAnnotationJson['resource'] = array(
             array(
                 '@type' => 'dctypes:Text',
@@ -183,14 +178,12 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
             $currentAnnotationJson = json_decode($elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
                 get_option('iiifitems_item_json_element'),
                 $onCanvasMatch->record_id,
-            ))[0], true);
+            ), true)->text, true);
             $currentText = $elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
                 get_option('iiifitems_annotation_text_element'),
                 $onCanvasMatch->record_id,
-            ));
-            if ($currentText) {
-                $currentText = $currentText[0];
-            } else {
+            ), true);
+            if (!$currentText) {
                 continue;
             }
             $currentAnnotationJson['resource'] = array(
@@ -368,7 +361,7 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
         $theItemCanvasIdText = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ? AND element_texts.record_type = 'Item' ", array(
             get_option('iiifitems_item_uuid_element'),
             $uuid,
-        ))[0];
+        ), true);
         $theItem = get_record_by_id('Item', $theItemCanvasIdText->record_id);
         return $theItem;
     }

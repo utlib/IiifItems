@@ -185,8 +185,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         $id = $params['id'];
         
         // Find the annotation by that ID and delete it
-        if ($annoTexts = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $id))) {
-            if ($annoItem = get_record_by_id('Item', $annoTexts[0]->record_id)) {
+        if ($annoText = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $id), true)) {
+            if ($annoItem = get_record_by_id('Item', $annoText->record_id)) {
                 // Check permissions
                 $user = current_user();
                 switch ($user->role) {
@@ -252,8 +252,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             }
         }
         // Save
-        if ($annoTexts = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $atid))) {
-            if ($annoItem = get_record_by_id('Item', $annoTexts[0]->record_id)) {
+        if ($annoText = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $atid), true)) {
+            if ($annoItem = get_record_by_id('Item', $annoText->record_id)) {
                 // Check permissions
                 $user = current_user();
                 switch ($user->role) {

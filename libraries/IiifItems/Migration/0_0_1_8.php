@@ -21,7 +21,7 @@ class IiifItems_Migration_0_0_1_8 extends IiifItems_BaseMigration {
             $xywhElementId = $this->_db->insert('Element', array(
                 'name' => 'Annotated Region',
                 'description' => 'The rectangular region of the annotation, in xywh format.',
-                'element_set_id' => $this->_db->getTable('ElementSet')->findBy(array('name' => 'Item Type Metadata'))[0]->id,
+                'element_set_id' => $this->_db->getTable('ElementSet')->findBy(array('name' => 'Item Type Metadata'), 1)[0]->id,
             ));
         }
         // Add element to annotation item type
