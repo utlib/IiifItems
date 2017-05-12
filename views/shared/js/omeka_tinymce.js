@@ -99,6 +99,10 @@
         });
       }
       motivation.push("oa:commenting");
+      if (motivation.length === 1) {
+          motivation = motivation[0];
+      }
+      
       resource.push({
         "@type": "dctypes:Text",
         "format": "text/html",
@@ -131,6 +135,9 @@
         resource = [];
 
       //remove all tag-related content in annotation
+      if (typeof oaAnno.motivation === 'string') {
+          oaAnno.motivation = [oaAnno.motivation];
+      }
       oaAnno.motivation = jQuery.grep(oaAnno.motivation, function(value) {
         return value !== "oa:tagging";
       });
@@ -152,6 +159,9 @@
           value.chars = resourceText;
         }
       });
+      if (oaAnno.motivation.length === 1) {
+          oaAnno.motivation = oaAnno.motivation[0];
+      }
       //add _iiifitems_access properties
       oaAnno._iiifitems_access = {
         "public": publicBox,
