@@ -65,9 +65,17 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         // Extract on canvas
         $on = $this->__extractOn($params);
         // Extract selector
-        $selector = $this->__extractSvg($params);
+        $svgs = $this->__extractSvg($params);
+        $svgMetas = array();
+        foreach ($svgs as $svg) {
+            $svgMetas[] = array('text' => $svg, 'html' => false);
+        }
         // Extract preview dimensions (xywh tuple)
-        $previewDimensions = $this->__extractXywh($params);
+        $xywhs = $this->__extractXywh($params);
+        $xywhMetas = array();
+        foreach ($xywhs as $xywh) {
+            $xywhMetas[] = array('text' => join(',', $xywh), 'html' => false);
+        }
         // Extract main text and tags
         $body = "";
         $tags = array();
@@ -119,8 +127,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             ),
             'Item Type Metadata' => array(
                 'On Canvas' => array(array('text' => $uuid, 'html' => false)),
-                'Selector' => array(array('text' => $selector, 'html' => false)),
-                'Annotated Region' => array(array('text' => join(',', $previewDimensions), 'html' => false)),
+                'Selector' => $svgMetas,
+                'Annotated Region' => $xywhMetas,
                 'Text' => array(array('text' => $body, 'html' => true)),
             ),
         ));
@@ -143,13 +151,15 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             'element_id' => get_option('iiifitems_item_json_element'),
             'text' => json_encode($params, JSON_UNESCAPED_SLASHES),
         ));
-        // Attach preview image based on first image
-        if (isset($previewDimensions) && !IiifItems_Util_Canvas::isNonIiifItem($originalItem)) {
-            Zend_Registry::get('bootstrap')->getResource('jobs')->sendLongRunning('IiifItems_Job_AddAnnotationThumbnail', array(
-                'originalItemId' => $originalItem->id,
-                'annotationItemId' => $newItem->id,
-                'dims' => $previewDimensions,
-            ));
+        // Attach preview images based on first image
+        if (isset($xywhs[0]) && !IiifItems_Util_Canvas::isNonIiifItem($originalItem)) {
+            foreach ($xywhs as $xywh) {
+                Zend_Registry::get('bootstrap')->getResource('jobs')->sendLongRunning('IiifItems_Job_AddAnnotationThumbnail', array(
+                    'originalItemId' => $originalItem->id,
+                    'annotationItemId' => $newItem->id,
+                    'dims' => $xywh,
+                ));
+            }
         }
         // Tack back the proprietary _iiifitems_access attribute
         $params['_iiifitems_access'] = array(
@@ -233,9 +243,19 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         $json = json_decode($jsonStr, true);
         $atid = $json['@id'];
         // Extract on canvas
-        $on = $this->__extractOn($json);
-        // Extract selector
-        $selector = $this->__extractSvg($json);
+//        $on = $this->__extractOn($json);
+        // Extract selectors
+        $svgs = $this->__extractSvg($json);
+        $svgNewMetas = array();
+        foreach ($svgs as $svg) {
+            $svgNewMetas[] = array('text' => $svg, 'html' => false);
+        }
+        // Extract xywhs
+        $xywhs = $this->__extractXywh($json);
+        $xywhNewMetas = array();
+        foreach ($xywhs as $xywh) {
+            $xywhNewMetas[] = array('text' => join(',', $xywh), 'html' => false);
+        }
         // Extract main text and tags
         $text = '';
         $textIsHtml = false;
@@ -254,6 +274,22 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         // Save
         if ($annoText = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $atid), true)) {
             if ($annoItem = get_record_by_id('Item', $annoText->record_id)) {
+                // Check whether xywh regions have changed
+                $oldXywhTexts = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(get_option('iiifitems_annotation_xywh_element'), $annoItem->id));
+                if (count($oldXywhTexts) != count($xywhNewMetas)) { // Not the same size = Changed
+                    $xywhChanged = true;
+                } else { // Same size = Changed if a new xywh isn't in the existing xywh set
+                    $oldXywhSet = array();
+                    foreach ($oldXywhTexts as $oldXywhText) {
+                        $oldXywhSet[$oldXywhText->text] = true;
+                    }
+                    foreach ($xywhNewMetas as $xywhNewMeta) {
+                        if (isset($oldXywhSet[$xywhNewMeta['text']])) {
+                            unset($oldXywhSet[$xywhNewMeta['text']]);
+                        }
+                    }
+                    $xywhChanged = !empty($oldXywhSet);
+                }
                 // Check permissions
                 $user = current_user();
                 switch ($user->role) {
@@ -279,20 +315,44 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                 $newTextsArray = array(
                     'Item Type Metadata' => array(
                         'Text' => array(array('text' => $text, 'html' => true)),
+                        'Selector' => $svgNewMetas,
+                        'Annotated Region' => $xywhNewMetas,
                     ),
                     'IIIF Item Metadata' => array(
                         'JSON Data' => array(array('text' => $this->__json_encode($json), 'html' => false)),
                     ),
                 );
+                // Update title if unchanged from default
+                $oldTitle = metadata($annoItem, array('Dublin Core', 'Title'), array('no_filter' => true, 'no_escape' => true));
+                if (strpos($oldTitle, 'Annotation: "') === 0) {
+                    $newTextsArray['Dublin Core'] = array('Title' => array(array('text' => 'Annotation: "' . html_entity_decode(snippet_by_word_count($text)) . '"', 'html' => true)));
+                    $annoItem->deleteElementTextsByElementId(array(get_db()->getTable('Element')->findByElementSetNameAndElementName('Dublin Core', 'Title')->id));
+                }
+                // Replace old element texts
                 $annoItem->deleteElementTextsByElementId(array(
                     get_option('iiifitems_annotation_text_element'),
                     get_option('iiifitems_item_json_element'),
+                    get_option('iiifitems_annotation_selector_element'),
+                    get_option('iiifitems_annotation_xywh_element'),
                 ));
                 $annoItem->addElementTextsByArray($newTextsArray);
                 $annoItem->public = $isPublic;
                 $annoItem->featured = $isFeatured;
                 $annoItem->save();
                 $this->__insertIiifItemsAccess($json, $annoItem);
+                if ($xywhChanged) {
+                    foreach ($annoItem->getFiles() as $file) {
+                        $file->delete();
+                    }
+                    foreach ($xywhs as $xywh) {
+                        $addAnnotationThumbnailJob = new IiifItems_Job_AddAnnotationThumbnail(array(
+                            'originalItemId' => $contextThing->id,
+                            'annotationItemId' => $annoItem->id,
+                            'dims' => $xywh,
+                        ));
+                        $addAnnotationThumbnailJob->perform();
+                    }
+                }
                 $this->__respondWithJson($json);
                 return;
             }
@@ -336,31 +396,39 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
     }
     
     /**
-     * Return the xywh selector of the annotation.
+     * Return xywh selectors from the annotation.
      * @param array $params OA annotation JSON array data
-     * @return array 4-entry array of x, y, width, height
+     * @return array[] 4-entry arrays of x, y, width, height
      */
     private function __extractXywh($params) {
         if (isset($params['_dims'])) {
-            return $params['_dims'];
+            return array($params['_dims']);
         }
         if (isset($params['on'][0]['selector']['default']['value'])) {
-            return explode(',', substr($params['on'][0]['selector']['default']['value'], 5));
+            $xywhs = array();
+            foreach ($params['on'] as $on) {
+                $xywhs[] = explode(',', substr($on['selector']['default']['value'], 5));
+            }
+            return $xywhs;
         } 
         return null;
     }
     
     /**
-     * Return the SVG selector of the annotation.
+     * Return SVG selectors of the annotation.
      * @param array $params OA annotation JSON array data
-     * @return string
+     * @return string[]
      */
     private function __extractSvg($params) {
         if (isset($params['on']['selector']['value'])) {
-            return $params['on']['selector']['value'];
+            return array($params['on']['selector']['value']);
         }
         if (isset($params['on'][0]['selector']['item']['value'])) {
-            return $params['on'][0]['selector']['item']['value'];
+            $svgs = array();
+            foreach ($params['on'] as $on) {
+                $svgs[] = $on['selector']['item']['value'];
+            }
+            return $svgs;
         } 
         return null;
     }

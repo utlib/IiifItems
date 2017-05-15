@@ -377,26 +377,26 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $newItem = insert_item($annotationImportOptions, $annotationMetadata);
         
         // Add preview image if xywh selector is available
-        if (is_string($annotationData['on'])) {
-            if (isset($annotationMetadata['Item Type Metadata']['Annotated Region'][0]['text'])) {
-                $xywhPosition = $annotationMetadata['Item Type Metadata']['Annotated Region'][0]['text'];
-                debug($xywhPosition);
-                if ($this->_annoPreviewSize) {
+        if (isset($annotationMetadata['Item Type Metadata']['Annotated Region'][0]['text'])) {
+            if ($this->_annoPreviewSize) {
+                foreach ($annotationMetadata['Item Type Metadata']['Annotated Region'] as $xywhTextFrag) {
+                    $xywhPosition = $xywhTextFrag['text'];
+                    debug($xywhPosition);
                     $downloadResult = $this->_downloadIiifImageToItem($newItem, $image, $this->_annoPreviewSize, ($xywhPosition == 'full') ? 'full' : explode(',', $xywhPosition));
-                    switch ($downloadResult['status']) {
-                        case 1:
-                            $jobStatus->dones++;
-                        break;
-                        case 0:
-                            $jobStatus->skips++;
-                        break;
-                        default:
-                            $jobStatus->fails++;
-                        break;
-                    }
-                } else {
-                    $jobStatus->dones++;
                 }
+                switch ($downloadResult['status']) {
+                    case 1:
+                        $jobStatus->dones++;
+                    break;
+                    case 0:
+                        $jobStatus->skips++;
+                    break;
+                    default:
+                        $jobStatus->fails++;
+                    break;
+                }
+            } else {
+                $jobStatus->dones++;
             }
         }
         // Up progress
@@ -605,17 +605,29 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         if (is_string($annotationData['on'])) {
             $metadata['Item Type Metadata']['Annotated Region'][] = array('text' => substr($annotationData['on'], strpos($annotationData['on'], '#xywh=')+6), 'html' => false);
         }
-        // Non-simple selector case
+        // Mirador 2.2- format: Extract SVG from value
         elseif (is_array($annotationData['on']) && isset($annotationData['on']['selector'])) {
             $selector = $annotationData['on']['selector'];
-            // Mirador 2.2- format: Extract SVG from value
             if ($selector['@type'] === 'oa:SvgSelector') {
                 $metadata['Item Type Metadata']['Selector'][] = array('text' => $selector['value'] , 'html' => false);
             }
-            // Mirador 2.3+ format: Extract xywh and SVG from default/value and item/value 
-            elseif ($selector['@type'] == 'oa:Choice') {
-                $metadata['Item Type Metadata']['Selector'][] = array('text' => $selector['item']['value'], 'html' => false);
-                $metadata['Item Type Metadata']['Annotated Region'][] = array('text' => substr($selector['default']['value'], 5), 'html' => false);
+        }
+        // Mirador 2.3+ format: Extract xywhs and SVGs
+        elseif (is_array($annotationData['on']) && isset($annotationData['on'][0]['selector'])) {
+            foreach ($annotationData['on'] as $on) {
+                $selector = $on['selector'];
+                switch ($on['selector']['@type']) {
+                    case 'oa:Choice':
+                        $metadata['Item Type Metadata']['Selector'][] = array('text' => $selector['item']['value'], 'html' => false);
+                        $metadata['Item Type Metadata']['Annotated Region'][] = array('text' => substr($selector['default']['value'], 5), 'html' => false);
+                    break;
+                    case 'oa:SvgSelector':
+                        $metadata['Item Type Metadata']['Selector'][] = array('text' => $selector['item']['value'], 'html' => false);
+                    break;
+                    case 'oa:FragmentSelector':
+                        $metadata['Item Type Metadata']['Annotated Region'][] = array('text' => substr($selector['default']['value'], 5), 'html' => false);
+                    break;
+                }
             }
         }
         return $metadata;
