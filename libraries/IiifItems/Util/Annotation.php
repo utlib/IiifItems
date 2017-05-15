@@ -70,7 +70,6 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
      */
     public static function buildList($item) {
         $atId = public_full_url(array('things' => 'items', 'id' => $item->id, 'typeext' => 'annolist.json'), 'iiifitems_oa_uri');
-        $annotations = array();
         if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
             return self::blankListTemplate($atId, array(self::buildAnnotation($item)));
         } else {
@@ -110,27 +109,33 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
             if (!($canvasId = raw_iiif_metadata($attachedItem, 'iiifitems_item_atid_element'))) {
                 $canvasId = public_full_url(array('things' => 'items', 'id' => $attachedItem->id, 'typeext' => 'canvas.json'), 'iiifitems_oa_uri');
             }
-            $svgSelector = raw_iiif_metadata($annoItem, 'iiifitems_annotation_selector_element');
-            $xywhSelector = raw_iiif_metadata($annoItem, 'iiifitems_annotation_xywh_element');
+            $svgSelectors = self::getAnnotationSvg($annoItem);
+            $xywhSelectors = self::getAnnotationXywh($annoItem);
+            $svgSelector = empty($svgSelectors) ? null : $svgSelectors[0];
+            $xywhSelector = empty($xywhSelectors) ? null : $xywhSelectors[0];
             if ($svgSelector || $xywhSelector) {
                 unset($currentAnnotationJson['on']);
                 // Mirador 2.3+ format
                 if ($svgSelector && $xywhSelector) {
-                    $currentAnnotationJson['on'] = array(array(
-                        '@type' => 'oa:SpecificResource',
-                        'full' => $canvasId,
-                        'selector' => array(
-                            '@type' => 'oa:Choice',
-                            'default' => array(
-                                '@type' => 'oa:FragmentSelector',
-                                'value' => 'xywh=' . $xywhSelector,
+                    $currentAnnotationJson['on'] = array();
+                    $areas = min(count($svgSelectors), count($xywhSelectors));
+                    for ($i = 0; $i < $areas; $i++) {
+                        $currentAnnotationJson['on'][] = array(
+                            '@type' => 'oa:SpecificResource',
+                            'full' => $canvasId,
+                            'selector' => array(
+                                '@type' => 'oa:Choice',
+                                'default' => array(
+                                    '@type' => 'oa:FragmentSelector',
+                                    'value' => 'xywh=' . $xywhSelectors[$i],
+                                ),
+                                'item' => array(
+                                    '@type' => 'oa:SvgSelector',
+                                    'value' => $svgSelectors[$i],
+                                ),
                             ),
-                            'item' => array(
-                                '@type' => 'oa:SvgSelector',
-                                'value' => $svgSelector,
-                            ),
-                        ),
-                    ));
+                        );
+                    }
                 }
                 // xywh-only format
                 elseif ($xywhSelector) {
@@ -150,6 +155,39 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
             }
         }
         return $currentAnnotationJson;
+    }
+    
+    /**
+     * Return the SVG selectors of the given annotation-type item.
+     * @param Item $annoItem The annotation-type item
+     * @return string[]
+     */
+    public static function getAnnotationSvg($annoItem) {
+        $svgTexts = get_db()->getTable('ElementText')->findBySql("element_texts.record_id = ? AND element_texts.record_type = 'Item' AND element_texts.element_id = ?", array($annoItem->id, get_option('iiifitems_annotation_selector_element')));
+        $svgs = array();
+        foreach ($svgTexts as $svgText) {
+            $svgs[] = $svgText->text;
+        }
+        return $svgs;
+    }
+    
+    /**
+     * Return the xywh regions of the given annotation-type item.
+     * @param Item $annoItem The annotation-type item
+     * @param boolean $arrayForm Whether to return results as an array of strings (false, default) or of 4-entry arrays (true)
+     * @return string[]|array[] 
+     */
+    public static function getAnnotationXywh($annoItem, $arrayForm=false) {
+        $xywhTexts = get_db()->getTable('ElementText')->findBySql("element_texts.record_id = ? AND element_texts.record_type = 'Item' AND element_texts.element_id = ?", array($annoItem->id, get_option('iiifitems_annotation_xywh_element')));
+        $xywhs = array();
+        foreach ($xywhTexts as $xywhText) {
+            if ($arrayForm) {
+                $xywhs[] = explode(',', $xywhText->text);
+            } else {
+                $xywhs[] = $xywhText->text;
+            }
+        }
+        return $xywhs;
     }
     
     /**
@@ -346,7 +384,6 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
             break;
             case 'Item':
                 return $context;
-            break;
         }
         return null;
     }

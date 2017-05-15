@@ -272,14 +272,16 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         try {
             // Annotation item
             if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
-                if ($xywhBounds = raw_iiif_metadata($item, 'iiifitems_annotation_xywh_element')) {
+                if ($xywhBounds = IiifItems_Util_Annotation::getAnnotationXywh($item, true)) {
                     $attachedItem = IiifItems_Util_Annotation::findAnnotatedItemFor($item);
-                    $addAnnotationThumbnailJob = new IiifItems_Job_AddAnnotationThumbnail(array(
-                        'originalItemId' => $attachedItem->id,
-                        'annotationItemId' => $item->id,
-                        'dims' => explode(',', $xywhBounds, 4),
-                    ));
-                    $addAnnotationThumbnailJob->perform();
+                    foreach ($xywhBounds as $xywhBound) {
+                        $addAnnotationThumbnailJob = new IiifItems_Job_AddAnnotationThumbnail(array(
+                            'originalItemId' => $attachedItem->id,
+                            'annotationItemId' => $item->id,
+                            'dims' => $xywhBound,
+                        ));
+                        $addAnnotationThumbnailJob->perform();
+                    }
                 } else {
                     throw new Exception("No xywh bounds found on annotation.");
                 }
