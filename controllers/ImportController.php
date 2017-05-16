@@ -58,19 +58,9 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             }
             // Grab and verify the submitted source
             switch ($form->getValue('items_import_type')) {
-                case 0:
-                    $importType = 'Collection';
-                    if ($parentUuid && !IiifItems_Util_Collection::isCollection($parentCollection)) {
-                        $this->_helper->flashMessenger(__('Only collections can be the parent of a collection.'), 'error');
-                        return false;
-                    }
-                break;
                 case 1:
                     $importType = 'Manifest';
-                    if ($parentUuid && !IiifItems_Util_Collection::isCollection($parentCollection)) {
-                        $this->_helper->flashMessenger(__('Only collections can be the parent of a manifest.'), 'error');
-                        return false;
-                    }
+                    $parentUuid = '';
                 break;
                 case 2:
                     $importType = 'Canvas';

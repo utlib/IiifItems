@@ -118,15 +118,11 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
                 }
                 break;
             case 'Collection':
-                $currentCollection = IiifItems_Util_Collection::findParentFor($thing);
                 break;
             default:
                 throw new InvalidArgumentException('Thing must be an Item or Collection.');
         }
-        while ($currentCollection) {
-            $path[] = $currentCollection;
-            $currentCollection = IiifItems_Util_Collection::findParentFor($currentCollection);
-        }
+        $path[] = $currentCollection;
         return array_reverse($path);
     }
     

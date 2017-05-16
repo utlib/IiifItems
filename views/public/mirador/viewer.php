@@ -25,43 +25,20 @@
             "buildPath": "<?php echo html_escape($mirador_path) . '/'; ?>",
             "layout": "1",
             "data": [
-                <?php if ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) : ?>
                 { "manifestUri": "<?php echo absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest'); ?>" }
-                <?php else : ?>
-                <?php foreach (IiifItems_Util_Collection::findSubcollectionsFor($thing) as $subcollection) : ?>
-                { "collectionUri": "<?php echo absolute_url(array('id' => $subcollection->id), 'iiifitems_collection'); ?>" },
-                <?php endforeach; ?>
-                <?php foreach (IiifItems_Util_Collection::findSubmanifestsFor($thing) as $submanifest) : ?>
-                { "manifestUri": "<?php echo absolute_url(array('things' => $type, 'id' => $submanifest->id), 'iiifitems_manifest'); ?>" },
-                <?php endforeach; ?>
-                {}
-                <?php endif; ?>
             ],
             <?php 
-                $defaultManifest = '';
-                if ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) {
-                    $defaultManifest = absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest');
-                }
-//                else {
-//                    $submanifests = IiifItems_Util_Collection::findSubmanifestsFor($thing);
-//                    if (count($submanifests) > 0) {
-//                        $defaultManifest = absolute_url(array('things' => $type, 'id' => $submanifests[0]->id), 'iiifitems_manifest');
-//                    }
-//                }
+                $defaultManifest = absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest');
             ?>
-            <?php if ($type == 'collections' && IiifItems_Util_Collection::isCollection($thing)) : ?>
-            "openManifestsPage": true,
-            <?php else: ?>
             "windowObjects": [{
                 imageMode: "ImageView",
                 loadedManifest: "<?php echo $defaultManifest; ?>",
                 slotAddress: "row1.column1",
                 viewType: "ImageView",
-                displayLayout: <?php echo ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) ? 'false' : 'true'; ?>,
+                displayLayout: false,
                 sidePanel: true,
                 annotationLayer: true
             }],
-            <?php endif; ?>
             "windowSettings": {
                 canvasControls: {
                     annotations: {

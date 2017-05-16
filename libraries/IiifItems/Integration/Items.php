@@ -184,9 +184,6 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         $iiifUrl = public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
         echo '<div class="element-set">';
         echo '<h2>IIIF ' . ($item->item_type_id == get_option('iiifitems_annotation_item_type') ? 'Annotation' : 'Item') . ' Information</h2>';
-        echo '<p>';
-        echo IiifItems_Util_CollectionOptions::getPathBreadcrumb($item, true);
-        echo '</p>';
         echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
         $this->_adminElementTextPair('Manifest URL', 'iiif-item-metadata-manifest-url', '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
         $this->_adminElementTextPair('Original ID', 'iiif-item-metadata-original-id', metadata($item, array('IIIF Item Metadata', 'Original @id')), true);

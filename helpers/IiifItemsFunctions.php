@@ -104,11 +104,6 @@ function clear_iiifitems_cache_values_for($record, $bubble=true) {
                 }
             break;
             case 'Collection':
-                if ($parentCollectionId = raw_iiif_metadata($record, 'iiifitems_collection_parent_element')) {
-                    if ($parentCollection = IiifItems_Util_Collection::findParentFor($record)) {
-                        clear_iiifitems_cache_values_for($parentCollection, false);
-                    }
-                }
             break;
         }
     }

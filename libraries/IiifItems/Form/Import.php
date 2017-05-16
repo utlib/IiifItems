@@ -28,7 +28,7 @@ class IiifItems_Form_Import extends Omeka_Form {
         // Type (Collection/Manifest/Image-Canvas)
         $this->addElement('radio', 'items_import_type', array(
             'label' => __('Type'),
-            'multiOptions' => array('Collection', 'Manifest', 'Canvas'),
+            'multiOptions' => array(1 => 'Manifest', 2 => 'Canvas'),
         ));
         // Source
         $this->addElement('radio', 'items_import_source', array(
@@ -47,7 +47,7 @@ class IiifItems_Form_Import extends Omeka_Form {
         // Parent
         $this->addElement('select', 'items_import_to_parent', array(
             'label' => __('Parent'),
-            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(null, (current_user()->role == 'contributor') ? current_user() : null),
+            'multiOptions' => $this->__getParentOptions(),
         ));
         // Set to Public?
         $this->addElement('checkbox', 'items_are_public', array(
@@ -95,5 +95,20 @@ class IiifItems_Form_Import extends Omeka_Form {
             )
         ));
         $this->addElement($submit);
+    }
+    
+    private function __getParentOptions() {
+        $db = get_db();
+        $collectionTable = $db->getTable('Collection');
+        $select = $collectionTable->getSelect();
+        if (current_user()->role == 'contributor') {
+            $select->where('owner_id = ?', array(current_user()->id));
+        }
+        $collections = $collectionTable->fetchObjects($select);
+        $options = array('' => 'None');
+        foreach ($collections as $collection) {
+            $options[raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element')] = metadata($collection, array('Dublin Core', 'Title'));
+        }
+        return $options;
     }
 }
