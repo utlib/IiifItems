@@ -14,7 +14,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
         'uninstall',
         'upgrade',
         'initialize',
-        'define_acl',
         'define_routes',
         'config_form',
         'config',
@@ -90,20 +89,6 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
             $integration = new $integrationClass();
             $integration->integrate();
         }
-    }
-    
-    /**
-     * Hook for adding ACL entries.
-     * Allow public users to traverse the collection tree and the top-level collection.
-     * 
-     * @param array $args
-     */
-    public function hookDefineAcl($args) {
-        $acl = $args['acl'];
-        // Solve login redirect when viewing submembers or collection.json as public user
-        $acl->allow(null, 'Collections', 'members');
-        $acl->allow(null, 'Collections', 'collection');
-        $acl->allow(null, 'Collections', 'explorer');
     }
 
     public function hookDefineRoutes($args) {
