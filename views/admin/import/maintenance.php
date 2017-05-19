@@ -22,3 +22,4 @@ echo flash();
         </div>
     </div>
 </div>
+<?php echo foot(); ?>
