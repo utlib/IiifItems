@@ -13,5 +13,5 @@
             }
         }
     ?>
-    <iframe src="<?php echo public_full_url(array(), 'iiifitems_exhibit_mirador', $params); ?>"></iframe>
+    <iframe src="<?php echo public_full_url(array(), 'iiifitems_exhibit_mirador', $params); ?>" allowfullscreen="allowfullscreen"></iframe>
 </div>
