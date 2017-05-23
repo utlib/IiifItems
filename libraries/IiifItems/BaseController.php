@@ -17,7 +17,7 @@ abstract class IiifItems_BaseController extends Omeka_Controller_AbstractActionC
         //Get and check the thing's existence
         $id = $this->getParam('id');
         $type = $this->getParam('things');
-        $class = Inflector::titleize(Inflector::singularize($type));
+        $class = Inflector::camelize(Inflector::singularize($type));
         $thing = get_record_by_id($class, $id);
         if (empty($thing)) {
             throw new Omeka_Controller_Exception_404;

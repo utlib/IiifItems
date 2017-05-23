@@ -5,13 +5,13 @@
  * @package controllers
  */
 class IiifItems_ManifestController extends IiifItems_BaseController {
-    protected static $allowedThings = array('Collection', 'Item', 'File');
+    protected static $allowedThings = array('Collection', 'Item', 'File', 'ExhibitPageBlock');
     
     public function manifestAction() {
         //Get and check the thing's existence
         $id = $this->getParam('id');
         $type = $this->getParam('things');
-        $class = Inflector::titleize(Inflector::singularize($type));
+        $class = Inflector::camelize(Inflector::singularize($type));
         $thing = get_record_by_id($class, $id);
         if (empty($thing) || !in_array($class, self::$allowedThings)) {
             throw new Omeka_Controller_Exception_404;
@@ -23,6 +23,7 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
                 case 'Collection': $jsonData = IiifItems_Util_Manifest::buildManifest($thing, is_admin_theme()); break;
                 case 'Item': $jsonData = IiifItems_Util_Manifest::buildItemManifest($thing); break;
                 case 'File': $jsonData = IiifItems_Util_Manifest::buildFileManifest($thing); break;
+                case 'ExhibitPageBlock': $jsonData = IiifItems_Util_Manifest::buildExhibitPageBlockManifest($thing); break;
             }
             $this->__respondWithJson($jsonData);
         } catch (Exception $e) {
