@@ -130,6 +130,39 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
         // Done
         return $json;
     }
+    
+    /**
+     * Return the IIIF Presentation API manifest representation of the exhibit block's attached items
+     * @param ExhibitPageBlock $block
+     * @return array
+     */
+    public static function buildExhibitPageBlockManifest($block) {
+        // Set default IDs and titles
+        $atId = public_full_url(array('things' => 'exhibit_page_blocks', 'id' => $block->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
+        $seqId = public_full_url(array('things' => 'exhibit_page_blocks', 'id' => $block->id, 'typeext' => 'sequence.json'), 'iiifitems_oa_uri');
+        $label = $block->getPage()->title;
+        // Find attached items in order
+        $canvases = array();
+        foreach ($block->getAttachments() as $attachment) {
+            if ($item = $attachment->getItem()) {
+                // If it is an annotation, use the special annotation canvas utility
+                if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
+                    $canvases[] = IiifItems_Util_Canvas::buildAnnotationCanvas($item);
+                }
+                // Otherwise, use the standard item-to-canvas utility
+                else {
+                    $canvases[] = IiifItems_Util_Canvas::buildCanvas($item);
+                }
+            }
+        }
+        // Generate from template
+        $json = self::blankTemplate($atId, $seqId, $label, $canvases);
+        if ($block->text) {
+            $json['description'] = $block->text;
+        }
+        // Done
+        return $json;
+    }
 
     /**
      * Return the parent collection of this collection (Collection or Manifest type)
