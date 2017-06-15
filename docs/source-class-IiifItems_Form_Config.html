@@ -81,7 +81,6 @@
 				<li><a href="class-IiifItems_BaseIntegration.html">IiifItems_BaseIntegration</a></li>
 				<li><a href="class-IiifItems_BaseMigration.html">IiifItems_BaseMigration</a></li>
 				<li><a href="class-IiifItems_CachedJsonData.html">IiifItems_CachedJsonData</a></li>
-				<li><a href="class-IiifItems_CollectionsController.html">IiifItems_CollectionsController</a></li>
 				<li><a href="class-IiifItems_Form_Config.html">IiifItems_Form_Config</a></li>
 				<li><a href="class-IiifItems_Form_Import.html">IiifItems_Form_Import</a></li>
 				<li><a href="class-IiifItems_IiifUtil.html">IiifItems_IiifUtil</a></li>
@@ -102,15 +101,18 @@
 				<li><a href="class-IiifItems_ManifestController.html">IiifItems_ManifestController</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1.html">IiifItems_Migration_0_0_1</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_1.html">IiifItems_Migration_0_0_1_1</a></li>
+				<li><a href="class-IiifItems_Migration_0_0_1_10.html">IiifItems_Migration_0_0_1_10</a></li>
+				<li><a href="class-IiifItems_Migration_0_0_1_11.html">IiifItems_Migration_0_0_1_11</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_3.html">IiifItems_Migration_0_0_1_3</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_4.html">IiifItems_Migration_0_0_1_4</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_5.html">IiifItems_Migration_0_0_1_5</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_6.html">IiifItems_Migration_0_0_1_6</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_7.html">IiifItems_Migration_0_0_1_7</a></li>
+				<li><a href="class-IiifItems_Migration_0_0_1_8.html">IiifItems_Migration_0_0_1_8</a></li>
+				<li><a href="class-IiifItems_Migration_0_0_1_9.html">IiifItems_Migration_0_0_1_9</a></li>
 				<li><a href="class-IiifItems_MiradorController.html">IiifItems_MiradorController</a></li>
 				<li><a href="class-IiifItems_Util_Annotation.html">IiifItems_Util_Annotation</a></li>
 				<li><a href="class-IiifItems_Util_Canvas.html">IiifItems_Util_Canvas</a></li>
-				<li><a href="class-IiifItems_Util_Collection.html">IiifItems_Util_Collection</a></li>
 				<li><a href="class-IiifItems_Util_CollectionOptions.html">IiifItems_Util_CollectionOptions</a></li>
 				<li><a href="class-IiifItems_Util_Manifest.html">IiifItems_Util_Manifest</a></li>
 				<li><a href="class-IiifItemsPlugin.html">IiifItemsPlugin</a></li>
@@ -129,9 +131,7 @@
 				<li><a href="function-filter_hide_element_display.html">filter_hide_element_display</a></li>
 				<li><a href="function-filter_minimal_input.html">filter_minimal_input</a></li>
 				<li><a href="function-filter_singular_form.html">filter_singular_form</a></li>
-				<li><a href="function-find_collection_by_atid.html">find_collection_by_atid</a></li>
 				<li><a href="function-find_collection_by_uuid.html">find_collection_by_uuid</a></li>
-				<li><a href="function-find_item_by_atid.html">find_item_by_atid</a></li>
 				<li><a href="function-find_item_by_uuid.html">find_item_by_uuid</a></li>
 				<li><a href="function-generate_uuid.html">generate_uuid</a></li>
 				<li><a href="function-get_cached_iiifitems_value_for.html">get_cached_iiifitems_value_for</a></li>
@@ -200,8 +200,18 @@
 </span><span id="26" class="l"><a href="#26">26: </a>            <span class="php-quote">'description'</span> =&gt; __(<span class="php-quote">'URL to the directory holding the main mirador.js and supporting files.'</span>),
 </span><span id="27" class="l"><a href="#27">27: </a>            <span class="php-quote">'value'</span> =&gt; get_option(<span class="php-quote">'iiifitems_mirador_path'</span>),
 </span><span id="28" class="l"><a href="#28">28: </a>        ));
-</span><span id="29" class="l"><a href="#29">29: </a>    }
-</span><span id="30" class="l"><a href="#30">30: </a>}</span></code></pre>
+</span><span id="29" class="l"><a href="#29">29: </a>        <span class="php-var">$this</span>-&gt;addElement(<span class="php-quote">'text'</span>, <span class="php-quote">'iiifitems_mirador_js'</span>, <span class="php-keyword1">array</span>(
+</span><span id="30" class="l"><a href="#30">30: </a>            <span class="php-quote">'label'</span> =&gt; __(<span class="php-quote">'Mirador JS file'</span>),
+</span><span id="31" class="l"><a href="#31">31: </a>            <span class="php-quote">'description'</span> =&gt; __(<span class="php-quote">'Path to the main Mirador JS file, relative to the specified Mirador Path.'</span>),
+</span><span id="32" class="l"><a href="#32">32: </a>            <span class="php-quote">'value'</span> =&gt; get_option(<span class="php-quote">'iiifitems_mirador_js'</span>),
+</span><span id="33" class="l"><a href="#33">33: </a>        ));
+</span><span id="34" class="l"><a href="#34">34: </a>        <span class="php-var">$this</span>-&gt;addElement(<span class="php-quote">'text'</span>, <span class="php-quote">'iiifitems_mirador_css'</span>, <span class="php-keyword1">array</span>(
+</span><span id="35" class="l"><a href="#35">35: </a>            <span class="php-quote">'label'</span> =&gt; __(<span class="php-quote">'Mirador CSS file'</span>),
+</span><span id="36" class="l"><a href="#36">36: </a>            <span class="php-quote">'description'</span> =&gt; __(<span class="php-quote">'Path to the main Mirador CSS file. Can be absolute (starting with http:// or https://) or relative to the specified Mirador Path.'</span>),
+</span><span id="37" class="l"><a href="#37">37: </a>            <span class="php-quote">'value'</span> =&gt; get_option(<span class="php-quote">'iiifitems_mirador_css'</span>),
+</span><span id="38" class="l"><a href="#38">38: </a>        ));
+</span><span id="39" class="l"><a href="#39">39: </a>    }
+</span><span id="40" class="l"><a href="#40">40: </a>}</span></code></pre>
 
 	<div id="footer">
 		IiifItems API documentation generated by <a href="http://apigen.org">ApiGen</a>
@@ -209,6 +219,6 @@
 </div>
 </div>
 <script src="resources/combined.js?cd021bc814832c24a7cec5319ea03335bfba1caf"></script>
-<script src="elementlist.js?5b1eeb89e7d364c5ea866af13a4b732077070c49"></script>
+<script src="elementlist.js?b1700f7b6938491109adabdb5c1bd3cba0f90bbb"></script>
 </body>
 </html>

@@ -76,7 +76,6 @@
 			<ul>
 				<li><a href="class-IiifItems_AnnotationController.html">IiifItems_AnnotationController</a></li>
 				<li><a href="class-IiifItems_AnnotatorController.html">IiifItems_AnnotatorController</a></li>
-				<li><a href="class-IiifItems_CollectionsController.html">IiifItems_CollectionsController</a></li>
 				<li class="active"><a href="class-IiifItems_ImportController.html">IiifItems_ImportController</a></li>
 				<li><a href="class-IiifItems_ManifestController.html">IiifItems_ManifestController</a></li>
 				<li><a href="class-IiifItems_MiradorController.html">IiifItems_MiradorController</a></li>
@@ -161,7 +160,7 @@ Omeka_Controller_AbstractActionController
 		
 		<b>Package:</b> <a href="package-controllers.html">controllers</a><br>
 
-			<b>Located at</b> <a href="source-class-IiifItems_ImportController.html#3-314" title="Go to source code">controllers/ImportController.php</a>
+			<b>Located at</b> <a href="source-class-IiifItems_ImportController.html#3-377" title="Go to source code">controllers/ImportController.php</a>
 		<br>
 	</div>
 
@@ -217,7 +216,7 @@ GET/POST iiif-items/import</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_processSubmission">#</a>
-		<code><a href="source-class-IiifItems_ImportController.html#33-116" title="Go to source code">processSubmission</a>( )</code>
+		<code><a href="source-class-IiifItems_ImportController.html#33-149" title="Go to source code">processSubmission</a>( )</code>
 
 		<div class="description short">
 			<p>Processes the submission of the IIIF import form.
@@ -253,7 +252,7 @@ POST iiif-items/import</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#__extractResourceUrl">#</a>
-		<code><a href="source-class-IiifItems_ImportController.html#118-137" title="Go to source code">_extractResourceUrl</a>( <span>string <var>$url</var></span> )</code>
+		<code><a href="source-class-IiifItems_ImportController.html#151-170" title="Go to source code">_extractResourceUrl</a>( <span>string <var>$url</var></span> )</code>
 
 		<div class="description short">
 			<p>Attempts to return the manifest URL from IIIF drag-and-drop URLs</p>
@@ -292,7 +291,7 @@ POST iiif-items/import</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_statusAction">#</a>
-		<code><a href="source-class-IiifItems_ImportController.html#139-154" title="Go to source code">statusAction</a>( )</code>
+		<code><a href="source-class-IiifItems_ImportController.html#172-187" title="Go to source code">statusAction</a>( )</code>
 
 		<div class="description short">
 			<p>Renders a table of job statuses related to IIIF Items.
@@ -328,7 +327,7 @@ GET iiif-items/status</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_statusUpdateAction">#</a>
-		<code><a href="source-class-IiifItems_ImportController.html#156-177" title="Go to source code">statusUpdateAction</a>( )</code>
+		<code><a href="source-class-IiifItems_ImportController.html#189-215" title="Go to source code">statusUpdateAction</a>( )</code>
 
 		<div class="description short">
 			<p>Renders JSON with current server timestamp and list of import tasks updated since the specified last-updated timestamp
@@ -368,7 +367,7 @@ GET iiif-items/status-update?t=...</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#__getImportForm">#</a>
-		<code><a href="source-class-IiifItems_ImportController.html#179-186" title="Go to source code">_getImportForm</a>( )</code>
+		<code><a href="source-class-IiifItems_ImportController.html#217-224" title="Go to source code">_getImportForm</a>( )</code>
 
 		<div class="description short">
 			<p>Helper for returning the import form</p>
@@ -402,7 +401,7 @@ GET iiif-items/status-update?t=...</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_repairItemAction">#</a>
-		<code><a href="source-class-IiifItems_ImportController.html#188-241" title="Go to source code">repairItemAction</a>( )</code>
+		<code><a href="source-class-IiifItems_ImportController.html#226-298" title="Go to source code">repairItemAction</a>( )</code>
 
 		<div class="description short">
 			<p>Repair the preview images of the given item.
@@ -438,7 +437,7 @@ POST iiif-items/items/:id/repair</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_maintenanceAction">#</a>
-		<code><a href="source-class-IiifItems_ImportController.html#243-249" title="Go to source code">maintenanceAction</a>( )</code>
+		<code><a href="source-class-IiifItems_ImportController.html#300-309" title="Go to source code">maintenanceAction</a>( )</code>
 
 		<div class="description short">
 			<p>Renders the maintenance actions menu.
@@ -470,7 +469,7 @@ GET iiif-items/maintenance</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_cleanCacheAction">#</a>
-		<code><a href="source-class-IiifItems_ImportController.html#251-313" title="Go to source code">cleanCacheAction</a>( )</code>
+		<code><a href="source-class-IiifItems_ImportController.html#311-376" title="Go to source code">cleanCacheAction</a>( )</code>
 
 		<div class="description short">
 			<p>Cleans cached data generated by the IIIF Items plugin.

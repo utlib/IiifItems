@@ -76,7 +76,6 @@
 			<ul>
 				<li><a href="class-IiifItems_AnnotationController.html">IiifItems_AnnotationController</a></li>
 				<li><a href="class-IiifItems_AnnotatorController.html">IiifItems_AnnotatorController</a></li>
-				<li><a href="class-IiifItems_CollectionsController.html">IiifItems_CollectionsController</a></li>
 				<li><a href="class-IiifItems_ImportController.html">IiifItems_ImportController</a></li>
 				<li><a href="class-IiifItems_ManifestController.html">IiifItems_ManifestController</a></li>
 				<li class="active"><a href="class-IiifItems_MiradorController.html">IiifItems_MiradorController</a></li>
@@ -161,7 +160,7 @@ Omeka_Controller_AbstractActionController
 		
 		<b>Package:</b> <a href="package-controllers.html">controllers</a><br>
 
-			<b>Located at</b> <a href="source-class-IiifItems_MiradorController.html#3-75" title="Go to source code">controllers/MiradorController.php</a>
+			<b>Located at</b> <a href="source-class-IiifItems_MiradorController.html#3-86" title="Go to source code">controllers/MiradorController.php</a>
 		<br>
 	</div>
 
@@ -217,7 +216,7 @@ GET :things/mirador/:id</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_multiviewerAction">#</a>
-		<code><a href="source-class-IiifItems_MiradorController.html#25-37" title="Go to source code">multiviewerAction</a>( )</code>
+		<code><a href="source-class-IiifItems_MiradorController.html#25-39" title="Go to source code">multiviewerAction</a>( )</code>
 
 		<div class="description short">
 			<p>Renders a Mirador viewer featuring multiple items and/or manifests.
@@ -241,6 +240,38 @@ Pass GET parameter u[]=(URL) to embed manifests</p>
 		</div>
 		</div></td>
 	</tr>
+	<tr data-order="neatlineAction" id="_neatlineAction">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_neatlineAction">#</a>
+		<code><a href="source-class-IiifItems_MiradorController.html#41-48" title="Go to source code">neatlineAction</a>( )</code>
+
+		<div class="description short">
+			<p>Renders a minimal Mirador viewer for embedding in Neatline.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Renders a minimal Mirador viewer for embedding in Neatline.</p>
+
+<p>GET iiif-items/nlmirador/:id</p>
+
+
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
 	<tr data-order="annotatorAction" id="_annotatorAction">
 
 		<td class="attributes"><code>
@@ -253,7 +284,7 @@ Pass GET parameter u[]=(URL) to embed manifests</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_annotatorAction">#</a>
-		<code><a href="source-class-IiifItems_MiradorController.html#39-74" title="Go to source code">annotatorAction</a>( )</code>
+		<code><a href="source-class-IiifItems_MiradorController.html#50-85" title="Go to source code">annotatorAction</a>( )</code>
 
 		<div class="description short">
 			<p>Renders an annotation-enabled Mirador viewer for the given manifest-type collection or non-annotation item.
@@ -331,7 +362,7 @@ GET: :things/:id/annotator</p>
 		<td class="value">
 			<div>
 				<a href="#$allowedThings" class="anchor">#</a>
-				<code><span class="php-keyword1">array</span>(<span class="php-quote">'Collection'</span>, <span class="php-quote">'Item'</span>, <span class="php-quote">'File'</span>)</code>
+				<code><span class="php-keyword1">array</span>(<span class="php-quote">'Collection'</span>, <span class="php-quote">'Item'</span>, <span class="php-quote">'File'</span>, <span class="php-quote">'ExhibitPageBlock'</span>)</code>
 			</div>
 		</td>
 	</tr>

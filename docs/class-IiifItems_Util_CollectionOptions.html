@@ -76,7 +76,6 @@
 			<ul>
 				<li><a href="class-IiifItems_Util_Annotation.html">IiifItems_Util_Annotation</a></li>
 				<li><a href="class-IiifItems_Util_Canvas.html">IiifItems_Util_Canvas</a></li>
-				<li><a href="class-IiifItems_Util_Collection.html">IiifItems_Util_Collection</a></li>
 				<li class="active"><a href="class-IiifItems_Util_CollectionOptions.html">IiifItems_Util_CollectionOptions</a></li>
 				<li><a href="class-IiifItems_Util_Manifest.html">IiifItems_Util_Manifest</a></li>
 			</ul>
@@ -154,7 +153,7 @@
 		
 		<b>Package:</b> <a href="package-IiifItems.html">IiifItems</a>\<a href="package-IiifItems.Util.html">Util</a><br>
 
-			<b>Located at</b> <a href="source-class-IiifItems_Util_CollectionOptions.html#3-288" title="Go to source code">libraries/IiifItems/Util/CollectionOptions.php</a>
+			<b>Located at</b> <a href="source-class-IiifItems_Util_CollectionOptions.html#3-297" title="Go to source code">libraries/IiifItems/Util/CollectionOptions.php</a>
 		<br>
 	</div>
 
@@ -260,7 +259,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#__pathToThing">#</a>
-		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#95-131" title="Go to source code">_pathToThing</a>( <span>Collection|Item <var>$thing</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#95-127" title="Go to source code">_pathToThing</a>( <span>Collection|Item <var>$thing</var></span> )</code>
 
 		<div class="description short">
 			<p>Generate a path array for the sequence of nodes leading to the given thing</p>
@@ -303,7 +302,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#__hierarchyToOptions">#</a>
-		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#133-149" title="Go to source code">_hierarchyToOptions</a>( <span>array <var>$hierarchy</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#129-156" title="Go to source code">_hierarchyToOptions</a>( <span>array <var>$hierarchy</var></span>, <span>User|null <var>$contributor</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			<p>Convert a raw tree array to an options array used in form helpers</p>
@@ -317,11 +316,13 @@
 				<div class="list"><dl>
 					<dt><var>$hierarchy</var></dt>
 					<dd>Raw tree array of entries [collection, title, depth]</dd>
+					<dt><var>$contributor</var></dt>
+					<dd>Return an option that applies to the given contributor User, if provided.</dd>
 				</dl></div>
 
 				<h4>Returns</h4>
 				<div class="list">
-					array<br>Form helper options array with value => label mappings
+					array<br>Form helper options array
 				</div>
 
 
@@ -342,7 +343,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#__hierarchyToUl">#</a>
-		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#151-178" title="Go to source code">_hierarchyToUl</a>( <span>array <var>$hierarchy</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#158-185" title="Go to source code">_hierarchyToUl</a>( <span>array <var>$hierarchy</var></span> )</code>
 
 		<div class="description short">
 			<p>Convert a raw tree array to a HTML string containing nested unordered lists</p>
@@ -381,7 +382,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getCollectionOptions">#</a>
-		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#180-187" title="Go to source code">getCollectionOptions</a>( <span>boolean|null <var>$isPublic</var> = <span class="php-keyword1">null</span></span> )</code>
+		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#187-195" title="Go to source code">getCollectionOptions</a>( <span>boolean|null <var>$isPublic</var> = <span class="php-keyword1">null</span></span>, <span>User|null <var>$contributor</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			<p>Return form helper options array for all collections, in tree-like form.</p>
@@ -395,6 +396,8 @@
 				<div class="list"><dl>
 					<dt><var>$isPublic</var></dt>
 					<dd></dd>
+					<dt><var>$contributor</var></dt>
+					<dd>Return an option that applies to the given contributor User, if provided.</dd>
 				</dl></div>
 
 				<h4>Returns</h4>
@@ -420,7 +423,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getFullOptions">#</a>
-		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#189-196" title="Go to source code">getFullOptions</a>( <span>boolean|null <var>$isPublic</var> = <span class="php-keyword1">null</span></span> )</code>
+		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#197-205" title="Go to source code">getFullOptions</a>( <span>boolean|null <var>$isPublic</var> = <span class="php-keyword1">null</span></span>, <span>User|null <var>$contributor</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			<p>Return form helper options array for all collections and manifests, in tree-like form.</p>
@@ -434,6 +437,8 @@
 				<div class="list"><dl>
 					<dt><var>$isPublic</var></dt>
 					<dd></dd>
+					<dt><var>$contributor</var></dt>
+					<dd>Return an option that applies to the given contributor User, if provided.</dd>
 				</dl></div>
 
 				<h4>Returns</h4>
@@ -459,7 +464,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getCollectionUl">#</a>
-		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#198-205" title="Go to source code">getCollectionUl</a>( <span>boolean|null <var>$isPublic</var> = <span class="php-keyword1">null</span></span> )</code>
+		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#207-214" title="Go to source code">getCollectionUl</a>( <span>boolean|null <var>$isPublic</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			<p>Return HTML representation for all collections, in nested unordered list form.</p>
@@ -498,7 +503,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getFullUl">#</a>
-		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#207-214" title="Go to source code">getFullUl</a>( <span>boolean|null <var>$isPublic</var> = <span class="php-keyword1">null</span></span> )</code>
+		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#216-223" title="Go to source code">getFullUl</a>( <span>boolean|null <var>$isPublic</var> = <span class="php-keyword1">null</span></span> )</code>
 
 		<div class="description short">
 			<p>Return the HTML representation for all collections and manifests, in nested unordered list form.</p>
@@ -537,7 +542,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getPathUl">#</a>
-		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#216-250" title="Go to source code">getPathUl</a>( <span>Collection|Item <var>$thing</var></span>, <span>boolean <var>$linked</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#225-259" title="Go to source code">getPathUl</a>( <span>Collection|Item <var>$thing</var></span>, <span>boolean <var>$linked</var></span> )</code>
 
 		<div class="description short">
 			<p>Return HTML string representing a path to the current collection/item, in nested list form</p>
@@ -578,7 +583,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_getPathBreadcrumb">#</a>
-		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#252-287" title="Go to source code">getPathBreadcrumb</a>( <span>type <var>$thing</var></span>, <span>boolean <var>$linked</var></span>, <span>boolean <var>$includeTop</var> = <span class="php-keyword1">true</span></span> )</code>
+		<code><a href="source-class-IiifItems_Util_CollectionOptions.html#261-296" title="Go to source code">getPathBreadcrumb</a>( <span>type <var>$thing</var></span>, <span>boolean <var>$linked</var></span>, <span>boolean <var>$includeTop</var> = <span class="php-keyword1">true</span></span> )</code>
 
 		<div class="description short">
 			<p>Return HTML string representing a pth to the current collection/item, in linear breadcrumb form</p>
