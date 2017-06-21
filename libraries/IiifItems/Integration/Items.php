@@ -224,7 +224,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
                 if ($allowEdit) {
                     echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
                     echo '<div class="panel"><h4>Repair</h4>'
-                        . '<p>If this item is imported via IIIF Items and the files are '
+                        . '<p>If this item is imported via IIIF Toolkit and the files are '
                         . 'missing/corrupted, you can repair it below. All '
                         . 'files belonging to this item will be deleted and '
                         . 'then reloaded.</p>'

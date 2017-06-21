@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Integrations for the general IIIF Items system.
+ * Integrations for the general IIIF Toolkit system.
  * @package IiifItems
  * @subpackage Integration
  */
@@ -22,7 +22,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     }
     
     /**
-     * Add new tables for IIIF Items-specific models.
+     * Add new tables for IIIF Toolkit-specific models.
      */
     private function __addTables() {
         $db = get_db();
@@ -76,7 +76,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     }
     
     /**
-     * Removes IIIF Items-specific elements.
+     * Removes IIIF Toolkit-specific elements.
      */
     public function uninstall() {
         $this->__removeIiif();
@@ -85,7 +85,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     }
     
     /**
-     * Drop tables for IIIF Items-specific models.
+     * Drop tables for IIIF Toolkit-specific models.
      */
     private function __removeTables() {
         $db = get_db();
@@ -113,7 +113,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     
     /**
      * Filter for the main admin navigation.
-     * Adds navigation link to the IIIF Items import form, status screen and maintenance options.
+     * Adds navigation link to the IIIF Toolkit import form, status screen and maintenance options.
      * 
      * @param array $nav
      * @return array
@@ -121,7 +121,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     public function filterAdminNavigationMain($nav) {
         if (current_user()->role != 'researcher') {
             $nav[] = array(
-                'label' => __('IIIF Items'),
+                'label' => __('IIIF Toolkit'),
                 'uri' => url('iiif-items/import'),
             );
         }
@@ -130,7 +130,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
 
     /**
      * Filter for which elements to display.
-     * Unset most IIIF Items-specific metadata for manual handling.
+     * Unset most IIIF Toolkit-specific metadata for manual handling.
      * 
      * @param array $elementsBySet
      * @return array
