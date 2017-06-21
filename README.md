@@ -2,7 +2,7 @@
 
 Annotate. Present. Impress.
 
-IIIF Toolkit by University of Toronto Libraries is a plugin for Omeka Classic 2.4 and up. It integrates Mirador with a built-in annotator, a manifest generator, Simple Pages shortcodes and Exhibit Builder blocks for a rich presentation experience.
+IIIF Toolkit by University of Toronto Libraries is a plugin for Omeka Classic 2.3 and up. It integrates Mirador with a built-in annotator, a manifest generator, Simple Pages shortcodes and Exhibit Builder blocks for a rich presentation experience.
 
 ## System Requirements
 
