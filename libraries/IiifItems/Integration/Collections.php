@@ -287,7 +287,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             if ($annotationCount = IiifItems_Util_Manifest::countAnnotationsFor($collection)) {
                 echo '<div class="panel">'
                     . '<h4>Annotations</h4>'
-                    . '<p>This manifest contains ' . __(plural('1 annotation', '%s%d annotations', $annotationCount), '', $annotationCount, '') . '.</p>';
+                    . '<p>This manifest contains ' . __(plural('1 annotation', '%s%d annotations', $annotationCount), '', $annotationCount, '') . '.</p></div>';
             }
         }
         if ($allowEdit) {
