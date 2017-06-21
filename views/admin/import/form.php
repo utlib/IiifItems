@@ -22,6 +22,18 @@ include __DIR__ . '/_nav.php';
         if (!jQuery('#items_import_source-2').is(':checked')) {
             jQuery('#items_import_source_json').parent().parent().hide();
         }
+        if (!jQuery('#items_import_type-1').is(':checked')) {
+            jQuery('#items_import_to_parent').attr('disabled', true).val('');
+            jQuery('#items_import_to_parent').parent().parent().hide();
+        }
+        jQuery('#items_import_type-1').click(function() {
+            jQuery('#items_import_to_parent').attr('disabled', true).val('');
+            jQuery('#items_import_to_parent').parent().parent().hide(fadeDelay);
+        });
+        jQuery('#items_import_type-2').click(function() {
+            jQuery('#items_import_to_parent').parent().parent().show(fadeDelay);
+            jQuery('#items_import_to_parent').attr('disabled', null);
+        });
         jQuery('#items_import_source-0').click(function() {
             jQuery('#items_import_source_file').parent().parent().show(fadeDelay);
             jQuery('#items_import_source_url').val('').parent().parent().hide(fadeDelay);
