@@ -50,19 +50,29 @@ class IiifItems_Form_Import extends Omeka_Form {
             'multiOptions' => $this->__getParentOptions(),
         ));
         // Set to Public?
-        $this->addElement('checkbox', 'items_are_public', array(
-            'label' => __('Set as Public?'),
-            'options' => array(
-                'use_hidden_element' => false,
-            ),
-        ));
+        if (array_search(current_user()->role, array('super', 'admin')) === FALSE) {
+            $setPublicElem = $this->createElement('hidden', 'items_are_public', array('value' => '0'));
+            $setPublicElem->setDecorators(array('ViewHelper'));
+        } else {
+            $this->addElement('checkbox', 'items_are_public', array(
+                'label' => __('Set as Public?'),
+                'options' => array(
+                    'use_hidden_element' => false,
+                ),
+            ));
+        }
         // Set as Featured?
-        $this->addElement('checkbox', 'items_are_featured', array(
-            'label' => __('Set as Featured?'),
-            'options' => array(
-                'use_hidden_element' => false,
-            ),
-        ));
+        if (array_search(current_user()->role, array('super', 'admin')) === FALSE) {
+            $setFeaturedElem = $this->createElement('hidden', 'items_are_featured', array('value' => '0', 'disableLoadDefaultDecorators' => true));
+            $setFeaturedElem->setDecorators(array('ViewHelper'));
+        } else {
+            $this->addElement('checkbox', 'items_are_featured', array(
+                'label' => __('Set as Featured?'),
+                'options' => array(
+                    'use_hidden_element' => false,
+                ),
+            ));
+        }
         // Import backwards?
         $this->addElement('checkbox', 'items_are_reversed', array(
             'label' => __('Import in Reverse?'),
