@@ -134,9 +134,10 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
      * Convert a raw tree array to an options array used in form helpers
      * @param array $hierarchy Raw tree array of entries [collection, title, depth]
      * @param User|null $contributor Return an option that applies to the given contributor User, if provided.
+     * @param bool $idValue (optional) Return an option that uses ID numbers instead of UUIDs for values.
      * @return array Form helper options array
      */
-    protected static function _hierarchyToOptions($hierarchy, $contributor=null) {
+    protected static function _hierarchyToOptions($hierarchy, $contributor=null, $idValue=false) {
         // Get flat hierarchy
         $options = array('' => 'No Parent');
         $disables = array();
@@ -144,7 +145,7 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
         foreach ($hierarchy as $i => $entry) {
             // Add option with indent
             $label = str_repeat("----", $entry[2]) . $entry[1];
-            $value = raw_iiif_metadata($entry[0], 'iiifitems_collection_uuid_element');
+            $value = $idValue ? $entry[0]->id : raw_iiif_metadata($entry[0], 'iiifitems_collection_uuid_element');
             $options[$value] = $label;
             if ($contributor !== null && $entry[0]->owner_id != $contributor->id) {
                 $disables[] = $i;
@@ -206,6 +207,16 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
      */
     public static function getFullOptions($isPublic=null, $contributor=null) {
         return self::_hierarchyToOptions(self::_fullHierarchy($isPublic, $contributor));
+    }
+    
+    /**
+     * Return form helper options array for all collections and manifests, in tree-like form. Uses ID-based values instead of UUID values.
+     * @param boolean|null $isPublic
+     * @param User|null $contributor Return an option that applies to the given contributor User, if provided.
+     * @return array
+     */
+    public static function getFullIdOptions($isPublic=null, $contributor=null) {
+        return self::_hierarchyToOptions(self::_fullHierarchy($isPublic, $contributor), $contributor, true);
     }
     
     /**

@@ -84,6 +84,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         add_filter(array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'JSON Data'), 'filter_minimal_input');
         add_filter(array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'UUID'), array($this, 'inputForCollectionUuid'));
         add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'UUID'), 'filter_singular_form');
+        add_filter('collections_select_options', array($this, 'filterCollectionsSelectOptions'));
     }
         
     /**
@@ -446,5 +447,18 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     public function inputForCollectionUuid($comps, $args) {
         $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
         return filter_minimal_input($comps, $args);
+    }
+    
+    /**
+     * Manage search options for collections.
+     *
+     * @param array Search options for collections.
+     * @return array Filtered search options for collections.
+     */
+    public function filterCollectionsSelectOptions($options)
+    {
+        $currentUser = current_user();
+        $treeOptions = IiifItems_Util_CollectionOptions::getFullIdOptions(null, ($currentUser->role == 'contributor') ? $currentUser : null);
+        return array_intersect_key($treeOptions, $options);
     }
 }
