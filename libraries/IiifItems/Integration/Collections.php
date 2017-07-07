@@ -57,6 +57,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         delete_option('iiifitems_collection_atid_element');
         delete_option('iiifitems_collection_type_element');
         delete_option('iiifitems_collection_json_element');
+        delete_option('iiifitems_collection_uuid_element');
     }
     
     /**

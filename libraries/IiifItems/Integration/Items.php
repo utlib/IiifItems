@@ -59,6 +59,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         delete_option('iiifitems_item_display_element');
         delete_option('iiifitems_item_atid_element');
         delete_option('iiifitems_item_json_element');
+        delete_option('iiifitems_item_uuid_element');
     }
     
     /**
