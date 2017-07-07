@@ -16,7 +16,7 @@ class IiifItems_Integration_Files extends IiifItems_BaseIntegration {
     public function install() {
         $elementTable = get_db()->getTable('Element');
         // Add File type metadata elements
-        $file_metadata = insert_element_set(array(
+        $file_metadata = insert_element_set_failsafe(array(
             'name' => 'IIIF File Metadata',
             'description' => '',
             'record_type' => 'File'

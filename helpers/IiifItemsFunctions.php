@@ -192,3 +192,61 @@ function find_collection_by_uuid($uuid) {
     }
     return null;
 }
+
+/**
+ * Failsafe version of insert_element_set() that ignores "name must be unique" validation exceptions.
+ * 
+ * @param array $elementSetMetadata
+ * @param array $elements
+ * @return ElementSet
+ * @throws InvalidArgumentException
+ */
+function insert_element_set_failsafe($elementSetMetadata=array(), $elements=array()) {
+    $db = get_db();
+    $elementSet = null;
+    if (is_string($elementSetMetadata)) {
+        $elementSet = $db->getTable('ElementSet')->findByName($elementSetMetadata);
+    } elseif (is_array($elementSetMetadata)) {
+        $elementSet = $db->getTable('ElementSet')->findByName($elementSetMetadata['name']);
+    } else {
+        throw new InvalidArgumentException("Wrong argument type for elementSetMetadata parameter.");
+    }
+    if ($elementSet) {
+        foreach ($elements as $element) {
+            try {
+                $elementSet->addElements(array($element));
+                $elementSet->save();
+            } catch (Exception $ex) {
+                debug("Exception passed when adding element to new element set: {$ex->getMessage()}");
+            }
+        }
+    } else {
+        $elementSet = insert_element_set($elementSetMetadata, $elements);
+    }
+    return $elementSet;
+}
+
+/**
+ * Failsafe version of insert_item_type() that ignores "name must be unique" validation exceptions.
+ * 
+ * @param array $metadata
+ * @param array $elementInfos
+ * @return ItemType
+ */
+function insert_item_type_failsafe($metadata=array(), $elementInfos=array()) {
+    $db = get_db();
+    $itemType = $db->getTable('ItemType')->findByName($metadata['name']);
+    if ($itemType) {
+        foreach ($elementInfos as $element) {
+            try {
+                $itemType->addElements(array($element));
+                $itemType->save();
+            } catch (Exception $ex) {
+                debug("Exception passed when adding element to new item type: {$ex->getMessage()}");
+            }
+        }
+    } else {
+        $itemType = insert_item_type($metadata, $elementInfos);
+    }
+    return $itemType;
+}
