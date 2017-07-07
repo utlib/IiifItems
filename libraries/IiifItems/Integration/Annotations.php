@@ -13,7 +13,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
     public function install() {
         $elementTable = get_db()->getTable('Element');
         // Add Annotation item type elements
-        $annotation_metadata = insert_item_type(array(
+        $annotation_metadata = insert_item_type_failsafe(array(
             'name' => 'Annotation',
             'description' => 'An OA-compliant annotation',
         ), array(

@@ -35,7 +35,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     public function install() {
         $elementTable = get_db()->getTable('Element');
         // Add Collection type metadata elements
-        $collection_metadata = insert_element_set(array(
+        $collection_metadata = insert_element_set_failsafe(array(
             'name' => 'IIIF Collection Metadata',
             'description' => '',
             'record_type' => 'Collection'
