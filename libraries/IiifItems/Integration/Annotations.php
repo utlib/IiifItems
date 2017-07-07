@@ -52,6 +52,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         delete_option('iiifitems_annotation_selector_element');
         delete_option('iiifitems_annotation_xywh_element');
         delete_option('iiifitems_annotation_elements');
+        delete_option('iiifitems_annotation_text_element');
     }
     
     /**
