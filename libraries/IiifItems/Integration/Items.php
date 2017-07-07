@@ -33,7 +33,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
     public function install() {
         $elementTable = get_db()->getTable('Element');
         // Add Item type metadata elements
-        $item_metadata = insert_element_set(array(
+        $item_metadata = insert_element_set_failsafe(array(
             'name' => 'IIIF Item Metadata',
             'description' => '',
             'record_type' => 'Item'
