@@ -14,12 +14,19 @@ class IiifItems_Migration_0_0_1_6 extends IiifItems_BaseMigration {
     public function up() {
         // Add elements
         $collectionElementSet = get_record_by_id('ElementSet', get_option('iiifitems_collection_element_set'));
-        $collectionElementSet->addElements(array('UUID'));
-        $collectionElementSet->save();
+        try {
+            $collectionElementSet->addElements(array('UUID'));
+            $collectionElementSet->save();
+        } catch (Omeka_Validate_Exception $ex) {
+            debug("Passed UUID element for collections.");
+        }
         $itemElementSet = get_record_by_id('ElementSet', get_option('iiifitems_item_element_set'));
-        $itemElementSet->addElements(array('UUID'));
-        $itemElementSet->save();
-        
+        try {
+            $itemElementSet->addElements(array('UUID'));
+            $itemElementSet->save();
+        } catch (Omeka_Validate_Exception $ex) {
+            debug("Passed UUID element for items.");
+        }
         // Set quick-access options
         $tableElement = get_db()->getTable('Element');
         $uuidCollectionElement = $tableElement->findByElementSetNameAndElementName($collectionElementSet->name, 'UUID');
