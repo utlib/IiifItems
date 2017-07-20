@@ -212,7 +212,8 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         // Hack for hiding the preview from the standard Item view
         // The standard Item view has a non-empty action context (i.e. list of exports)
         if ($item = get_current_record('item', false)) {
-            if (empty(get_current_action_contexts()) && !IiifItems_Util_Canvas::isNonIiifItem($item)) {
+            $currentActionContexts = get_current_action_contexts();
+            if (empty($currentActionContexts) && !IiifItems_Util_Canvas::isNonIiifItem($item)) {
                 $elementsBySet = array_merge(array(__('IIIF Preview') => array('' => $elementsBySet['IIIF Item Metadata']['UUID'])), $elementsBySet);
             }
         }

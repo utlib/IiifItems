@@ -364,7 +364,8 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
     public function displayPreview($text, $args) {
         // Don't show preview on standard Omeka views
         // Note: This is in fact a hack that depends on non-Omeka views not having export actions.
-        if (!empty(get_current_action_contexts())) {
+        $currentActionContexts = get_current_action_contexts();
+        if (!empty($currentActionContexts)) {
             return $text;
         }
         // Render the viewer

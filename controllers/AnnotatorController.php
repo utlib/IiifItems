@@ -17,7 +17,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         // Sanity checks
         $this->__blockPublic();
         $this->__restrictVerb('GET');
-        if (empty($this->getParam('uri'))) {
+        $uri = $this->getParam('uri');
+        if (empty($uri)) {
             $this->__respondWithJson(null, 400);
             return;
         }
@@ -27,7 +28,6 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             $this->__respondWithJson(null, 400);
             return;
         }
-        $uri = $this->getParam('uri');
         if (!($thing = IiifItems_Util_Annotation::findAttachmentInContextByUri($contextThing, $uri))) {
             $this->__respondWithJson(null, 400);
             return;
