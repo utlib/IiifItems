@@ -45,7 +45,10 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     public function uninstall() {
         $elementSetTable = get_db()->getTable('ElementSet');
         // Remove Collection Metadata element set
-        $elementSetTable->find(get_option('iiifitems_collection_element_set'))->delete();
+        $elementSet = $elementSetTable->find(get_option('iiifitems_collection_element_set'));
+        if (!empty($elementSet)) {
+            $elementSet->delete();
+        }
         delete_option('iiifitems_collection_element_set');
         delete_option('iiifitems_collection_atid_element');
         delete_option('iiifitems_collection_type_element');

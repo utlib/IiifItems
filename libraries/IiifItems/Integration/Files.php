@@ -35,7 +35,10 @@ class IiifItems_Integration_Files extends IiifItems_BaseIntegration {
     public function uninstall() {
         $elementSetTable = get_db()->getTable('ElementSet');
         // Remove File Metadata element set
-        $elementSetTable->find(get_option('iiifitems_file_element_set'))->delete();
+        $elementSet = $elementSetTable->find(get_option('iiifitems_file_element_set'));
+        if (!empty($elementSet)) {
+            $elementSet->delete();
+        }
         delete_option('iiifitems_file_atid_element');
         delete_option('iiifitems_file_json_element');
         delete_option('iiifitems_file_element_set');

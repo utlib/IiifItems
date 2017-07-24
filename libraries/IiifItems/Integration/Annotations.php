@@ -40,13 +40,17 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
      * Remove metadata elements and the Annotation item type.
      */
     public function uninstall() {
-        $elementSetTable = get_db()->getTable('ElementSet');
         $itemTypeTable = get_db()->getTable('ItemType');
-        $annotationItemType = $itemTypeTable->find(get_option('iiifitems_annotation_item_type'));
-        foreach (json_decode(get_option('iiifitems_annotation_elements')) as $_ => $element_id) {
-            get_db()->getTable('Element')->find($element_id)->delete();
+        $annotationElements = json_decode(get_option('iiifitems_annotation_elements'));
+        if (!empty($annotationElements)) {
+            foreach ($annotationElements as $_ => $element_id) {
+                get_db()->getTable('Element')->find($element_id)->delete();
+            }
         }
-        $annotationItemType->delete();
+        $annotationItemType = $itemTypeTable->find(get_option('iiifitems_annotation_item_type'));
+        if (!empty($annotationItemType)) {
+            $annotationItemType->delete();
+        }
         delete_option('iiifitems_annotation_item_type');
         delete_option('iiifitems_annotation_on_element');
         delete_option('iiifitems_annotation_selector_element');
