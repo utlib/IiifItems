@@ -25,7 +25,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         // Process the form instead if POSTed
         if ($this->getRequest()->isPost()) {
             if ($this->processSubmission()) {
-                $this->_helper->redirector->goto(array(), 'status');
+                $this->_helper->redirector->gotoRoute(array(), 'iiifItemsStatus');
             }
         }
     }
