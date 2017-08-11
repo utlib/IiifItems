@@ -114,17 +114,30 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     /**
      * Filter for the main admin navigation.
      * Adds navigation link to the IIIF Toolkit import form, status screen and maintenance options.
+     * Also add IIIF Catalogue Tree
      * 
      * @param array $nav
      * @return array
      */
     public function filterAdminNavigationMain($nav) {
+        // Add link to import form, status screen, etc. to qualified users
         if (current_user()->role != 'researcher') {
             $nav[] = array(
                 'label' => __('IIIF Toolkit'),
                 'uri' => url('iiif-items/import'),
             );
         }
+        // Add link to tree navigator
+        foreach ($nav as $i => $navEntry) {
+            if ($navEntry['label'] === __('Collections')) {
+                array_splice($nav, $i+1, 0, array(array(
+                    'label' => __('IIIF Catalogue Tree'),
+                    'uri' => url('iiif-items/tree'),
+                )));
+                break;
+            }
+        }
+        // Return navigation
         return $nav;
     }
 

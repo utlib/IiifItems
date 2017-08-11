@@ -127,4 +127,47 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
         $atId = public_full_url();
         $this->__respondWithJson(IiifItems_Util_Collection::blankTemplate($atId, get_option('site_title'), $manifests, $collections));
     }
+    
+    /**
+     * Renders the catalogue tree.
+     * GET iiif-items/tree
+     */
+    public function treeAction() {
+        $db = get_db();
+        $itemsTable = $db->getTable('Item');
+        $select = $itemsTable->getSelectForCount()->where('items.collection_id IS NULL AND (items.item_type_id IS NULL OR items.item_type_id <> ?)', array(get_option('iiifitems_annotation_item_type')));
+        $totalItemsWithoutCollection = $db->fetchOne($select);
+        if ($totalItemsWithoutCollection > 0) {
+            $this->view->withoutCollectionMessage = __(plural('%sOne item has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '', $totalItemsWithoutCollection, '');
+        } else {
+            $this->view->withoutCollectionMessage = __('All items are in a collection.');
+        }
+    }
+    
+    /**
+     * JSON response for expanding a tree node
+     * GET iiif-items/collection/:id/tree-ajax
+     */
+    public function treeAjaxAction() {
+        // Get and check the collection's existence
+        $collection = get_record_by_id('Collection', $this->getParam('id'));
+        if (empty($collection) || !IiifItems_Util_Collection::isCollection($collection)) {
+            throw new Omeka_Controller_Exception_404;
+        }
+        // Echo children in the following form
+        // [{id: n, title: "title", type: "Collection|Manifest", count: nn}, ...]
+        $jsonData = array();
+        foreach (IiifItems_Util_Collection::findSubmembersFor($collection) as $submember) {
+            $submemberIsCollection = IiifItems_Util_Collection::isCollection($submember);
+            $jsonData[] = array(
+                'id' => $submember->id,
+                'title' => metadata($submember, array('Dublin Core', 'Title')),
+                'thumbnail' => $submemberIsCollection ? '' : (($file = $submember->getFile()) ? $file->getWebPath() : ''),
+                'expand-url' => $submemberIsCollection ? admin_url(array('id' => $submember->id), 'iiifitems_collection_tree_ajax') : '',
+                'type' => $submemberIsCollection ? 'Collection' : 'Manifest',
+                'count' => $submemberIsCollection ? IiifItems_Util_Collection::countSubmembersFor($submember) : $submember->totalItems(),
+            );
+        }
+        $this->__respondWithJson($jsonData);
+    }
 }
