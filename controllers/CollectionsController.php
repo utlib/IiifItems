@@ -133,14 +133,39 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
      * GET iiif-items/tree
      */
     public function treeAction() {
+        // Get tables
         $db = get_db();
         $itemsTable = $db->getTable('Item');
-        $select = $itemsTable->getSelectForCount()->where('items.collection_id IS NULL AND (items.item_type_id IS NULL OR items.item_type_id <> ?)', array(get_option('iiifitems_annotation_item_type')));
-        $totalItemsWithoutCollection = $db->fetchOne($select);
+        // Get "x items has no collection" message
+        $noCollectionSelect = $itemsTable->getSelectForCount()->where('items.collection_id IS NULL AND (items.item_type_id IS NULL OR items.item_type_id <> ?)', array(get_option('iiifitems_annotation_item_type')));
+        $totalItemsWithoutCollection = $db->fetchOne($noCollectionSelect);
         if ($totalItemsWithoutCollection > 0) {
-            $this->view->withoutCollectionMessage = __(plural('%sOne item has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '', $totalItemsWithoutCollection, '');
+            $this->view->withoutCollectionMessage = __(plural('%sOne item has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '<a href="' . html_escape(url('items/browse?collection=0')) . '">', $totalItemsWithoutCollection, '</a>');
         } else {
             $this->view->withoutCollectionMessage = __('All items are in a collection.');
+        }
+        // Get pagination
+        $table = $db->getTable('Collection');
+        $sortField = $this->_getParam('sort_field') ? $_GET['sort_field'] : 'Dublin Core,Title';
+        $sortOrder = ($this->_getParam('sort_dir') ? (($_GET['sort_dir'] == 'd') ? 'DESC' : 'ASC') : 'ASC');
+        $select = $table->getSelectForFindBy();
+        $parentUuidElement = get_option('iiifitems_collection_parent_element');
+        $select->where("collections.id NOT IN (SELECT record_id FROM {$db->prefix}element_texts WHERE record_type = 'Collection' AND element_id = {$parentUuidElement})");
+        $table->applySorting($select, $sortField, $sortOrder);
+        $recordsPerPage = $this->_getBrowseRecordsPerPage();
+        $currentPage = $this->getParam('page', 1);
+        $this->view->total_results = count($table->fetchObjects($select));
+        $table->applyPagination($select, $recordsPerPage, $currentPage);
+        $this->view->collections = $table->fetchObjects($select);
+        $this->view->sort_field = $sortField;
+        $this->view->sort_order = $sortOrder;
+        // Add pagination data to the registry. Used by pagination_links().
+        if ($recordsPerPage) {
+            Zend_Registry::set('pagination', array(
+                'page' => $currentPage, 
+                'per_page' => $recordsPerPage, 
+                'total_results' => $this->view->total_results, 
+            ));
         }
     }
     
@@ -163,9 +188,11 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
                 'id' => $submember->id,
                 'title' => metadata($submember, array('Dublin Core', 'Title')),
                 'thumbnail' => $submemberIsCollection ? '' : (($file = $submember->getFile()) ? $file->getWebPath() : ''),
-                'expand-url' => $submemberIsCollection ? admin_url(array('id' => $submember->id), 'iiifitems_collection_tree_ajax') : '',
+                'link' => url(array('controller' => 'collections', 'action' => 'show', 'id' => $submember->id), 'id'),
+                'expand-url' => $submemberIsCollection ? url(array('id' => $submember->id), 'iiifitems_collection_tree_ajax') : '',
                 'type' => $submemberIsCollection ? 'Collection' : 'Manifest',
                 'count' => $submemberIsCollection ? IiifItems_Util_Collection::countSubmembersFor($submember) : $submember->totalItems(),
+                'subitems_link' => $submemberIsCollection ? null : url(array('controller' => 'items', 'action' => 'browse', 'id' => ''), 'id', array('collection' => $submember->id)),
             );
         }
         $this->__respondWithJson($jsonData);
