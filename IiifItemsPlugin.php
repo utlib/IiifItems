@@ -104,6 +104,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
         $acl->allow(null, 'Collections', 'members');
         $acl->allow(null, 'Collections', 'collection');
         $acl->allow(null, 'Collections', 'explorer');
+        $acl->allow(null, 'Collections', 'tree-ajax');
     }
 
     public function hookDefineRoutes($args) {
