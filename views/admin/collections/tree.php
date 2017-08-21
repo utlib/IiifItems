@@ -105,6 +105,28 @@ echo flash();
         -webkit-animation: fa-spin 1s infinite steps(8);
         animation: fa-spin 1s infinite steps(8);
     }
+    
+    #sort-links-list {
+        display: inline-block;
+        margin: 0.5em;
+        margin-left: 0;
+        padding: 0;
+    }
+    #sort-links-list li {
+        display: inline;
+        margin-left: 1em;
+    }
+    
+    #sort-links-list li.desc a:after, #sort-links-list li.asc a:after {
+        font-family: "FontAwesome";
+        display: inline-block;
+    }
+    #sort-links-list li.desc a:after {
+        content: "\00a0\f0d8";
+    }
+    #sort-links-list li.asc a:after {
+        content: "\00a0\f0d7";
+    }
 </style>
 
 <script>
@@ -182,6 +204,21 @@ jQuery(function() {
 <?php echo pagination_links(); ?>
 <a href="/omeka/admin/collections/add" class="small green button">Add a Collection</a>
 <p class="not-in-collections"><?php echo $withoutCollectionMessage; ?></p>
+
+
+<?php
+$sortLinks = array(
+    __('Title') => 'Dublin Core,Title',
+    __('Date Added') => 'added',
+);
+?>   
+
+<div id="sort-links">
+    <span class="sort-label"><?php echo __('Sort by:'); ?></span>
+    <ul id="sort-links-list">
+        <?php echo browse_sort_links($sortLinks, array('link_tag' => 'li', 'list_tag' => '')); ?>
+    </ul>
+</div>
 
 <div class="iiifitems-tree-explorer">
     <?php foreach ($collections as $member): ?>

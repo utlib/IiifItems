@@ -140,7 +140,7 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
         $noCollectionSelect = $itemsTable->getSelectForCount()->where('items.collection_id IS NULL AND (items.item_type_id IS NULL OR items.item_type_id <> ?)', array(get_option('iiifitems_annotation_item_type')));
         $totalItemsWithoutCollection = $db->fetchOne($noCollectionSelect);
         if ($totalItemsWithoutCollection > 0) {
-            $this->view->withoutCollectionMessage = __(plural('%sOne item has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '<a href="' . html_escape(url('items/browse?collection=0')) . '">', $totalItemsWithoutCollection, '</a>');
+            $this->view->withoutCollectionMessage = __(plural('%sOne item has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '', $totalItemsWithoutCollection, '');
         } else {
             $this->view->withoutCollectionMessage = __('All items are in a collection.');
         }
