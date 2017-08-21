@@ -8,6 +8,7 @@
 class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     protected $_filters = array(
         'admin_navigation_main',
+        'public_navigation_main',
         'display_elements',
     );
     
@@ -137,6 +138,23 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
                 break;
             }
         }
+        // Return navigation
+        return $nav;
+    }
+    
+    /**
+     * Filter for the public navigation menu.
+     * Add the catalogue tree link.
+     * 
+     * @param array $nav
+     * @return array
+     */
+    public function filterPublicNavigationMain($nav) {
+        // Add link to navigator in third position, after collections
+        array_splice($nav, 2, 0, array(array(
+            'label' => __('Browse Catalogue'),
+            'uri' => url('iiif-items/tree'),
+        )));
         // Return navigation
         return $nav;
     }
