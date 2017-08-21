@@ -6,7 +6,7 @@ echo flash();
 
 <style>
     .iiifitems-tree-explorer {
-        
+        margin-bottom: 1em;
     }
     .iiifitems-catalogue-node {
         position: relative;
@@ -250,6 +250,10 @@ $sortLinks = array(
         </div>
     <?php endforeach; ?>
 </div>
+
+<?php echo pagination_links(); ?>
+<a href="/omeka/admin/collections/add" class="small green button">Add a Collection</a>
+<p class="not-in-collections"><?php echo $withoutCollectionMessage; ?></p>
 
 <?php
 echo foot();
