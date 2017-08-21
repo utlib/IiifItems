@@ -153,7 +153,7 @@ jQuery(function() {
         </h2>
         
         <?php if ($isCollection): ?>
-            <a class="iiifitems-catalogue-expand" data-status="unexpanded" data-depth="0" data-id="<?php echo $member->id; ?>" data-expand-url="<?php echo html_escape(admin_url(array('id' => $member->id), 'iiifitems_collection_tree_ajax')); ?>"></a>
+            <a class="iiifitems-catalogue-expand" data-status="unexpanded" data-depth="0" data-id="<?php echo $member->id; ?>" data-expand-url="<?php echo html_escape(url(array('id' => $member->id), 'iiifitems_collection_tree_ajax')); ?>"></a>
             <a href="<?php echo html_escape(url(array('controller' => 'items', 'action' => 'browse', 'id' => ''), 'id', array('collection' => $member->id))); ?>" class="image">
                 <img src="<?php echo html_escape(src('icon_collection', 'img', 'png')); ?>">
             </a>
