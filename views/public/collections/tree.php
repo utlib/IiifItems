@@ -105,7 +105,7 @@ jQuery(function() {
     
     jQuery('body').on('click', '.iiifitems-catalogue-expand', function() {
         var jqt = jQuery(this),
-            jqnr = jQuery(this).parent().next('.iiifitems-catalogue-node');
+            jqnr = jQuery(this).parent().next('.iiifitems-catalogue-node, .iiifitems-catalogue-stop');
         switch (jqt.data('status')) {
             case 'unexpanded':
                 jQuery.ajax({
@@ -185,6 +185,8 @@ jQuery(function() {
         <?php endif; ?>
     </div>
 <?php endforeach; ?>
+
+<span class="iiifitems-catalogue-stop"></span>
 
 <?php echo pagination_links(); ?>
 
