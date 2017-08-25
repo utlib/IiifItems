@@ -28,7 +28,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
      * @return boolean
      */
     protected function _isntIiifDisplayableItem($item) {
-        return ($item->fileCount() == 0 && !$item->hasElementText('IIIF Item Metadata', 'JSON Data')) || IiifItems_Util_Canvas::isNonIiifItem($item);
+        return (($item->fileCount() == 0 || get_option('iiifitems_bridge_prefix') == "") && !$item->hasElementText('IIIF Item Metadata', 'JSON Data')) || IiifItems_Util_Canvas::isNonIiifItem($item);
     }
     
     /**
