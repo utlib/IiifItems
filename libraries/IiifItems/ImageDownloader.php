@@ -14,6 +14,12 @@ class IiifItems_ImageDownloader {
      */
     public function __construct($imageJson) {
         $this->prefix = $imageJson['resource']['service']['@id'];
+        if (substr($this->prefix, 0, 2) == "//") {
+            $this->prefix = "http:" . $this->prefix;
+        }
+        elseif (substr($this->prefix, 0, 7) != "http://" && substr($this->prefix, 0, 8) != "https://") {
+            $this->prefix = "http://" . $this->prefix;
+        }
         $this->suffix = $this->__getIiifImageSuffix($imageJson);
         $this->defaultXywh = array(0, 0, $imageJson['resource']['width'], $imageJson['resource']['height']);
         $this->originalId = $imageJson['@id'];
