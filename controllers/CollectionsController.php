@@ -188,7 +188,7 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
             $jsonData[] = array(
                 'id' => $submember->id,
                 'title' => metadata($submember, array('Dublin Core', 'Title')),
-                'thumbnail' => $submemberIsCollection ? src('icon_collection', 'img', 'png') : (($file = $submember->getFile()) ? $file->getWebPath() : ''),
+                'thumbnail' => $submemberIsCollection ? src('icon_collection', 'img', 'png') : (($file = $submember->getFile()) ? $file->getWebPath('square_thumbnail') : ''),
                 'link' => url(array('controller' => 'collections', 'action' => 'show', 'id' => $submember->id), 'id'),
                 'expand-url' => $submemberIsCollection ? url(array('id' => $submember->id), 'iiifitems_collection_tree_ajax') : '',
                 'type' => $submemberIsCollection ? 'Collection' : 'Manifest',
