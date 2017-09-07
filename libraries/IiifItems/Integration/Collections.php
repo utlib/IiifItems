@@ -319,7 +319,28 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
      * @param array $args
      */
     public function hookPublicCollectionsBrowse($args) {
-        echo '<style>a.iiifitems-has-submembers:before { content: "\f115"; font-family: "FontAwesome" !important; padding-right: 1em; }</style><script>jQuery(document).ready(function() { jQuery("[data-hasmembers]").each(function() { var jqt = jQuery(this), jqtp = jqt.parent(".view-members-link"); jqtp.closest(".collection").find(".view-items-link a").text(jqt.text()).attr("href", jqt.attr("href")).addClass("iiifitems-has-submembers"); jqtp.remove(); }); });</script>';
+        echo <<<EOF
+<style>
+    a.iiifitems-has-submembers:before { 
+        content: url("data:image/svg+xml,%3Csvg%20width%3D%221em%22%20height%3D%221em%22%20viewBox%3D%220%200%202048%201792%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M1845%20931q0-35-53-35h-1088q-40%200-85.5%2021.5t-71.5%2052.5l-294%20363q-18%2024-18%2040%200%2035%2053%2035h1088q40%200%2086-22t71-53l294-363q18-22%2018-39zm-1141-163h768v-160q0-40-28-68t-68-28h-576q-40%200-68-28t-28-68v-64q0-40-28-68t-68-28h-320q-40%200-68%2028t-28%2068v853l256-315q44-53%20116-87.5t140-34.5zm1269%20163q0%2062-46%20120l-295%20363q-43%2053-116%2087.5t-140%2034.5h-1088q-92%200-158-66t-66-158v-960q0-92%2066-158t158-66h320q92%200%20158%2066t66%20158v32h544q92%200%20158%2066t66%20158v160h192q54%200%2099%2024.5t67%2070.5q15%2032%2015%2068z%22%20fill%3D%22%23999%22%2F%3E%3C%2Fsvg%3E"); 
+        padding-right: 1em;
+        mix-blend-mode: difference;
+    }
+</style>
+<script>
+    jQuery(document).ready(function() {
+        jQuery("[data-hasmembers]").each(function() {
+            var jqt = jQuery(this), jqtp = jqt.parent(".view-members-link"); 
+            jqtp.closest(".collection")
+                .find(".view-items-link a")
+                .text(jqt.text())
+                .attr("href", jqt.attr("href"))
+                .addClass("iiifitems-has-submembers"); 
+            jqtp.remove();
+        });
+    });
+</script>
+EOF;
     }
     
     /**

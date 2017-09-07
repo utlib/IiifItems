@@ -22,13 +22,13 @@ $sortLinks = array(
         cursor: pointer;
     }
     a.iiifitems-catalogue-expand:before {
-        content: "\f067";
-        font-family: "FontAwesome" !important;
+        content: url("data:image/svg+xml,%3Csvg%20width%3D%221em%22%20height%3D%221em%22%20viewBox%3D%220%200%201792%201792%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M1344%20960v-128q0-26-19-45t-45-19h-256v-256q0-26-19-45t-45-19h-128q-26%200-45%2019t-19%2045v256h-256q-26%200-45%2019t-19%2045v128q0%2026%2019%2045t45%2019h256v256q0%2026%2019%2045t45%2019h128q26%200%2045-19t19-45v-256h256q26%200%2045-19t19-45zm320-64q0%20209-103%20385.5t-279.5%20279.5-385.5%20103-385.5-103-279.5-279.5-103-385.5%20103-385.5%20279.5-279.5%20385.5-103%20385.5%20103%20279.5%20279.5%20103%20385.5z%22%20fill%3D%22%23999%22%2F%3E%3C%2Fsvg%3E");
         padding-right: 1em;
+        mix-blend-mode: difference;
     }
     
     a.opened:before {
-        content: "\f068";
+        content: url("data:image/svg+xml,%3Csvg%20width%3D%221em%22%20height%3D%221em%22%20viewBox%3D%220%200%201792%201792%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M1344%20960v-128q0-26-19-45t-45-19h-768q-26%200-45%2019t-19%2045v128q0%2026%2019%2045t45%2019h768q26%200%2045-19t19-45zm320-64q0%20209-103%20385.5t-279.5%20279.5-385.5%20103-385.5-103-279.5-279.5-103-385.5%20103-385.5%20279.5-279.5%20385.5-103%20385.5%20103%20279.5%20279.5%20103%20385.5z%22%20fill%3D%22%23999%22%2F%3E%3C%2Fsvg%3E");
     }
     .iiifitems-catalogue-node {
         position: relative;
