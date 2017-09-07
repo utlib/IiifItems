@@ -308,10 +308,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     public function hookPublicCollectionsBrowseEach($args) {
         $collection = $args['collection'];
         if (IiifItems_Util_Collection::isCollection($collection)) {
-            if ($collection->getFile() === null) {
-                echo '<a href="' . html_escape(public_url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id')) . '" class="image"><img src="' . html_escape(src('icon_collection', 'img', 'png')) . '"></a>';
-            }
-            echo '<p class="view-members-link"><a href="' . html_escape(public_url(array('id' => $collection->id), 'iiifitems_collection_members')) . '" data-hasmembers="' . $collection->id . '">View Submembers</a></p>';
+            echo '<p class="view-members-link"><a href="' . html_escape(public_url(array('id' => $collection->id), 'iiifitems_collection_members')) . '" data-hasmembers="' . $collection->id . '">' . html_escape(__("View submembers in %s", metadata($collection, array('Dublin Core', 'Title')))) . '</a></p>';
         }
     }
 
@@ -322,7 +319,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
      * @param array $args
      */
     public function hookPublicCollectionsBrowse($args) {
-        echo '<script>jQuery(document).ready(function() { jQuery("[data-hasmembers]").each(function() { jQuery(this).parent().parent().find(".view-items-link").remove(); }); });</script>';
+        echo '<style>a.iiifitems-has-submembers:before { content: "\f115"; font-family: "FontAwesome" !important; padding-right: 1em; }</style><script>jQuery(document).ready(function() { jQuery("[data-hasmembers]").each(function() { var jqt = jQuery(this), jqtp = jqt.parent(".view-members-link"); jqtp.closest(".collection").find(".view-items-link a").text(jqt.text()).attr("href", jqt.attr("href")).addClass("iiifitems-has-submembers"); jqtp.remove(); }); });</script>';
     }
     
     /**

@@ -194,7 +194,7 @@ class IiifItems_CollectionsController extends IiifItems_BaseController {
                 'type' => $submemberIsCollection ? 'Collection' : 'Manifest',
                 'count' => $submemberIsCollection ? IiifItems_Util_Collection::countSubmembersFor($submember) : $submember->totalItems(),
                 'subitems_link' => $submemberIsCollection ? url(array('id' => $submember->id), 'iiifitems_collection_members') : url(array('controller' => 'items', 'action' => 'browse', 'id' => ''), 'id', array('collection' => $submember->id)),
-                'subitems_text' => $submemberIsCollection ? __('View the submembers in %s', metadata($submember, array('Dublin Core', 'Title'))) : __('View the items in %s', metadata($submember, array('Dublin Core', 'Title'))),
+                'subitems_text' => $submemberIsCollection ? __('Expand submembers in %s', metadata($submember, array('Dublin Core', 'Title'))) : __('View the items in %s', metadata($submember, array('Dublin Core', 'Title'))),
                 'description_html' => text_to_paragraphs(metadata($submember, array('Dublin Core', 'Description'), array('snippet' => 150))),
                 'contributors_html' => metadata($submember, array('Dublin Core', 'Contributor'), array('all' => true, 'delimiter' => ', ')),
             );
