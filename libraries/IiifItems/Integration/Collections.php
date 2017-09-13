@@ -14,9 +14,11 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         'admin_collections_browse_each',
         'admin_collections_show',
         'admin_collections_show_sidebar',
+        'admin_items_search',
         'public_collections_browse',
         'public_collections_browse_each',
         'public_collections_show',
+        'public_items_search',
     );
     
     /**
@@ -297,6 +299,39 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                 . '<form action="' . admin_url(array(), 'iiifItemsCleanCache') . '" method="POST"><input type="hidden" name="type" value="Collection"><input type="hidden" name="id" value="' . $collection->id . '"><input type="submit" value="Clean" class="big blue button" style="width: 100%;"></form>'
                 . '</div>';
         }
+    }
+    
+    /**
+     * Hook for admin items search.
+     * Add the "include submembers" checkbox.
+     */
+    public function hookAdminItemsSearch($args)
+    {
+        $this->_addIncludeSubmembers($args);
+    }
+
+    /**
+     * Hook for admin items search.
+     * Add the "include submembers" checkbox.
+     */
+    public function hookPublicItemsSearch($args)
+    {
+        $this->_addIncludeSubmembers($args);
+    }
+
+    /**
+     * Echo the "include submembers" checkbox.
+     */
+    protected function _addIncludeSubmembers($args)
+    {
+        echo '<div class="field">';
+        echo '<div class="two columns alpha"><label for="include_submembers">';
+        echo __("Include IIIF Submembers");
+        echo '</label></div>';
+        echo '<div class="five columns omega inputs">';
+        echo $args['view']->formCheckbox('submembers', null, array('checked' => true));
+        echo '</div>';
+        echo '</div>';
     }
 
     /**

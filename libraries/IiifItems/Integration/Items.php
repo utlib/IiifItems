@@ -17,6 +17,10 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         'public_items_show',    
     );
     
+    protected $_filters = array(
+        'items_browse_params',
+    );
+    
     /**
      * Returns whether the given item can be displayed in IIIF.
      * 
@@ -82,17 +86,58 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
     /**
      * Hook for setting up the browsing SQL for items.
      * Hides annotation-type items from the "browse all items" view.
+     * Include submembers in search.
      * 
      * @param array $args
      */
     public function hookItemsBrowseSql($args) {
+        // Activate only when the controller and action are detectable
         $params = $args['params'];
         if (isset($params['controller']) && isset($params['action'])) {
+            $select = $args['select'];
+            // Hide annotation-type items form the "browse all items" view
             if (($params['controller'] == 'items') && ($params['action'] == 'index' || $params['action'] == 'browse') && !isset($params['search']) && !isset($params['tag']) && !isset($params['tags'])) {
-                $select = $args['select'];
                 $select->where("item_type_id != ? OR item_type_id IS NULL", get_option('iiifitems_annotation_item_type'));
             }
+            // Include submembers in search
+            if ($params['controller'] == 'items' && $params['action'] == 'browse' && isset($params['search']) && $params['submembers'] && !empty($params['iiif_collection_id'])) {
+                $collection = get_record_by_id('Collection', $params['iiif_collection_id']);
+                $collectionIds = IiifItems_Util_CollectionOptions::getFullSubmemberIdArray($collection);
+                // Add submembers only if there are any (collection isn't alone)
+                if (count($collectionIds) > 1) {
+                    $select->joinInner(array('iiif_catalogue_collections' => get_db()->Collection), 'items.collection_id = iiif_catalogue_collections.id', array());
+                    $select->where('iiif_catalogue_collections.id IN (' . join(',', $collectionIds) . ')');
+                }
+            }
+            debug($select->__toString());
         }
+    }
+    
+    /**
+     * Filter for items browse parameters.
+     * Expand search to subcollections if applicable.
+     *
+     * @param array $params
+     * @return array
+     */
+    public function filterItemsBrowseParams($params)
+    {
+        // Check if this is a direct query (not from advanced search).
+        if (isset($params['controller']) && isset($params['action'])) {
+            // Include submembers in search by virtually unsetting collection_id and collection
+            if ($params['controller'] == 'items' && $params['action'] == 'browse' && isset($params['search']) && $params['submembers'] && !empty($params['collection']) && $params['collection'] > 0) {
+                $params['iiif_collection_id'] = $params['collection'];
+                if (!empty($params['collection_id'])) {
+                    $collection = $params['collection_id'];
+                    $params['collection_id'] = '';
+                }
+                if (!empty($params['collection'])) {
+                    $collection = $params['collection'];
+                    $params['collection'] = '';
+                }
+            }
+        }
+        return $params;
     }
     
     /**

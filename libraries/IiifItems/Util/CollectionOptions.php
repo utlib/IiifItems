@@ -309,4 +309,19 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
         }
         return $breadcrumbString;
     }
+    
+    /**
+     * Return an array of IDs. For use with submember search.
+     * @param Collection $parent
+     * @param bool $isPublic
+     * @return int[]
+     */
+    public static function getFullSubmemberIdArray($parent=null, $isPublic=null) {
+        $fullHierarchy = self::_fullHierarchy($isPublic, $parent);
+        $idArray = array();
+        foreach ($fullHierarchy as $entry) {
+            $idArray[] = $entry[0]->id;
+        }
+        return $idArray;
+    }
 }
