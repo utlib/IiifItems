@@ -86,7 +86,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
     /**
      * Hook for setting up the browsing SQL for items.
      * Hides annotation-type items from the "browse all items" view.
-     * Include submembers in search.
+     * Include submembers and annotations in search.
      * 
      * @param array $args
      */
@@ -99,17 +99,20 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
             if (($params['controller'] == 'items') && ($params['action'] == 'index' || $params['action'] == 'browse') && !isset($params['search']) && !isset($params['tag']) && !isset($params['tags'])) {
                 $select->where("item_type_id != ? OR item_type_id IS NULL", get_option('iiifitems_annotation_item_type'));
             }
-            // Include submembers in search
-            if ($params['controller'] == 'items' && $params['action'] == 'browse' && isset($params['search']) && $params['submembers'] && !empty($params['iiif_collection_id'])) {
+            // Include submembers and annotations in nested search
+            if ($params['controller'] == 'items' && $params['action'] == 'browse' && isset($params['search']) && !empty($params['iiif_collection_id'])) {
                 $collection = get_record_by_id('Collection', $params['iiif_collection_id']);
-                $collectionIds = IiifItems_Util_CollectionOptions::getFullSubmemberIdArray($collection);
-                // Add submembers only if there are any (collection isn't alone)
-                if (count($collectionIds) > 1) {
-                    $select->joinInner(array('iiif_catalogue_collections' => get_db()->Collection), 'items.collection_id = iiif_catalogue_collections.id', array());
-                    $select->where('iiif_catalogue_collections.id IN (' . join(',', $collectionIds) . ')');
-                }
+                $collectionIds = (empty($params['submembers']) || $params['submembers'] == 0) ? array() : IiifItems_Util_CollectionOptions::getFullSubmemberIdArray($collection);
+                $collectionIds[] = $collection->id;
+                $db = get_db();
+                $attachedToElementId = (int) get_option('iiifitems_annotation_on_element');
+                $uuidElementId = (int) get_option('iiifitems_item_uuid_element');
+                $select->joinLeft(array('iiif_catalogue_collections' => $db->Collection), 'items.collection_id = iiif_catalogue_collections.id', array());
+                $select->joinLeft(array('iiif_anno_attachment1_metadata' => $db->ElementText), "iiif_anno_attachment1_metadata.element_id = ${attachedToElementId} AND iiif_anno_attachment1_metadata.record_type = 'Item' AND iiif_anno_attachment1_metadata.record_id = items.id", array('text'));
+                $select->joinLeft(array('iiif_anno_attachment2_metadata' => $db->ElementText), "iiif_anno_attachment2_metadata.element_id = ${uuidElementId} AND iiif_anno_attachment2_metadata.record_type = 'Item' AND iiif_anno_attachment2_metadata.text = iiif_anno_attachment1_metadata.text", array('record_id'));
+                $select->joinLeft(array('iiif_attached_items' => $db->Item), "iiif_attached_items.id = iiif_anno_attachment2_metadata.record_id", array('collection_id'));
+                $select->where('iiif_catalogue_collections.id IN (?) OR iiif_attached_items.collection_id IN (?)', array($collectionIds, $collectionIds));
             }
-            debug($select->__toString());
         }
     }
     
@@ -125,7 +128,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         // Check if this is a direct query (not from advanced search).
         if (isset($params['controller']) && isset($params['action'])) {
             // Include submembers in search by virtually unsetting collection_id and collection
-            if ($params['controller'] == 'items' && $params['action'] == 'browse' && isset($params['search']) && $params['submembers'] && !empty($params['collection']) && $params['collection'] > 0) {
+            if ($params['controller'] == 'items' && $params['action'] == 'browse' && isset($params['search']) && !empty($params['collection']) && $params['collection'] > 0) {
                 $params['iiif_collection_id'] = $params['collection'];
                 if (!empty($params['collection_id'])) {
                     $collection = $params['collection_id'];
