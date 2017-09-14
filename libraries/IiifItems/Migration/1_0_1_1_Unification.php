@@ -14,7 +14,7 @@ class IiifItems_Migration_1_0_1_1_Unification extends IiifItems_BaseMigration {
     public function up() {
         $db = get_db();
         $elementSetTable = $db->getTable('ElementSet');
-        if (!$elementSetTable->findByName('IIIF Collection Metadata')) {
+        if (empty($collection_metadata = $elementSetTable->findByName('IIIF Collection Metadata'))) {
             // Add Collection type metadata elements
             $collection_metadata = insert_element_set_failsafe(array(
                 'name' => 'IIIF Collection Metadata',
@@ -25,13 +25,21 @@ class IiifItems_Migration_1_0_1_1_Unification extends IiifItems_BaseMigration {
                 array('name' => 'IIIF Type', 'description' => ''),
                 array('name' => 'Parent Collection', 'description' => ''),
                 array('name' => 'JSON Data', 'description' => ''),
+                array('name' => 'UUID', 'description' => ''),
             ));
-            $elementTable = $db->getTable('Element');
-            set_option('iiifitems_collection_element_set', $collection_metadata->id);
-            set_option('iiifitems_collection_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Original @id')->id);
-            set_option('iiifitems_collection_type_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'IIIF Type')->id);
-            set_option('iiifitems_collection_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Parent Collection')->id);
-            set_option('iiifitems_collection_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
         }
+        $elementTable = $db->getTable('Element');
+        if (empty($elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Parent Collection'))) {
+            $parentElement = new Element();
+            $parentElement->element_set_id = $collection_metadata->id;
+            $parentElement->name = 'Parent Collection';
+            $parentElement->save();
+        }
+        set_option('iiifitems_collection_element_set', $collection_metadata->id);
+        set_option('iiifitems_collection_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Original @id')->id);
+        set_option('iiifitems_collection_type_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'IIIF Type')->id);
+        set_option('iiifitems_collection_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Parent Collection')->id);
+        set_option('iiifitems_collection_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
+        set_option('iiifitems_collection_uuid_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
     }
 }
