@@ -244,7 +244,9 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         echo '<div class="element-set">';
         echo '<h2>' . $iiifLabel . '</h2>';
         echo '<p>' . IiifItems_Util_CollectionOptions::getPathBreadcrumb($args['collection'], true) . '</p>';
-        echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+        if (($collectionType != 'Collection' && get_option('iiifitems_show_mirador_manifests')) || ($collectionType == 'Collection' && get_option('iiifitems_show_mirador_collections'))) {
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+        }
         $this->_adminElementTextPair($urlLabel, "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
         echo '</div>';
         if ($collectionType == 'Collection') {
@@ -399,7 +401,9 @@ EOF;
         echo '<p>';
         echo IiifItems_Util_CollectionOptions::getPathBreadcrumb($args['collection'], true);
         echo '</p>';
-        echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+        if (($collectionType != 'Collection' && get_option('iiifitems_show_mirador_manifests')) || ($collectionType == 'Collection' && get_option('iiifitems_show_mirador_collections'))) {
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'collections', 'id' => $args['view']->collection->id), 'iiifitems_mirador')) . '"></iframe>';
+        }
         $this->_publicElementTextPair($urlLabel, "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
         echo '</div>';
         if ($collectionType == 'Collection') {

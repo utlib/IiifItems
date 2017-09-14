@@ -236,7 +236,9 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         echo '<p>';
         echo IiifItems_Util_CollectionOptions::getPathBreadcrumb($item, true);
         echo '</p>';
-        echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
+        if (get_option('iiifitems_show_mirador_items')) {
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
+        }
         $this->_adminElementTextPair('Manifest URL', 'iiif-item-metadata-manifest-url', '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
         $this->_adminElementTextPair('Original ID', 'iiif-item-metadata-original-id', metadata($item, array('IIIF Item Metadata', 'Original @id')), true);
         $this->_adminElementTextPair('UUID', 'iiif-item-metadata-uuid', metadata($item, array('IIIF Item Metadata', 'UUID'), array('no_filter' => true)), true);
@@ -305,7 +307,9 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         $iiifUrl = absolute_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
         echo '<div class="element-set">';
         echo '<h2>IIIF Manifest</h2>';
-        echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
+        if (get_option('iiifitems_show_mirador_items')) {
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
+        }
         $this->_publicElementTextPair("Manifest URL", "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>', true);
         echo '</div>'; 
     }

@@ -125,6 +125,11 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
         set_option('iiifitems_mirador_path', rtrim($data['iiifitems_mirador_path'], '/'));
         set_option('iiifitems_mirador_css', ltrim($data['iiifitems_mirador_css'], '/'));
         set_option('iiifitems_mirador_js', ltrim($data['iiifitems_mirador_js'], '/'));
+        set_option('iiifitems_show_public_catalogue', $data['iiifitems_show_public_catalogue'] ? '1' : '0');
+        foreach (array('collections', 'manifests', 'items', 'files') as $category) {
+            $category = 'iiifitems_show_mirador_' . $category;
+            set_option($category, $data[$category] ? '1' : '0');
+        }
     }
 
 }

@@ -20,6 +20,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         $this->__addIiif();
         $this->__addMediaPlaceholders();
         $this->__addUuids();
+        $this->__addViewOptions();
     }
     
     /**
@@ -77,12 +78,24 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     }
     
     /**
+     * Add viewing options.
+     */
+    private function __addViewOptions() {
+        set_option('iiifitems_show_public_catalogue', 1);
+        set_option('iiifitems_show_mirador_collections', 1);
+        set_option('iiifitems_show_mirador_manifests', 1);
+        set_option('iiifitems_show_mirador_items', 1);
+        set_option('iiifitems_show_mirador_files', 1);
+    }
+    
+    /**
      * Removes IIIF Toolkit-specific elements.
      */
     public function uninstall() {
         $this->__removeIiif();
         $this->__removeTables();
         $this->__removeMediaPlaceholders();
+        $this->__removeViewOptions();
     }
     
     /**
@@ -110,6 +123,17 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     private function __removeMediaPlaceholders() {
         $addMediaPlaceholdersMigration = new IiifItems_Migration_0_0_1_7();
         $addMediaPlaceholdersMigration->uninstall();
+    }
+    
+    /**
+     * Remove viewing options.
+     */
+    private function __removeViewOptions() {
+        delete_option('iiifitems_show_public_catalogue');
+        delete_option('iiifitems_show_mirador_collections');
+        delete_option('iiifitems_show_mirador_manifests');
+        delete_option('iiifitems_show_mirador_items');
+        delete_option('iiifitems_show_mirador_files');
     }
     
     /**
@@ -151,10 +175,12 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
      */
     public function filterPublicNavigationMain($nav) {
         // Add link to navigator in third position, after collections
-        array_splice($nav, 2, 0, array(array(
-            'label' => __('Browse Catalogue'),
-            'uri' => url('iiif-items/tree'),
-        )));
+        if (get_option('iiifitems_show_public_catalogue')) {
+            array_splice($nav, 2, 0, array(array(
+                'label' => __('Browse Catalogue'),
+                'uri' => url('iiif-items/tree'),
+            )));
+        }
         // Return navigation
         return $nav;
     }
