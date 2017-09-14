@@ -40,6 +40,6 @@ class IiifItems_Migration_1_0_1_1_Unification extends IiifItems_BaseMigration {
         set_option('iiifitems_collection_type_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'IIIF Type')->id);
         set_option('iiifitems_collection_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Parent Collection')->id);
         set_option('iiifitems_collection_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
-        set_option('iiifitems_collection_uuid_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
+        set_option('iiifitems_collection_uuid_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'UUID')->id);
     }
 }
