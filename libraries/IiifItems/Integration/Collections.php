@@ -35,23 +35,8 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
      * Install metadata elements for collections.
      */
     public function install() {
-        $elementTable = get_db()->getTable('Element');
-        // Add Collection type metadata elements
-        $collection_metadata = insert_element_set_failsafe(array(
-            'name' => 'IIIF Collection Metadata',
-            'description' => '',
-            'record_type' => 'Collection'
-        ), array(
-            array('name' => 'Original @id', 'description' => ''),
-            array('name' => 'IIIF Type', 'description' => ''),
-            array('name' => 'Parent Collection', 'description' => ''),
-            array('name' => 'JSON Data', 'description' => ''),
-        ));
-        set_option('iiifitems_collection_element_set', $collection_metadata->id);
-        set_option('iiifitems_collection_atid_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Original @id')->id);
-        set_option('iiifitems_collection_type_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'IIIF Type')->id);
-        set_option('iiifitems_collection_parent_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'Parent Collection')->id);
-        set_option('iiifitems_collection_json_element', $elementTable->findByElementSetNameAndElementName('IIIF Collection Metadata', 'JSON Data')->id);
+        $addCollectionsMigration = new IiifItems_Migration_1_0_1_1_Unification;
+        $addCollectionsMigration->up();
     }
     
     /**
