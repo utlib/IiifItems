@@ -237,11 +237,11 @@ $sortLinks = array(
                     <?php elseif ($file = $member->getFile()): ?>
                         <img src="<?php echo $file->getWebPath('square_thumbnail'); ?>" class="iiifitems-catalogue-thumbnail">
                         <div class="iiifitems-catalogue-description">
-                            <p><a href=""><?php echo metadata($member, array('Dublin Core', 'Title')); ?></a></p>
+                            <p><a href="<?php echo url(array('controller' => 'collections', 'action' => 'show', 'id' => $member->id), 'id'); ?>"><?php echo metadata($member, array('Dublin Core', 'Title')); ?></a></p>
                             <p>Items: <a href="<?php echo html_escape(url(array('controller' => 'items', 'action' => 'browse', 'id' => ''), 'id', array('collection' => $member->id))); ?>"><?php echo $member->totalItems(); ?></a></p>    
                         </div>
                     <?php else: ?>
-                        <p><a href=""><?php echo metadata($member, array('Dublin Core', 'Title')); ?></a></p>
+                        <p><a href="<?php echo url(array('controller' => 'collections', 'action' => 'show', 'id' => $member->id), 'id'); ?>"><?php echo metadata($member, array('Dublin Core', 'Title')); ?></a></p>
                         <p>Items: <a href="<?php echo html_escape(url(array('controller' => 'items', 'action' => 'browse', 'id' => ''), 'id', array('collection' => $member->id))); ?>"><?php echo $member->totalItems(); ?></a></p>
                     <?php endif; ?>
                 </div>
