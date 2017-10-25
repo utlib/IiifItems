@@ -1,0 +1,17 @@
+; Save this file as: options.ini
+; Uncomment settings that you wish to override, otherwise the plugin defaults will be used.
+
+[system]
+;   The URL root of the HTTP-resolved IIIF server referencing this Omeka installation.
+;   Use {FILENAME} for a file name without the extension, {EXTENSION} for the file extension alone
+;   and {FULLNAME} for a file name with the extension.
+;
+; bridge_prefix = "https://localhost/iiif/{FILENAME}.{EXTENSION}"
+
+
+;   The URL root of the Mirador IIIF-compatible viewer, JS file, and CSS path.
+;   See also: https://github.com/ProjectMirador/mirador
+;
+; mirador_path = "http://localhost/plugins/IiifItems/views/shared/js/mirador"
+; mirador_js = "mirador.js"
+; mirador_css = "css/mirador-combined.css"
