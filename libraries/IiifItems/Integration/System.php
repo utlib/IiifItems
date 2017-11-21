@@ -55,8 +55,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
      */
     private function __addIiif() {
         set_option('iiifitems_bridge_prefix', '');
-        $serverUrlHelper = new Zend_View_Helper_ServerUrl;
-        set_option('iiifitems_mirador_path', $serverUrlHelper->serverUrl() . public_url('plugins') . '/IiifItems/views/shared/js/mirador');
+        set_option('iiifitems_mirador_path', WEB_PLUGIN . '/IiifItems/views/shared/js/mirador');
         $addCssAndJsMigration = new IiifItems_Migration_0_0_1_9();
         $addCssAndJsMigration->up();
     }
