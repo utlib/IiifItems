@@ -21,7 +21,7 @@ class IiifItems_ManifestController extends IiifItems_BaseController {
         try {
             switch ($class) {
                 case 'Collection': 
-                    $jsonData = IiifItems_Util_Manifest::buildManifest($thing); 
+                    $jsonData = IiifItems_Util_Manifest::buildManifest($thing, is_admin_theme()); 
                     IiifItems_Util_Search::insertSearchApiFor($thing, $jsonData);
                 break;
                 case 'Item': 
