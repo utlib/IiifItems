@@ -84,6 +84,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
     }
 
     public function hookInitialize() {
+        // Add localizations
+         add_translation_source(IIIF_ITEMS_DIRECTORY . '/languages');
         // Add integrations
         foreach ($this->_integrations as $integrationName) {
             $integrationClass = 'IiifItems_Integration_' . $integrationName;
