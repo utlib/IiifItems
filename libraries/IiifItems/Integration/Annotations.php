@@ -111,7 +111,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
                 . '</a>".</p>'
                 . '</div>';
             if ($allowEdit) {
-                echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+                echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">' . __('Annotate') . '</a>");</script>';
                 echo '<div class="panel"><h4>' . __('Repair') . '</h4>'
                     . '<p>'
                     . __('If this annotation is missing its preview thumbnail, you can repair it below. All preview files attached to this item will be deleted and then reloaded.')
