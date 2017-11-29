@@ -199,11 +199,11 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             if ($uuid = raw_iiif_metadata($args['collection'], 'iiifitems_collection_uuid_element')) {
                 $count = IiifItems_Util_Collection::countSubmembersFor($args['collection']);
                 echo '<span class="iiifitems-replace-items-link" data-newcount="' . $count . '" data-newurl="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '" data-showurl="' . admin_url(array('id' => $args['collection']->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '"></span>'
-                        . '<ul class="iiifitems-action-links"><li><a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">List Members</a></li></ul>';
+                        . '<ul class="iiifitems-action-links"><li><a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">' . __("List Members") . '</a></li></ul>';
             }    
         } else if ($type != 'None') {
             if ($allowEdit && IiifItems_Util_Manifest::isManifest($args['collection'])) {
-                echo '<ul class="iiifitems-action-links"><li><a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">Annotate</a></li></ul>';
+                echo '<ul class="iiifitems-action-links"><li><a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">' . __("Annotate") . '</a></li></ul>';
             }
         }
     }
@@ -273,17 +273,17 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                 return;
             }
             $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
-            echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+            echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">' . __("Annotate") . '</a>");</script>';
             if ($annotationCount = IiifItems_Util_Manifest::countAnnotationsFor($collection)) {
                 echo '<div class="panel">'
-                    . '<h4>Annotations</h4>'
-                    . '<p>This manifest contains ' . __(plural('1 annotation', '%s%d annotations', $annotationCount), '', $annotationCount, '') . '.</p></div>';
+                    . '<h4>' . __("Annotations") . '</h4>'
+                    . '<p>' . __(plural('This manifest contains %d annotation.', 'This manifest contains %d annotations.', $annotationCount),  $annotationCount) . '.</p></div>';
             }
         }
         if ($allowEdit) {
-            echo '<div class="panel"><h4>Cache Management</h4>'
-                . '<p>If the content shown in the viewer looks out of date, you can clear the cache to regenerate the manifest.</p>'
-                . '<form action="' . admin_url(array(), 'iiifItemsCleanCache') . '" method="POST"><input type="hidden" name="type" value="Collection"><input type="hidden" name="id" value="' . $collection->id . '"><input type="submit" value="Clean" class="big blue button" style="width: 100%;"></form>'
+            echo '<div class="panel"><h4>' . __("Cache Management") . '</h4>'
+                . '<p>' . __('If the content shown in the viewer looks out of date, you can clear the cache to regenerate the manifest.') . '</p>'
+                . '<form action="' . admin_url(array(), 'iiifItemsCleanCache') . '" method="POST"><input type="hidden" name="type" value="Collection"><input type="hidden" name="id" value="' . $collection->id . '"><input type="submit" value="' . __("Clean") . '" class="big blue button" style="width: 100%;"></form>'
                 . '</div>';
         }
     }
@@ -488,7 +488,7 @@ EOF;
      * @return string
      */
     public function inputForCollectionUuid($comps, $args) {
-        $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
+        $comps['input'] = $args['value'] ? $args['value'] : html_escape(__('<TBD>'));
         return filter_minimal_input($comps, $args);
     }
     

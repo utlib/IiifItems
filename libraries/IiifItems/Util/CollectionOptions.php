@@ -121,7 +121,7 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
                 $currentCollection = IiifItems_Util_Collection::findParentFor($thing);
                 break;
             default:
-                throw new InvalidArgumentException('Thing must be an Item or Collection.');
+                throw new InvalidArgumentException(__('Thing must be an Item or Collection.'));
         }
         while ($currentCollection) {
             $path[] = $currentCollection;
@@ -139,7 +139,7 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
      */
     protected static function _hierarchyToOptions($hierarchy, $contributor=null, $idValue=false) {
         // Get flat hierarchy
-        $options = array('' => 'No Parent');
+        $options = array('' => __('No Parent'));
         $disables = array();
         // Repeat over flat hierarchy
         foreach ($hierarchy as $i => $entry) {
@@ -305,7 +305,7 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
             $first = false;
         }
         if ($includeTop) {
-            $breadcrumbString = '<a href="' . url(array('id' => $thing->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">Top</a> &raquo; ' . $breadcrumbString;
+            $breadcrumbString = '<a href="' . url(array('id' => $thing->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . __('Top') . '</a> &raquo; ' . $breadcrumbString;
         }
         return $breadcrumbString;
     }

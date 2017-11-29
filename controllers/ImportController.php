@@ -283,7 +283,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                         $addAnnotationThumbnailJob->perform();
                     }
                 } else {
-                    throw new Exception("No xywh bounds found on annotation.");
+                    throw new Exception(__("No xywh bounds found on annotation."));
                 }
             }
             // Non-annotation item
@@ -382,6 +382,6 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         }
         
         // Fail
-        $this->_helper->flashMessenger("Failed to purge JSON cache");
+        $this->_helper->flashMessenger(__("Failed to purge JSON cache"));
     }
 }

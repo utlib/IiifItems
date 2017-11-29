@@ -13,7 +13,7 @@
 		body { padding: 0; margin: 0; overflow: hidden; }
 		#viewer { background: #333; width: 100%; height: 100%; position: fixed; }
 	</style>
-        <title>Mirador Viewer</title>
+        <title><?php echo __("Mirador Viewer"); ?></title>
 </head>
 <body>
 	<div id="viewer"></div>

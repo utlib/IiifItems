@@ -14,7 +14,7 @@
     ?>
 </head>
 <body>
-    <div id="explorer" class="iiif-explorer-component">Loading...</div>
+    <div id="explorer" class="iiif-explorer-component"><?php echo __('Loading...'); ?></div>
     <script>
         var helper, component;
 
