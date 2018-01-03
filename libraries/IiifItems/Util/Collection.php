@@ -284,6 +284,28 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
     }
     
     /**
+     * Returns the number of annotations among submembers of the given collection-type collection.
+     * 
+     * @param Collection $collection
+     */
+    public static function countAnnotationsFor($collection) {
+        $db = get_db();
+        $itemTable = $db->getTable('Item');
+        $select = $itemTable->getSelectForCount();
+        $collectionIds = IiifItems_Util_CollectionOptions::getFullSubmemberIdArray($collection);
+        $collectionIds[] = $collection->id;
+        $attachedToElementId = (int) get_option('iiifitems_annotation_on_element');
+        $uuidElementId = (int) get_option('iiifitems_item_uuid_element');
+        $select->where('items.item_type_id = ?', array(get_option('iiifitems_annotation_item_type')));
+        $select->joinLeft(array('iiif_catalogue_collections' => $db->Collection), 'items.collection_id = iiif_catalogue_collections.id', array());
+        $select->joinLeft(array('iiif_anno_attachment1_metadata' => $db->ElementText), "iiif_anno_attachment1_metadata.element_id = ${attachedToElementId} AND iiif_anno_attachment1_metadata.record_type = 'Item' AND iiif_anno_attachment1_metadata.record_id = items.id", array('text'));
+        $select->joinLeft(array('iiif_anno_attachment2_metadata' => $db->ElementText), "iiif_anno_attachment2_metadata.element_id = ${uuidElementId} AND iiif_anno_attachment2_metadata.record_type = 'Item' AND iiif_anno_attachment2_metadata.text = iiif_anno_attachment1_metadata.text", array('record_id'));
+        $select->joinLeft(array('iiif_attached_items' => $db->Item), "iiif_attached_items.id = iiif_anno_attachment2_metadata.record_id", array('collection_id'));
+        $select->where('iiif_catalogue_collections.id IN (?) OR iiif_attached_items.collection_id IN (?)', array($collectionIds, $collectionIds));
+        return $db->fetchOne($select);
+    }
+    
+    /**
      * Returns a list of top-level collections, regardless of IIIF type (i.e. those with no parents).
      * 
      * @return Collection[]

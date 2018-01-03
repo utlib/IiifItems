@@ -268,7 +268,9 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             return;
         }
         $allowEdit = is_allowed($collection, 'edit');
-        if (!IiifItems_Util_Collection::isCollection($collection) && IiifItems_Util_Manifest::isManifest($collection)) {
+        $isCollection = IiifItems_Util_Collection::isCollection($collection);
+        $isManifest = IiifItems_Util_Manifest::isManifest($collection);
+        if (!$isCollection && $isManifest) {
             if ($collection->totalItems() == 0) {
                 return;
             }
@@ -280,6 +282,15 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                 echo '<div class="panel">'
                     . '<h4>Annotations</h4>'
                     . '<p>This manifest contains <a href="'
+                    . admin_url('items') . '/browse?search=&type=' . get_option('iiifitems_annotation_item_type') . '&collection=' . $collection->id . '&submembers=1'
+                    . '">' . $annotationCount . '</a> annotation(s).</p></div>';
+            }
+        } else if ($isCollection && !$isManifest) {
+            $annotationCount = IiifItems_Util_Collection::countAnnotationsFor($collection);
+            if ($annotationCount = IiifItems_Util_Collection::countAnnotationsFor($collection)) {
+                echo '<div class="panel">'
+                    . '<h4>Annotations</h4>'
+                    . '<p>This collection contains <a href="'
                     . admin_url('items') . '/browse?search=&type=' . get_option('iiifitems_annotation_item_type') . '&collection=' . $collection->id . '&submembers=1'
                     . '">' . $annotationCount . '</a> annotation(s).</p></div>';
             }
