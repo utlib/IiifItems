@@ -349,7 +349,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
      * @return string
      */
     public function inputForItemUuid($comps, $args) {
-        $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
+        $comps['input'] = $args['value'] ? (get_view()->formHidden($args['input_name_stem'] . '[text]', $args['value']) . $args['value']) : '&lt;TBD&gt;';
         return filter_minimal_input($comps, $args);
     }
     
