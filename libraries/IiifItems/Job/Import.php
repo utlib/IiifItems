@@ -314,19 +314,23 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         // Process canvases
         debug("Processing canvas " . $canvasData['@id']);
         $newItem = insert_item($canvasImportOptions, $canvasMetadata);
-        foreach ($canvasData['images'] as $image) {
-            $downloadResult = $this->_downloadIiifImageToItem($newItem, $image, $this->_importPreviewSize);
-            switch ($downloadResult['status']) {
-                case 1:
-                    $jobStatus->dones++;
-                break;
-                case 0:
-                    $jobStatus->skips++;
-                break;
-                default:
-                    $jobStatus->fails++;
-                break;
+        if ($this->_importPreviewSize) {
+            foreach ($canvasData['images'] as $image) {
+                $downloadResult = $this->_downloadIiifImageToItem($newItem, $image, $this->_importPreviewSize);
+                switch ($downloadResult['status']) {
+                    case 1:
+                        $jobStatus->dones++;
+                    break;
+                    case 0:
+                        $jobStatus->skips++;
+                    break;
+                    default:
+                        $jobStatus->fails++;
+                    break;
+                }
             }
+        } else {
+            $jobStatus->dones++;
         }
         // Up progress
         $jobStatus->progress++;

@@ -108,12 +108,15 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             }
             switch ($form->getValue('items_preview_size')) {
                 case 0:
-                    $importPreviewSize = 96;
+                    $importPreviewSize = null;
                 break;
                 case 1:
-                    $importPreviewSize = 512;
+                    $importPreviewSize = 96;
                 break;
                 case 2:
+                    $importPreviewSize = 512;
+                break;
+                case 3:
                     $importPreviewSize = 'full';
                 break;
                 default:
