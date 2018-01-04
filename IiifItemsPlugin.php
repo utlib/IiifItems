@@ -28,6 +28,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
         'Items',
         'Collections',
         'Annotations',
+        'Search',
         'System',
     );
 

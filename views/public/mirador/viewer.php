@@ -71,7 +71,10 @@
                     }
                 },
                 bottomPanelVisible: false,
-                sidePanelVisible: false
+                sidePanelVisible: false,
+                sidePanelOptions: {
+                    searchTabAvailable: true
+                }
             },
             "autoHideControls": false,
             "mainMenuSettings": {
