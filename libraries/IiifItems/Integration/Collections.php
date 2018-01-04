@@ -166,7 +166,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         $select = $itemsTable->getSelectForCount()->where('items.collection_id IS NULL AND (items.item_type_id IS NULL OR items.item_type_id <> ?)', array(get_option('iiifitems_annotation_item_type')));
         $totalItemsWithoutCollection = $db->fetchOne($select);
         if ($totalItemsWithoutCollection) {
-            $withoutCollectionMessage = __(plural('%sOne item has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '<a href="' . html_escape(url('items/browse?collection=0')) . '">', $totalItemsWithoutCollection, '</a>');
+            $withoutCollectionMessage = __(plural('%s%d item%s has no collection.', "%s%d items%s aren't in a collection.", $totalItemsWithoutCollection), '<a href="' . html_escape(url('items/browse?collection=0')) . '">', $totalItemsWithoutCollection, '</a>');
         } else {
             $withoutCollectionMessage = __('All items are in a collection.');
         }
@@ -282,14 +282,14 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             if ($annotationCount = IiifItems_Util_Manifest::countAnnotationsFor($collection)) {
                 echo '<div class="panel">'
                     . '<h4>' . __("Annotations") . '</h4>'
-                    . '<p>' . __(plural('This manifest contains %s%d%s annotation.', 'This manifest contains %s%d%s annotations.', $annotationCount), '<a href="' . $searchUrl . '">', $annotationCount, '</a>') . '.</p></div>';
+                    . '<p>' . __(plural('This manifest contains %s%d%s annotation.', 'This manifest contains %s%d%s annotations.', $annotationCount), '<a href="' . $searchUrl . '">', $annotationCount, '</a>') . '</p></div>';
             }
         } else if ($isCollection && !$isManifest) {
             $annotationCount = IiifItems_Util_Collection::countAnnotationsFor($collection);
             if ($annotationCount = IiifItems_Util_Collection::countAnnotationsFor($collection)) {
                 echo '<div class="panel">'
                     . '<h4>' . __("Annotations") . '</h4>'
-                    . '<p>' . __(plural('This collection contains %s%d%s annotation.', 'This collection contains %s%d%s annotations.', $annotationCount), '<a href="' . $searchUrl . '">', $annotationCount, '</a>') . '.</p></div>';
+                    . '<p>' . __(plural('This collection contains %s%d%s annotation.', 'This collection contains %s%d%s annotations.', $annotationCount), '<a href="' . $searchUrl . '">', $annotationCount, '</a>') . '</p></div>';
             }
         }
         if ($allowEdit) {

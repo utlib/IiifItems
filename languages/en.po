@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Translation for the IIIF Toolkit plugin for Omeka "
 "Classic 2.x\n"
-"POT-Creation-Date: 2017-11-29 11:22-0500\n"
-"PO-Revision-Date: 2017-11-29 11:23-0500\n"
+"POT-Creation-Date: 2018-01-04 11:18-0500\n"
+"PO-Revision-Date: 2018-01-04 11:19-0500\n"
 "Last-Translator: Dickson Law <dickson.law@utoronto.ca>\n"
 "Language-Team: University of Toronto Libraries <exhibits@library.utoronto."
 "ca>\n"
@@ -12,13 +12,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.4\n"
-"X-Poedit-KeywordsList: __;gettext;gettext_noop\n"
+"X-Poedit-KeywordsList: __;gettext;gettext_noop;plural:1,2\n"
 "X-Poedit-Basepath: /home/developer/IiifItems\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: IiifItemsPlugin.php:123
+#: IiifItemsPlugin.php:124
 msgid "Invalid CSRF token."
 msgstr "Invalid CSRF token."
 
@@ -51,7 +51,7 @@ msgstr "Return to Previous Page"
 
 #: views/admin/import/maintenance.php:3 views/admin/import/status.php:3
 #: views/admin/import/form.php:3
-#: libraries/IiifItems/Integration/System.php:151
+#: libraries/IiifItems/Integration/System.php:150
 msgid "IIIF Toolkit"
 msgstr "IIIF Toolkit"
 
@@ -72,7 +72,7 @@ msgstr ""
 "changing the IIIF prefix or making any other major configuration change."
 
 #: views/admin/import/maintenance.php:20
-#: libraries/IiifItems/Integration/Collections.php:286
+#: libraries/IiifItems/Integration/Collections.php:298
 msgid "Clean"
 msgstr "Clean"
 
@@ -213,7 +213,7 @@ msgid "Description"
 msgstr "Description"
 
 #: views/public/collections/tree.php:2
-#: libraries/IiifItems/Integration/System.php:180
+#: libraries/IiifItems/Integration/System.php:179
 msgid "Browse Catalogue"
 msgstr "Browse Catalogue"
 
@@ -287,8 +287,10 @@ msgid "Manifest URL: %s"
 msgstr "Manifest URL: %s"
 
 #: libraries/IiifItems/Integration/Items.php:206
+#: libraries/IiifItems/Integration/Items.php:275
+#: libraries/IiifItems/Integration/Annotations.php:114
 #: libraries/IiifItems/Integration/Collections.php:206
-#: libraries/IiifItems/Integration/Collections.php:276
+#: libraries/IiifItems/Integration/Collections.php:280
 msgid "Annotate"
 msgstr "Annotate"
 
@@ -308,7 +310,7 @@ msgstr "IIIF Manifest Information"
 #: libraries/IiifItems/Integration/Items.php:246
 #: libraries/IiifItems/Integration/Items.php:311
 #: libraries/IiifItems/Integration/Collections.php:240
-#: libraries/IiifItems/Integration/Collections.php:395
+#: libraries/IiifItems/Integration/Collections.php:407
 msgid "Manifest URL"
 msgstr "Manifest URL"
 
@@ -323,9 +325,17 @@ msgstr "UUID"
 
 #: libraries/IiifItems/Integration/Items.php:271
 #: libraries/IiifItems/Integration/Annotations.php:104
-#: libraries/IiifItems/Integration/Collections.php:279
+#: libraries/IiifItems/Integration/Collections.php:284
+#: libraries/IiifItems/Integration/Collections.php:291
 msgid "Annotations"
 msgstr "Annotations"
+
+#: libraries/IiifItems/Integration/Items.php:272
+#, php-format
+msgid "This item has %s%d%s annotation."
+msgid_plural "This item has %s%d%s annotations."
+msgstr[0] "This item has %s%d%s annotation."
+msgstr[1] "This item has %s%d%s annotations."
 
 #: libraries/IiifItems/Integration/Items.php:276
 #: libraries/IiifItems/Integration/Items.php:281
@@ -345,12 +355,12 @@ msgstr ""
 "deleted and then reloaded."
 
 #: libraries/IiifItems/Integration/Items.php:307
-#: libraries/IiifItems/Integration/Collections.php:394
+#: libraries/IiifItems/Integration/Collections.php:406
 msgid "IIIF Manifest"
 msgstr "IIIF Manifest"
 
 #: libraries/IiifItems/Integration/Items.php:324
-#: libraries/IiifItems/Integration/Collections.php:438
+#: libraries/IiifItems/Integration/Collections.php:450
 msgid "Default"
 msgstr "Default"
 
@@ -363,7 +373,7 @@ msgid "Never"
 msgstr "Never"
 
 #: libraries/IiifItems/Integration/Items.php:350
-#: libraries/IiifItems/Integration/Collections.php:491
+#: libraries/IiifItems/Integration/Collections.php:503
 msgid "<TBD>"
 msgstr "<TBD>"
 
@@ -399,6 +409,14 @@ msgstr "You do not have the permission reassign this parent as a contributor."
 msgid "A collection cannot have itself or a descendent as its parent."
 msgstr "A collection cannot have itself or a descendent as its parent."
 
+#: libraries/IiifItems/Integration/Collections.php:169
+#: controllers/CollectionsController.php:143
+#, php-format
+msgid "%s%d item%s has no collection."
+msgid_plural "%s%d items%s aren't in a collection."
+msgstr[0] "%s%d item%s has no collection."
+msgstr[1] "%s%d items%s aren't in a collection."
+
 #: libraries/IiifItems/Integration/Collections.php:171
 #: controllers/CollectionsController.php:146
 msgid "All items are in a collection."
@@ -413,7 +431,7 @@ msgid "IIIF Collection Information"
 msgstr "IIIF Collection Information"
 
 #: libraries/IiifItems/Integration/Collections.php:230
-#: libraries/IiifItems/Integration/Collections.php:387
+#: libraries/IiifItems/Integration/Collections.php:399
 msgid "Collection URL"
 msgstr "Collection URL"
 
@@ -421,11 +439,25 @@ msgstr "Collection URL"
 msgid "IIIF Manifest Information"
 msgstr "IIIF Manifest Information"
 
-#: libraries/IiifItems/Integration/Collections.php:284
+#: libraries/IiifItems/Integration/Collections.php:285
+#, php-format
+msgid "This manifest contains %s%d%s annotation."
+msgid_plural "This manifest contains %s%d%s annotations."
+msgstr[0] "This manifest contains %s%d%s annotation."
+msgstr[1] "This manifest contains %s%d%s annotations."
+
+#: libraries/IiifItems/Integration/Collections.php:292
+#, php-format
+msgid "This collection contains %s%d%s annotation."
+msgid_plural "This collection contains %s%d%s annotations."
+msgstr[0] "This collection contains %s%d%s annotation."
+msgstr[1] "This collection contains %s%d%s annotations."
+
+#: libraries/IiifItems/Integration/Collections.php:296
 msgid "Cache Management"
 msgstr "Cache Management"
 
-#: libraries/IiifItems/Integration/Collections.php:285
+#: libraries/IiifItems/Integration/Collections.php:297
 msgid ""
 "If the content shown in the viewer looks out of date, you can clear the "
 "cache to regenerate the manifest."
@@ -433,40 +465,40 @@ msgstr ""
 "If the content shown in the viewer looks out of date, you can clear the "
 "cache to regenerate the manifest."
 
-#: libraries/IiifItems/Integration/Collections.php:316
+#: libraries/IiifItems/Integration/Collections.php:328
 msgid "Include IIIF Submembers"
 msgstr "Include IIIF Submembers"
 
-#: libraries/IiifItems/Integration/Collections.php:333
+#: libraries/IiifItems/Integration/Collections.php:345
 #, php-format
 msgid "View submembers in %s"
 msgstr "View submembers in %s"
 
-#: libraries/IiifItems/Integration/Collections.php:386
+#: libraries/IiifItems/Integration/Collections.php:398
 msgid "IIIF Collection"
 msgstr "IIIF Collection"
 
-#: libraries/IiifItems/Integration/Collections.php:438
+#: libraries/IiifItems/Integration/Collections.php:450
 msgid "Manifest"
 msgstr "Manifest"
 
-#: libraries/IiifItems/Integration/Collections.php:438
+#: libraries/IiifItems/Integration/Collections.php:450
 msgid "Collection"
 msgstr "Collection"
 
-#: libraries/IiifItems/Integration/Collections.php:438
+#: libraries/IiifItems/Integration/Collections.php:450
 msgid "Hidden"
 msgstr "Hidden"
 
-#: libraries/IiifItems/Integration/System.php:157
+#: libraries/IiifItems/Integration/System.php:156
 msgid "Collections"
 msgstr "Collections"
 
-#: libraries/IiifItems/Integration/System.php:159
+#: libraries/IiifItems/Integration/System.php:158
 msgid "IIIF Catalogue Tree"
 msgstr "IIIF Catalogue Tree"
 
-#: libraries/IiifItems/Integration/System.php:200
+#: libraries/IiifItems/Integration/System.php:199
 msgid "IIIF Preview"
 msgstr "IIIF Preview"
 
@@ -657,8 +689,8 @@ msgid "Got JSON from submitted string"
 msgstr "Got JSON from submitted string"
 
 #: libraries/IiifItems/Job/Import.php:70 libraries/IiifItems/Job/Import.php:95
-#: controllers/ImportController.php:106 controllers/ImportController.php:120
-#: controllers/ImportController.php:137
+#: controllers/ImportController.php:106 controllers/ImportController.php:123
+#: controllers/ImportController.php:140
 msgid "Invalid import source."
 msgstr "Invalid import source."
 
@@ -739,44 +771,44 @@ msgstr "Not a valid canvas."
 msgid "Processing canvas %s"
 msgstr "Processing canvas %s"
 
-#: libraries/IiifItems/Job/Import.php:336
+#: libraries/IiifItems/Job/Import.php:340
 msgid "Canvas OK."
 msgstr "Canvas OK."
 
-#: libraries/IiifItems/Job/Import.php:376
+#: libraries/IiifItems/Job/Import.php:380
 #, php-format
 msgid "Processing annotation %s"
 msgstr "Processing annotation %s"
 
-#: libraries/IiifItems/Job/Import.php:406
+#: libraries/IiifItems/Job/Import.php:410
 msgid "Annotation OK."
 msgstr "Annotation OK."
 
-#: libraries/IiifItems/Job/Import.php:423
+#: libraries/IiifItems/Job/Import.php:427
 msgid "Missing stuff?"
 msgstr "Missing stuff?"
 
-#: libraries/IiifItems/Job/Import.php:582
+#: libraries/IiifItems/Job/Import.php:586
 #, php-format
 msgid "Data Set: %s"
 msgstr "Data Set: %s"
 
-#: libraries/IiifItems/Job/Import.php:585
+#: libraries/IiifItems/Job/Import.php:589
 #, php-format
 msgid "Image: %s"
 msgstr "Image: %s"
 
-#: libraries/IiifItems/Job/Import.php:588
+#: libraries/IiifItems/Job/Import.php:592
 #, php-format
 msgid "Moving Image: %s"
 msgstr "Moving Image: %s"
 
-#: libraries/IiifItems/Job/Import.php:591
+#: libraries/IiifItems/Job/Import.php:595
 #, php-format
 msgid "Sound: %s"
 msgstr "Sound: %s"
 
-#: libraries/IiifItems/Job/Import.php:601
+#: libraries/IiifItems/Job/Import.php:605
 #, php-format
 msgid "Annotation: \"%s\""
 msgstr "Annotation: \"%s\""
@@ -822,39 +854,39 @@ msgstr "Invalid import type."
 msgid "Invalid source file upload."
 msgstr "Invalid source file upload."
 
-#: controllers/ImportController.php:156
+#: controllers/ImportController.php:159
 msgid "An unexpected error occurred during submission. Please retry later."
 msgstr "An unexpected error occurred during submission. Please retry later."
 
-#: controllers/ImportController.php:260
+#: controllers/ImportController.php:263
 msgid "This item does not exist."
 msgstr "This item does not exist."
 
-#: controllers/ImportController.php:266
+#: controllers/ImportController.php:269
 msgid "This item does not seem to be imported using IIIF Toolkit."
 msgstr "This item does not seem to be imported using IIIF Toolkit."
 
-#: controllers/ImportController.php:286
+#: controllers/ImportController.php:289
 msgid "No xywh bounds found on annotation."
 msgstr "No xywh bounds found on annotation."
 
-#: controllers/ImportController.php:298
+#: controllers/ImportController.php:301
 msgid "Unable to repair item."
 msgstr "Unable to repair item."
 
-#: controllers/ImportController.php:306
+#: controllers/ImportController.php:309
 msgid "Item successfully repaired. Please recheck contents."
 msgstr "Item successfully repaired. Please recheck contents."
 
-#: controllers/ImportController.php:345
+#: controllers/ImportController.php:348
 msgid "JSON cache purged."
 msgstr "JSON cache purged."
 
-#: controllers/ImportController.php:356
+#: controllers/ImportController.php:359
 msgid "Cleaned JSON cached data."
 msgstr "Cleaned JSON cached data."
 
-#: controllers/ImportController.php:385
+#: controllers/ImportController.php:388
 msgid "Failed to purge JSON cache"
 msgstr "Failed to purge JSON cache"
 
@@ -945,3 +977,14 @@ msgstr "None"
 #: languages/special_strings.php:39
 msgid "Maximum"
 msgstr "Maximum"
+
+#~ msgid "%sOne item has no collection."
+#~ msgid_plural "%s%d items%s aren't in a collection."
+#~ msgstr[0] "%sOne item has no collection."
+#~ msgstr[1] "%s%d items%s aren't in a collection."
+
+#~ msgid "This manifest contains %s%s%s annotations."
+#~ msgstr "This manifest contains %s%s%s annotations."
+
+#~ msgid "This collection contains %s%s%s annotations."
+#~ msgstr "This collection contains %s%s%s annotations."

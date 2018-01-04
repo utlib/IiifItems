@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Translation for the IIIF Toolkit plugin for Omeka "
 "Classic 2.x\n"
-"POT-Creation-Date: 2017-11-29 11:35-0500\n"
-"PO-Revision-Date: 2017-11-29 11:35-0500\n"
+"POT-Creation-Date: 2018-01-04 11:19-0500\n"
+"PO-Revision-Date: 2018-01-04 11:35-0500\n"
 "Last-Translator: Dickson Law <dickson.law@utoronto.ca>\n"
 "Language-Team: University of Toronto <exhibits@library.utoronto.ca>\n"
 "Language: zh-TW\n"
@@ -11,13 +11,13 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.4\n"
-"X-Poedit-KeywordsList: __;gettext;gettext_noop\n"
+"X-Poedit-KeywordsList: __;gettext;gettext_noop;plural:1,2\n"
 "X-Poedit-Basepath: /home/developer/IiifItems\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: IiifItemsPlugin.php:123
+#: IiifItemsPlugin.php:124
 msgid "Invalid CSRF token."
 msgstr "反跨站請求校驗值無效。"
 
@@ -50,7 +50,7 @@ msgstr "回到上頁"
 
 #: views/admin/import/maintenance.php:3 views/admin/import/status.php:3
 #: views/admin/import/form.php:3
-#: libraries/IiifItems/Integration/System.php:151
+#: libraries/IiifItems/Integration/System.php:150
 msgid "IIIF Toolkit"
 msgstr "IIIF工具箱"
 
@@ -71,7 +71,7 @@ msgstr ""
 "一次。"
 
 #: views/admin/import/maintenance.php:20
-#: libraries/IiifItems/Integration/Collections.php:286
+#: libraries/IiifItems/Integration/Collections.php:298
 msgid "Clean"
 msgstr "清理"
 
@@ -212,7 +212,7 @@ msgid "Description"
 msgstr "描述"
 
 #: views/public/collections/tree.php:2
-#: libraries/IiifItems/Integration/System.php:180
+#: libraries/IiifItems/Integration/System.php:179
 msgid "Browse Catalogue"
 msgstr "瀏覽總目錄"
 
@@ -284,8 +284,10 @@ msgid "Manifest URL: %s"
 msgstr "配置集地址：%s"
 
 #: libraries/IiifItems/Integration/Items.php:206
+#: libraries/IiifItems/Integration/Items.php:275
+#: libraries/IiifItems/Integration/Annotations.php:114
 #: libraries/IiifItems/Integration/Collections.php:206
-#: libraries/IiifItems/Integration/Collections.php:276
+#: libraries/IiifItems/Integration/Collections.php:280
 msgid "Annotate"
 msgstr "注釋"
 
@@ -305,7 +307,7 @@ msgstr "IIIF單件詳目"
 #: libraries/IiifItems/Integration/Items.php:246
 #: libraries/IiifItems/Integration/Items.php:311
 #: libraries/IiifItems/Integration/Collections.php:240
-#: libraries/IiifItems/Integration/Collections.php:395
+#: libraries/IiifItems/Integration/Collections.php:407
 msgid "Manifest URL"
 msgstr "配置集地址"
 
@@ -320,9 +322,17 @@ msgstr "UUID"
 
 #: libraries/IiifItems/Integration/Items.php:271
 #: libraries/IiifItems/Integration/Annotations.php:104
-#: libraries/IiifItems/Integration/Collections.php:279
+#: libraries/IiifItems/Integration/Collections.php:284
+#: libraries/IiifItems/Integration/Collections.php:291
 msgid "Annotations"
 msgstr "注釋"
+
+#: libraries/IiifItems/Integration/Items.php:272
+#, php-format
+msgid "This item has %s%d%s annotation."
+msgid_plural "This item has %s%d%s annotations."
+msgstr[0] "此物件含有%s%d%s項注釋。"
+msgstr[1] "此物件含有%s%d%s項注釋。"
 
 #: libraries/IiifItems/Integration/Items.php:276
 #: libraries/IiifItems/Integration/Items.php:281
@@ -341,12 +351,12 @@ msgstr ""
 "案。"
 
 #: libraries/IiifItems/Integration/Items.php:307
-#: libraries/IiifItems/Integration/Collections.php:394
+#: libraries/IiifItems/Integration/Collections.php:406
 msgid "IIIF Manifest"
 msgstr "IIIF配置集"
 
 #: libraries/IiifItems/Integration/Items.php:324
-#: libraries/IiifItems/Integration/Collections.php:438
+#: libraries/IiifItems/Integration/Collections.php:450
 msgid "Default"
 msgstr "預置"
 
@@ -359,7 +369,7 @@ msgid "Never"
 msgstr "永不"
 
 #: libraries/IiifItems/Integration/Items.php:350
-#: libraries/IiifItems/Integration/Collections.php:491
+#: libraries/IiifItems/Integration/Collections.php:503
 msgid "<TBD>"
 msgstr "待定"
 
@@ -392,6 +402,15 @@ msgstr "您的貢獻者使用權限不能重設此IIIF合集母目錄。"
 msgid "A collection cannot have itself or a descendent as its parent."
 msgstr "IIIF合集不能以自己或其他子合集作為母目錄。"
 
+# Special string
+#: libraries/IiifItems/Integration/Collections.php:169
+#: controllers/CollectionsController.php:143
+#, fuzzy, php-format
+msgid "%s%d item%s has no collection."
+msgid_plural "%s%d items%s aren't in a collection."
+msgstr[0] "%s%d個單件%s尚未安放在合集裏。"
+msgstr[1] "%s%d個單件%s尚未安放在合集裏。"
+
 #: libraries/IiifItems/Integration/Collections.php:171
 #: controllers/CollectionsController.php:146
 msgid "All items are in a collection."
@@ -406,7 +425,7 @@ msgid "IIIF Collection Information"
 msgstr "IIIF合集詳目"
 
 #: libraries/IiifItems/Integration/Collections.php:230
-#: libraries/IiifItems/Integration/Collections.php:387
+#: libraries/IiifItems/Integration/Collections.php:399
 msgid "Collection URL"
 msgstr "合集地址"
 
@@ -414,50 +433,64 @@ msgstr "合集地址"
 msgid "IIIF Manifest Information"
 msgstr "IIIF配置集詳目"
 
-#: libraries/IiifItems/Integration/Collections.php:284
+#: libraries/IiifItems/Integration/Collections.php:285
+#, php-format
+msgid "This manifest contains %s%d%s annotation."
+msgid_plural "This manifest contains %s%d%s annotations."
+msgstr[0] "此配置集含有%s%d%s項注釋。"
+msgstr[1] "此配置集含有%s%d%s項注釋。"
+
+#: libraries/IiifItems/Integration/Collections.php:292
+#, php-format
+msgid "This collection contains %s%d%s annotation."
+msgid_plural "This collection contains %s%d%s annotations."
+msgstr[0] "此合集含有%s%d%s項注釋。"
+msgstr[1] "此合集含有%s%d%s項注釋。"
+
+#: libraries/IiifItems/Integration/Collections.php:296
 msgid "Cache Management"
 msgstr "緩存管理"
 
-#: libraries/IiifItems/Integration/Collections.php:285
+#: libraries/IiifItems/Integration/Collections.php:297
 msgid ""
 "If the content shown in the viewer looks out of date, you can clear the "
 "cache to regenerate the manifest."
 msgstr "如果檢閱器的內容沒有如期更新，按「清理」重設配置集。"
 
-#: libraries/IiifItems/Integration/Collections.php:316
+#: libraries/IiifItems/Integration/Collections.php:328
 msgid "Include IIIF Submembers"
 msgstr "包括IIIF附屬目錄"
 
-#: libraries/IiifItems/Integration/Collections.php:333
+#: libraries/IiifItems/Integration/Collections.php:345
 #, php-format
 msgid "View submembers in %s"
 msgstr "查看%s的附屬目錄"
 
-#: libraries/IiifItems/Integration/Collections.php:386
+#: libraries/IiifItems/Integration/Collections.php:398
 msgid "IIIF Collection"
 msgstr "IIIF合集"
 
-#: libraries/IiifItems/Integration/Collections.php:438
+#: libraries/IiifItems/Integration/Collections.php:450
 msgid "Manifest"
 msgstr "配置集"
 
-#: libraries/IiifItems/Integration/Collections.php:438
+#: libraries/IiifItems/Integration/Collections.php:450
 msgid "Collection"
 msgstr "合集"
 
-#: libraries/IiifItems/Integration/Collections.php:438
+#: libraries/IiifItems/Integration/Collections.php:450
 msgid "Hidden"
 msgstr "隱藏"
 
-#: libraries/IiifItems/Integration/System.php:157
+#: libraries/IiifItems/Integration/System.php:156
 msgid "Collections"
 msgstr "合集"
 
-#: libraries/IiifItems/Integration/System.php:159
+#: libraries/IiifItems/Integration/System.php:158
 msgid "IIIF Catalogue Tree"
 msgstr "IIIF總目錄"
 
-#: libraries/IiifItems/Integration/System.php:200
+#: libraries/IiifItems/Integration/System.php:199
 msgid "IIIF Preview"
 msgstr "IIIF預覽"
 
@@ -641,8 +674,8 @@ msgid "Got JSON from submitted string"
 msgstr "從表格提供的資料收到JSON"
 
 #: libraries/IiifItems/Job/Import.php:70 libraries/IiifItems/Job/Import.php:95
-#: controllers/ImportController.php:106 controllers/ImportController.php:120
-#: controllers/ImportController.php:137
+#: controllers/ImportController.php:106 controllers/ImportController.php:123
+#: controllers/ImportController.php:140
 msgid "Invalid import source."
 msgstr "匯入來源無效。"
 
@@ -723,44 +756,44 @@ msgstr "畫布無效。"
 msgid "Processing canvas %s"
 msgstr "正在處理畫布%s"
 
-#: libraries/IiifItems/Job/Import.php:336
+#: libraries/IiifItems/Job/Import.php:340
 msgid "Canvas OK."
 msgstr "成功建立畫布。"
 
-#: libraries/IiifItems/Job/Import.php:376
+#: libraries/IiifItems/Job/Import.php:380
 #, php-format
 msgid "Processing annotation %s"
 msgstr "正在處理注釋%s"
 
-#: libraries/IiifItems/Job/Import.php:406
+#: libraries/IiifItems/Job/Import.php:410
 msgid "Annotation OK."
 msgstr "成功建立注釋。"
 
-#: libraries/IiifItems/Job/Import.php:423
+#: libraries/IiifItems/Job/Import.php:427
 msgid "Missing stuff?"
 msgstr "資料缺失"
 
-#: libraries/IiifItems/Job/Import.php:582
+#: libraries/IiifItems/Job/Import.php:586
 #, php-format
 msgid "Data Set: %s"
 msgstr "資料組：%s"
 
-#: libraries/IiifItems/Job/Import.php:585
+#: libraries/IiifItems/Job/Import.php:589
 #, php-format
 msgid "Image: %s"
 msgstr "映像：%s"
 
-#: libraries/IiifItems/Job/Import.php:588
+#: libraries/IiifItems/Job/Import.php:592
 #, php-format
 msgid "Moving Image: %s"
 msgstr "動畫：%s"
 
-#: libraries/IiifItems/Job/Import.php:591
+#: libraries/IiifItems/Job/Import.php:595
 #, php-format
 msgid "Sound: %s"
 msgstr "聲音：%s"
 
-#: libraries/IiifItems/Job/Import.php:601
+#: libraries/IiifItems/Job/Import.php:605
 #, php-format
 msgid "Annotation: \"%s\""
 msgstr "注釋：%s"
@@ -806,39 +839,39 @@ msgstr "匯入型式無效。"
 msgid "Invalid source file upload."
 msgstr "來源上載檔案無效。"
 
-#: controllers/ImportController.php:156
+#: controllers/ImportController.php:159
 msgid "An unexpected error occurred during submission. Please retry later."
 msgstr "上傳表格時發生錯誤，請稍後重試。"
 
-#: controllers/ImportController.php:260
+#: controllers/ImportController.php:263
 msgid "This item does not exist."
 msgstr "此單件不存在。"
 
-#: controllers/ImportController.php:266
+#: controllers/ImportController.php:269
 msgid "This item does not seem to be imported using IIIF Toolkit."
 msgstr "此單件好像不是用IIIF工具箱匯入的。"
 
-#: controllers/ImportController.php:286
+#: controllers/ImportController.php:289
 msgid "No xywh bounds found on annotation."
 msgstr "注釋沒有xywh座標值。"
 
-#: controllers/ImportController.php:298
+#: controllers/ImportController.php:301
 msgid "Unable to repair item."
 msgstr "無法修復單件。"
 
-#: controllers/ImportController.php:306
+#: controllers/ImportController.php:309
 msgid "Item successfully repaired. Please recheck contents."
 msgstr "單件已修復，請刷新並核對內容。"
 
-#: controllers/ImportController.php:345
+#: controllers/ImportController.php:348
 msgid "JSON cache purged."
 msgstr "已清理JSON緩存。"
 
-#: controllers/ImportController.php:356
+#: controllers/ImportController.php:359
 msgid "Cleaned JSON cached data."
 msgstr "已清理JSON緩存。"
 
-#: controllers/ImportController.php:385
+#: controllers/ImportController.php:388
 msgid "Failed to purge JSON cache"
 msgstr "清理JSON緩存失敗。"
 
@@ -931,10 +964,11 @@ msgstr "無"
 msgid "Maximum"
 msgstr "最大"
 
-# Special string
-#, fuzzy
-#~ msgid "%s%d item%s has no collection."
-#~ msgstr "%s%d個單件%s尚未安放在合集裏。"
+#~ msgid "This manifest contains %s%d%s annotations."
+#~ msgstr "此配置集含有%s%d%s項注釋。"
+
+#~ msgid "This collection contains %s%d%s annotations."
+#~ msgstr "此合集含有%s%d%s項注釋。"
 
 #, fuzzy
 #~ msgid "%s%d items%s aren't in a collection."

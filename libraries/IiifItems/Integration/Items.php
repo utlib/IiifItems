@@ -268,9 +268,11 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
                     get_option('iiifitems_annotation_on_element'),
                     $uuid,
                 ));
-                echo '<div class="panel"><h4>' . __("Annotations") . '</h4>'
-                    . '<p>' . __(plural('This item has %s%d%s annotation.', 'This item has %s%d%s annotations.', count($onCanvasMatches)), '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">', count($onCanvasMatches), '</a>') . '</p>'
-                    . '</div>';
+                if (!empty($onCanvasMatches)) {
+                    echo '<div class="panel"><h4>' . __("Annotations") . '</h4>'
+                        . '<p>' . __(plural('This item has %s%d%s annotation.', 'This item has %s%d%s annotations.', count($onCanvasMatches)), '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">', count($onCanvasMatches), '</a>') . '</p>'
+                        . '</div>';
+                }
                 if ($allowEdit) {
                     echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">' . __('Annotate') . '</a>");</script>';
                     echo '<div class="panel"><h4>' . html_escape(__("Repair")) . '</h4>'
