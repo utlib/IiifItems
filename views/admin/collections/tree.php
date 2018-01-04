@@ -150,7 +150,7 @@ jQuery(function() {
                                 });
                                 expandNode.appendTo(thisNode);
                                 bodyNode.append('<span class="iiifitems-catalogue-folder-icon"></span>');
-                                jQuery('<div class="iiifitems-catalogue-description">').append(jQuery('<p></p>').text(v.title)).append(jQuery('<p></p>').text("Submembers: " + v.count)).appendTo(bodyNode);
+                                jQuery('<div class="iiifitems-catalogue-description">').append(jQuery('<p></p>').text(v.title)).append(jQuery('<p></p>').text(<?php echo js_escape(__("Submembers: ")); ?> + v.count)).appendTo(bodyNode);
                             } else {
                                 jQuery('<a></a>').attr('href', v.link).append(
                                     jQuery('<img>').attr({
@@ -163,7 +163,7 @@ jQuery(function() {
                                         jQuery('<a></a>').attr('href', v.link).text(v.title)
                                     )
                                 ).append(
-                                    jQuery('<p></p>').text("Items: ").append(
+                                    jQuery('<p></p>').text(<?php echo js_escape(__("Items: ")); ?>).append(
                                         (v.count > 0) ?
                                             jQuery('<a></a>').attr('href', v.subitems_link).text(v.count) :
                                             jQuery('<span>0</span>')
@@ -202,9 +202,8 @@ jQuery(function() {
 </script>
 
 <?php echo pagination_links(); ?>
-<a href="/omeka/admin/collections/add" class="small green button">Add a Collection</a>
+<a href="/omeka/admin/collections/add" class="small green button"><?php echo __("Add a Collection"); ?></a>
 <p class="not-in-collections"><?php echo $withoutCollectionMessage; ?></p>
-
 
 <?php
 $sortLinks = array(
@@ -232,17 +231,17 @@ $sortLinks = array(
                         <span class="iiifitems-catalogue-folder-icon"></span>
                         <div class="iiifitems-catalogue-description">
                             <p><?php echo metadata($member, array('Dublin Core', 'Title')); ?></p>
-                            <p>Submembers: <?php echo IiifItems_Util_Collection::countSubmembersFor($member); ?></p>
+                            <p><?php echo __('Submembers: '); ?><?php echo IiifItems_Util_Collection::countSubmembersFor($member); ?></p>
                         </div>
                     <?php elseif ($file = $member->getFile()): ?>
                         <img src="<?php echo $file->getWebPath('square_thumbnail'); ?>" class="iiifitems-catalogue-thumbnail">
                         <div class="iiifitems-catalogue-description">
-                            <p><a href="<?php echo url(array('controller' => 'collections', 'action' => 'show', 'id' => $member->id), 'id'); ?>"><?php echo metadata($member, array('Dublin Core', 'Title')); ?></a></p>
-                            <p>Items: <a href="<?php echo html_escape(url(array('controller' => 'items', 'action' => 'browse', 'id' => ''), 'id', array('collection' => $member->id))); ?>"><?php echo $member->totalItems(); ?></a></p>    
+                            <p><a href=""><?php echo metadata($member, array('Dublin Core', 'Title')); ?></a></p>
+                            <p><?php echo __("Items: "); ?><a href="<?php echo html_escape(url(array('controller' => 'items', 'action' => 'browse', 'id' => ''), 'id', array('collection' => $member->id))); ?>"><?php echo $member->totalItems(); ?></a></p>    
                         </div>
                     <?php else: ?>
-                        <p><a href="<?php echo url(array('controller' => 'collections', 'action' => 'show', 'id' => $member->id), 'id'); ?>"><?php echo metadata($member, array('Dublin Core', 'Title')); ?></a></p>
-                        <p>Items: <a href="<?php echo html_escape(url(array('controller' => 'items', 'action' => 'browse', 'id' => ''), 'id', array('collection' => $member->id))); ?>"><?php echo $member->totalItems(); ?></a></p>
+                        <p><a href=""><?php echo metadata($member, array('Dublin Core', 'Title')); ?></a></p>
+                        <p><?php echo __("Items: "); ?><a href="<?php echo html_escape(url(array('controller' => 'items', 'action' => 'browse', 'id' => ''), 'id', array('collection' => $member->id))); ?>"><?php echo $member->totalItems(); ?></a></p>
                     <?php endif; ?>
                 </div>
             </div>
@@ -252,7 +251,7 @@ $sortLinks = array(
 </div>
 
 <?php echo pagination_links(); ?>
-<a href="/omeka/admin/collections/add" class="small green button">Add a Collection</a>
+<a href="/omeka/admin/collections/add" class="small green button"><?php echo __("Add a Collection"); ?></a>
 <p class="not-in-collections"><?php echo $withoutCollectionMessage; ?></p>
 
 <?php

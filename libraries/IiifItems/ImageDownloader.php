@@ -40,7 +40,7 @@ class IiifItems_ImageDownloader {
                 $client->request('GET');
                 return true;
             } catch (Exception $e) {
-                debug("Download with size " . $trySize . " failed, trying next...");
+                debug(__("Download with size %s failed, trying next...", $trySize));
             }
         }
         return false;
@@ -58,9 +58,9 @@ class IiifItems_ImageDownloader {
         foreach ($trySizes as $trySize) {
             try {
                 $imageUrl = $this->__buildUrl($xywh, $trySize);
-                debug("Downloading image " . $imageUrl);
+                debug(__("Downloading image %s", $imageUrl));
                 $downloadedFile = insert_files_for_item($item, 'Url', $imageUrl)[0];
-                debug("Download OK: " . $imageUrl);
+                debug(__("Download OK: %s", $imageUrl));
                 $downloadedFile->addElementTextsByArray(array(
                     'IIIF File Metadata' => array(
                         'Original @id' => array(array('text' => $this->originalId, 'html' => false)),
@@ -70,7 +70,7 @@ class IiifItems_ImageDownloader {
                 $downloadedFile->saveElementTexts();
                 return $downloadedFile;
             } catch (Exception $e) {
-                debug("Download with size " . $trySize . " failed, trying next...");
+                debug(__("Download with size %s failed, trying next...", $trySize));
             }
         }
         return null;

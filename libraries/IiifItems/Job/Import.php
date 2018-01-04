@@ -33,10 +33,10 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         try {
             // Get import task ready
             switch ($this->_importSource) {
-                case 'File': $importSourceLabel = 'Upload: ' . $this->_importSourceBody; break;
+                case 'File': $importSourceLabel = __("Upload: %s", $this->_importSourceBody); break;
                 case 'Url': $importSourceLabel = $this->_importSourceBody; break;
-                case 'Paste': $importSourceLabel = 'Pasted JSON'; break; 
-                default: $importSourceLabel = 'Unknown'; break;
+                case 'Paste': $importSourceLabel = __("Pasted JSON"); break; 
+                default: $importSourceLabel = __("Unknown"); break;
             }
             $this->_statusId = get_db()->insert('IiifItems_JobStatus', array(
                 'source' => $importSourceLabel,
@@ -50,34 +50,34 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             ));
             debug($this->_statusId);
             $js = get_db()->getTable('IiifItems_JobStatus')->find($this->_statusId);
-            debug("Starting Import Job " . $this->_statusId);
+            debug(__("Starting Import Job %s", $this->_statusId));
             
             // (Download and) Decode
             switch ($this->_importSource) {
                 case 'File':
                     $jsonSource = file_get_contents($this->_importSourceBody);
-                    debug("Got JSON from uploaded file: " . $this->_importSourceBody);
+                    debug(__("Got JSON from uploaded file: %s", $this->_importSourceBody));
                 break;
                 case 'Url':
                     $jsonSource = file_get_contents($this->_importSourceBody);
-                    debug("Downloaded from " . $this->_importSourceBody);
+                    debug(__("Downloaded from %s", $this->_importSourceBody));
                 break;
                 case 'Paste':
                     $jsonSource = $this->_importSourceBody;
-                    debug("Got JSON from submitted string");
+                    debug(__("Got JSON from submitted string"));
                 break;
                 default:
-                    throw new Exception("Invalid import source.");
+                    throw new Exception(__("Invalid import source."));
                 break;
             }
             $jsonData = json_decode($jsonSource, true);
-            debug("Top level structure parsed for Import Job " . $this->_statusId);
+            debug(__("Top level structure parsed for Import Job %s", $this->_statusId));
             
             // Get number of import tasks
-            debug("Enumerating download items for Import Job " . $this->_statusId);
+            debug(__("Enumerating download items for Import Job %s", $this->_statusId));
             $js->total = $this->_generateTasks($jsonData);
             $js->save();
-            debug("Found " . $js->total . " download items for Import Job " . $this->_statusId);
+            debug(__("Found %s download items for Import Job %s" , $js->total, $this->_statusId));
             
             // Process the submission
             $parentCollection = find_collection_by_uuid($this->_parent);
@@ -92,7 +92,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
                     $this->_processCanvas($jsonData, $js, $parentCollection);
                 break;
                 default:
-                    throw new Exception("Invalid import source.");
+                    throw new Exception(__("Invalid import source."));
                 break;
             }
             
@@ -101,7 +101,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             $js->status = 'Completed';
             $js->modified = date('Y-m-d H:i:s');
             $js->save();
-            debug("Import done");
+            debug(__("Import done"));
         }
         catch (Exception $e) {
             debug($e->getMessage());
@@ -195,13 +195,13 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         // Set up metadata
         $collectionMetadata = $this->_buildMetadata('Collection', $collectionData, $parentCollection);
         // Create collection
-        debug("Creating collection for collection " . $collectionData['@id']);
+        debug(__("Creating collection for collection %s", $collectionData['@id']));
         $collection = insert_collection(array(
             'public' => false,
             'featured' => false,
         ), $collectionMetadata);
         // Look for collections
-        debug("Scanning subcollections for " . $collectionData['@id']);
+        debug(__("Scanning subcollections for %s", $collectionData['@id']));
         if (isset($collectionData['collections'])) {
             foreach ($collectionData['collections'] as $subcollectionSource) {
                 $subcollectionRaw = file_get_contents($subcollectionSource['@id']);
@@ -210,7 +210,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             }
         }
         // Look for manifests and import them too
-        debug("Scanning submanifests for " . $collectionData['@id']);
+        debug(__("Scanning submanifests for %s", $collectionData['@id']));
         if (isset($collectionData['manifests'])) {
             foreach ($collectionData['manifests'] as $submanifestSource) {
                 $submanifestRaw = file_get_contents($submanifestSource['@id']);
@@ -219,7 +219,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             }
         }
         // Look for members
-        debug("Scanning submembers for " . $collectionData['@id']);
+        debug(__("Scanning submembers for %s", $collectionData['@id']));
         if (isset($collectionData['members'])) {
             foreach ($collectionData['members'] as $submemberSource) {
                 $submemberRaw = file_get_contents($submemberSource);
@@ -235,11 +235,11 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             }
         }
         // Set public and featured here if applicable
-        debug("Setting public/featured flags for collection...");
+        debug(__("Setting public/featured flags for collection..."));
         $collection->public = $this->_isPublic;
         $collection->featured = $this->_isFeatured;
         $collection->save();
-        debug("Collection OK.");
+        debug(__("Collection OK."));
         // Return the created Collection
         return $collection;
     }
@@ -265,7 +265,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         );
         $manifestMetadata = $this->_buildMetadata('Manifest', $manifestData, $parentCollection);
         // Create collection
-        debug("Creating collection for manifest " . $manifestData['@id']);
+        debug(__("Creating collection for manifest %s", $manifestData['@id']));
         $manifest = insert_collection($manifestImportOptions, $manifestMetadata);
         // Look for canvases and import them too
         if (isset($manifestData['sequences']) && isset($manifestData['sequences'][0]) && isset($manifestData['sequences'][0]['canvases'])) {
@@ -275,7 +275,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         }
         
         // Set public and featured here if applicable
-        debug("Setting public/featured flags for manifest...");
+        debug(__("Setting public/featured flags for manifest..."));
         $manifest->public = $this->_isPublic;
         $manifest->featured = $this->_isFeatured;
         if ($this->_isPublic || $this->_isFeatured) {
@@ -283,7 +283,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             $db->query("UPDATE `" . $db->prefix . "items` SET `public` = " . ($manifest->public ? 1 : 0) . ", `featured` = " . ($manifest->featured ? 1 : 0) . " WHERE `collection_id` = {$manifest->id}");
         }
         $manifest->save();
-        debug("Manifest OK.");
+        debug(__("Manifest OK."));
         // Return the created Collection
         return $manifest;
     }
@@ -312,7 +312,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             $canvasImportOptions['collection_id'] = $parentCollection->id;
         }
         // Process canvases
-        debug("Processing canvas " . $canvasData['@id']);
+        debug(__("Processing canvas %s", $canvasData['@id']));
         $newItem = insert_item($canvasImportOptions, $canvasMetadata);
         if ($this->_importPreviewSize) {
             foreach ($canvasData['images'] as $image) {
@@ -337,7 +337,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $jobStatus->status = 'In Progress';
         $jobStatus->modified = date('Y-m-d H:i:s');
         $jobStatus->save();
-        debug("Canvas OK.");
+        debug(__("Canvas OK."));
         // Process annotations
         if (isset($canvasData['otherContent'])) {
             foreach ($canvasData['otherContent'] as $otherContent) {
@@ -377,7 +377,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $annotationMetadata = $this->_buildAnnotationMetadata($annotationData, $source, $parentCollection, $attachItem);
       
         // Process annotation
-        debug("Processing annotation " . $annotationData['@id']);
+        debug(__("Processing annotation %s", $annotationData['@id']));
         $newItem = insert_item($annotationImportOptions, $annotationMetadata);
         
         // Add preview image if xywh selector is available
@@ -407,7 +407,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         $jobStatus->progress++;
         $jobStatus->modified = date('Y-m-d H:i:s');
         $jobStatus->save();
-        debug("Annotation OK.");
+        debug(__("Annotation OK."));
         // Return the created Item
         return $newItem;
     }
@@ -424,7 +424,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
     protected function _downloadIiifImageToItem($item, $image, $preferredSize='full', $region='full') {
         // Sanity check for image JSON faults
         if (!isset($image['resource']) || !isset($image['resource']['service']) || !isset($image['resource']['height']) || !isset($image['resource']['width'])) {
-            debug("Missing stuff?");
+            debug(__("Missing stuff?"));
             return array('status' => 0);
         }
         // Download
@@ -583,16 +583,16 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
             foreach ($resources as $resource) {
                 switch ($resource['@type']) {
                     case 'dctypes:Dataset':
-                        $metadata['Dublin Core']['Relation'][] = array('text' => 'Data Set: <a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>', 'html' => true);
+                        $metadata['Dublin Core']['Relation'][] = array('text' => __("Data Set: %s", '<a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>'), 'html' => true);
                     break;
                     case 'dctypes:Image':
-                        $metadata['Dublin Core']['Relation'][] = array('text' => 'Image: <a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>', 'html' => true);
+                        $metadata['Dublin Core']['Relation'][] = array('text' => __("Image: %s", '<a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>'), 'html' => true);
                     break;
                     case 'dctypes:MovingImage':
-                        $metadata['Dublin Core']['Relation'][] = array('text' => 'Moving Image: <a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>', 'html' => true);
+                        $metadata['Dublin Core']['Relation'][] = array('text' => __("Moving Image: %s", '<a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>'), 'html' => true);
                     break;
                     case 'dctypes:Sound':
-                        $metadata['Dublin Core']['Relation'][] = array('text' => 'Sound: <a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>', 'html' => true);
+                        $metadata['Dublin Core']['Relation'][] = array('text' => __("Sound: %s", '<a href="' . $resource['@id'] . '"> ' . html_escape($resource['@id']) . '</a>'), 'html' => true);
                     break;
                     case 'cnt:ContentAsText': case 'dctypes:Text': default:
                         $metadata['Item Type Metadata']['Text'][] = array('text' => $resource['chars'], 'html' => isset($resource['@type']) && $resource['@type'] == 'text/html');
@@ -602,7 +602,7 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
         }
         // Set title based on snippet of first available text
         if (!empty($metadata['Item Type Metadata']['Text'])) {
-            $metadata['Dublin Core']['Title'][] = array('text' => 'Annotation: "' . snippet_by_word_count($metadata['Item Type Metadata']['Text'][0]['text']) . '"', 'html' => false);
+            $metadata['Dublin Core']['Title'][] = array('text' => __("Annotation: \"%s\"", snippet_by_word_count($metadata['Item Type Metadata']['Text'][0]['text'])), 'html' => false);
         }
         // Set annotation region
         // Simple xywh case: Extract xywh from on

@@ -203,10 +203,10 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
                 if ($allowEdit || $annotations) {
                     echo '<ul class="iiifitems-action-links">';
                     if ($allowEdit) {
-                        echo '<li><a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a></li>';
+                        echo '<li><a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">' . __("Annotate") . '</a></li>';
                     }
                     if ($annotations) {
-                        echo '<li><a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations (' . count($annotations) . ')</a></li>';
+                        echo '<li><a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">' . __("List annotations (%d)", count($annotations)) . '</a></li>';
                     }
                     echo '</ul>';
                 }
@@ -232,16 +232,20 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
         $iiifUrl = public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
         echo '<div class="element-set">';
-        echo '<h2>IIIF ' . ($item->item_type_id == get_option('iiifitems_annotation_item_type') ? 'Annotation' : 'Item') . ' Information</h2>';
+        if (($item->item_type_id == get_option('iiifitems_annotation_item_type'))) {
+            echo '<h2>' . __("IIIF Annotation Information") . '</h2>';
+        } else {
+            echo '<h2>' . __("IIIF Item Information") . '</h2>';
+        }
         echo '<p>';
         echo IiifItems_Util_CollectionOptions::getPathBreadcrumb($item, true);
         echo '</p>';
         if (get_option('iiifitems_show_mirador_items')) {
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
         }
-        $this->_adminElementTextPair('Manifest URL', 'iiif-item-metadata-manifest-url', '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
-        $this->_adminElementTextPair('Original ID', 'iiif-item-metadata-original-id', metadata($item, array('IIIF Item Metadata', 'Original @id')), true);
-        $this->_adminElementTextPair('UUID', 'iiif-item-metadata-uuid', metadata($item, array('IIIF Item Metadata', 'UUID'), array('no_filter' => true)), true);
+        $this->_adminElementTextPair(__('Manifest URL'), 'iiif-item-metadata-manifest-url', '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
+        $this->_adminElementTextPair(__('Original ID'), 'iiif-item-metadata-original-id', metadata($item, array('IIIF Item Metadata', 'Original @id')), true);
+        $this->_adminElementTextPair(__('UUID'), 'iiif-item-metadata-uuid', metadata($item, array('IIIF Item Metadata', 'UUID'), array('no_filter' => true)), true);
         echo '</div>';
     }
     
@@ -264,23 +268,17 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
                     get_option('iiifitems_annotation_on_element'),
                     $uuid,
                 ));
-                echo '<div class="panel"><h4>Annotations</h4>'
-                    . '<p>This item has '
-                    . '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">'
-                    . count($onCanvasMatches)
-                    . '</a>'
-                    . ' annotation(s).</p>'
-                    // . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
+                echo '<div class="panel"><h4>' . __("Annotations") . '</h4>'
+                    . '<p>' . __(plural('This item has %s%d%s annotation.', 'This item has %s%d%s annotations.', count($onCanvasMatches)), '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">', count($onCanvasMatches), '</a>') . '</p>'
                     . '</div>';
                 if ($allowEdit) {
-                    echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
-                    echo '<div class="panel"><h4>Repair</h4>'
-                        . '<p>If this item is imported via IIIF Toolkit and the files are '
-                        . 'missing/corrupted, you can repair it below. All '
-                        . 'files belonging to this item will be deleted and '
-                        . 'then reloaded.</p>'
+                    echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">' . __('Annotate') . '</a>");</script>';
+                    echo '<div class="panel"><h4>' . html_escape(__("Repair")) . '</h4>'
+                        . '<p>'
+                        . html_escape(__("If this item is imported via IIIF Toolkit and the files are missing/corrupted, you can repair it below. All files belonging to this item will be deleted and then reloaded."))
+                        . '</p>'
                         . '<form action="' . admin_url(array('id' => $item->id), 'iiifitems_repair_item') . '" method="POST">'
-                        . '<input type="submit" value="Repair" class="big blue button" style="width:100%"/>'
+                        . '<input type="submit" value="' . html_escape(__("Repair")) . '" class="big blue button" style="width:100%"/>'
                         . '</form>'
                         . '</div>';
                 }
@@ -306,11 +304,11 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
         $iiifUrl = absolute_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
         echo '<div class="element-set">';
-        echo '<h2>IIIF Manifest</h2>';
+        echo '<h2>' . __("IIIF Manifest") . '</h2>';
         if (get_option('iiifitems_show_mirador_items')) {
             echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
         }
-        $this->_publicElementTextPair("Manifest URL", "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>', true);
+        $this->_publicElementTextPair(__("Manifest URL"), "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>', true);
         echo '</div>'; 
     }
     
@@ -349,7 +347,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
      * @return string
      */
     public function inputForItemUuid($comps, $args) {
-        $comps['input'] = $args['value'] ? (get_view()->formHidden($args['input_name_stem'] . '[text]', $args['value']) . $args['value']) : '&lt;TBD&gt;';
+        $comps['input'] = $args['value'] ? (get_view()->formHidden($args['input_name_stem'] . '[text]', $args['value']) . $args['value']) : html_escape(__("<TBD>"));
         return filter_minimal_input($comps, $args);
     }
     
