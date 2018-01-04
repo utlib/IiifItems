@@ -268,16 +268,31 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             return;
         }
         $allowEdit = is_allowed($collection, 'edit');
-        if (!IiifItems_Util_Collection::isCollection($collection) && IiifItems_Util_Manifest::isManifest($collection) && $allowEdit) {
+        $isCollection = IiifItems_Util_Collection::isCollection($collection);
+        $isManifest = IiifItems_Util_Manifest::isManifest($collection);
+        if (!$isCollection && $isManifest) {
             if ($collection->totalItems() == 0) {
                 return;
             }
-            $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
-            echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+            if ($allowEdit) {
+                $url = admin_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_annotate');
+                echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape($url) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
+            }
             if ($annotationCount = IiifItems_Util_Manifest::countAnnotationsFor($collection)) {
                 echo '<div class="panel">'
                     . '<h4>Annotations</h4>'
-                    . '<p>This manifest contains ' . __(plural('1 annotation', '%s%d annotations', $annotationCount), '', $annotationCount, '') . '.</p></div>';
+                    . '<p>This manifest contains <a href="'
+                    . admin_url('items') . '/browse?search=&type=' . get_option('iiifitems_annotation_item_type') . '&collection=' . $collection->id . '&submembers=1'
+                    . '">' . $annotationCount . '</a> annotation(s).</p></div>';
+            }
+        } else if ($isCollection && !$isManifest) {
+            $annotationCount = IiifItems_Util_Collection::countAnnotationsFor($collection);
+            if ($annotationCount = IiifItems_Util_Collection::countAnnotationsFor($collection)) {
+                echo '<div class="panel">'
+                    . '<h4>Annotations</h4>'
+                    . '<p>This collection contains <a href="'
+                    . admin_url('items') . '/browse?search=&type=' . get_option('iiifitems_annotation_item_type') . '&collection=' . $collection->id . '&submembers=1'
+                    . '">' . $annotationCount . '</a> annotation(s).</p></div>';
             }
         }
         if ($allowEdit) {
