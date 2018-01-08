@@ -26,7 +26,7 @@
 		Mirador({
 			"id": "viewer",
 			"buildPath": "<?php echo src('', 'js/mirador', '') . '/'; ?>",
-            "language": "<?php echo Zend_Registry::get('bootstrap')->getResource('Locale')->toString(); ?>",
+            "language": "<?php echo str_replace('_', '-', Zend_Registry::get('bootstrap')->getResource('Locale')->toString()); ?>",
 			"layout": "1",
 			"data": [
 				{ "manifestUri": "<?php echo absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest'); ?>" }

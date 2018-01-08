@@ -47,6 +47,7 @@
         Mirador({
             "id": "viewer",
             "buildPath": "<?php echo html_escape($mirador_path) . '/'; ?>",
+            "language": "<?php echo str_replace('_', '-', Zend_Registry::get('bootstrap')->getResource('Locale')->toString()); ?>",
             "layout": "1",
             "data": [
                 <?php foreach ($urls as $i => $url): ?>

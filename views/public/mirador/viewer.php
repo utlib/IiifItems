@@ -23,7 +23,7 @@
         Mirador({
             "id": "viewer",
             "buildPath": "<?php echo html_escape($mirador_path) . '/'; ?>",
-            "language": "<?php echo Zend_Registry::get('bootstrap')->getResource('Locale')->toString(); ?>",
+            "language": "<?php echo str_replace('_', '-', Zend_Registry::get('bootstrap')->getResource('Locale')->toString()); ?>",
             "layout": "1",
             "data": [
                 <?php if ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) : ?>
