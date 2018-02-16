@@ -31,6 +31,8 @@ class IiifItems_Job_Import extends Omeka_Job_AbstractJob {
      */
     public function perform() {
         try {
+            // Load routes
+            fire_plugin_hook('define_routes', array('router' => Zend_Controller_Front::getInstance()->getRouter()));
             // Get import task ready
             switch ($this->_importSource) {
                 case 'File': $importSourceLabel = __("Upload: %s", $this->_importSourceBody); break;
