@@ -270,7 +270,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         $allowEdit = is_allowed($collection, 'edit');
         $isCollection = IiifItems_Util_Collection::isCollection($collection);
         $isManifest = IiifItems_Util_Manifest::isManifest($collection);
-        $searchUrl = admin_url('items') . '/browse?search=&type=' . get_option('iiifitems_annotation_item_type') . '&collection=' . $collection->id . '&submembers=1';
+        $searchUrl = admin_url('items') . '/browse?search=&type=' . get_option('iiifitems_annotation_item_type') . '&iiif_collection_id=' . $collection->id . '&submembers=1';
         if (!$isCollection && $isManifest) {
             if ($collection->totalItems() == 0) {
                 return;
