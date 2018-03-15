@@ -62,7 +62,7 @@ echo flash();
         position: relative;
         display: block;
         width: 100%;
-        padding-left: 15px;
+        padding: 0 15px;
         background-color: white;
         border: 1px solid #d8d8d8;
         box-sizing: border-box;
@@ -152,13 +152,20 @@ jQuery(function() {
                                 bodyNode.append('<span class="iiifitems-catalogue-folder-icon"></span>');
                                 jQuery('<div class="iiifitems-catalogue-description">').append(jQuery('<p></p>').text(v.title)).append(jQuery('<p></p>').text(<?php echo js_escape(__("Submembers: ")); ?> + v.count)).appendTo(bodyNode);
                             } else {
-                                jQuery('<a></a>').attr('href', v.link).append(
-                                    jQuery('<img>').attr({
-                                        src: v.thumbnail,
-                                        'class': 'iiifitems-catalogue-thumbnail'
-                                    })
-                                ).appendTo(bodyNode);
-                                jQuery('<div class="iiifitems-catalogue-description">').append(
+                                if (v.thumbnail) {
+                                    jQuery('<a></a>').attr('href', v.link).append(
+                                        jQuery('<img>').attr({
+                                            src: v.thumbnail,
+                                            'class': 'iiifitems-catalogue-thumbnail'
+                                        })
+                                    ).appendTo(bodyNode);
+                                }
+                                (v.thumbnail ?
+                                    jQuery('<div class="iiifitems-catalogue-description">').append(
+                                        jQuery('<p></p>').append(
+                                            jQuery('<a></a>').attr('href', v.link).text(v.title)
+                                        )
+                                    ) :
                                     jQuery('<p></p>').append(
                                         jQuery('<a></a>').attr('href', v.link).text(v.title)
                                     )
