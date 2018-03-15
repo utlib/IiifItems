@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Migration 0.0.1.3: Add string-referenceable options to help reference IIIF Items metadata elements.
+ * Migration 0.0.1.3: Add string-referenceable options to help reference IIIF Toolkit metadata elements.
  * @package IiifItems
  * @subpackage Migration
  */

@@ -5,7 +5,7 @@
  */
 
 defined('IIIF_ITEMS_DIRECTORY') or define('IIIF_ITEMS_DIRECTORY', dirname(__FILE__));
-require_once dirname(__FILE__) . '/helpers/IiifItemsFunctions.php';
+require_once IIIF_ITEMS_DIRECTORY . '/helpers/IiifItemsFunctions.php';
 
 class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
 
@@ -28,12 +28,13 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
         'Items',
         'Collections',
         'Annotations',
+        'Search',
         'System',
     );
 
     public function hookInstall() {
         // Populate entire library (needed because the plugin isn't loaded)
-        foreach (glob(__DIR__ . "/libraries/IiifItems/**/*.php") as $libUnit) {
+        foreach (glob(IIIF_ITEMS_DIRECTORY . "/libraries/IiifItems/**/*.php") as $libUnit) {
             require_once $libUnit;
         }
         // Trigger integrations
@@ -46,7 +47,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
 
     public function hookUninstall() {
         // Populate entire library (needed because the plugin isn't loaded)
-        foreach (glob(__DIR__ . "/libraries/IiifItems/**/*.php") as $libUnit) {
+        foreach (glob(IIIF_ITEMS_DIRECTORY . "/libraries/IiifItems/**/*.php") as $libUnit) {
             require_once $libUnit;
         }
         // Trigger integrations
@@ -63,7 +64,7 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
         $doMigrate = false;
 
         $versions = array();
-        foreach (glob(dirname(__FILE__) . '/libraries/IiifItems/Migration/*.php') as $migrationFile) {
+        foreach (glob(IIIF_ITEMS_DIRECTORY . '/libraries/IiifItems/Migration/*.php') as $migrationFile) {
             $className = 'IiifItems_Migration_' . basename($migrationFile, '.php');
             include $migrationFile;
             $versions[$className::$version] = new $className();
@@ -84,6 +85,8 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
     }
 
     public function hookInitialize() {
+        // Add localizations
+         add_translation_source(IIIF_ITEMS_DIRECTORY . '/languages');
         // Add integrations
         foreach ($this->_integrations as $integrationName) {
             $integrationClass = 'IiifItems_Integration_' . $integrationName;
@@ -104,14 +107,15 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
         $acl->allow(null, 'Collections', 'members');
         $acl->allow(null, 'Collections', 'collection');
         $acl->allow(null, 'Collections', 'explorer');
+        $acl->allow(null, 'Collections', 'tree-ajax');
     }
 
     public function hookDefineRoutes($args) {
-        $args['router']->addConfig(new Zend_Config_Ini(dirname(__FILE__) . '/routes.ini', 'routes'));
+        $args['router']->addConfig(new Zend_Config_Ini(IIIF_ITEMS_DIRECTORY . '/routes.ini', 'routes'));
     }
 
     public function hookConfigForm() {
-        require dirname(__FILE__) . '/config_form.php';
+        require IIIF_ITEMS_DIRECTORY . '/config_form.php';
     }
 
     public function hookConfig($args) {
@@ -122,6 +126,13 @@ class IiifItemsPlugin extends Omeka_Plugin_AbstractPlugin {
         $data = $args['post'];
         set_option('iiifitems_bridge_prefix', rtrim($data['iiifitems_bridge_prefix'], '/'));
         set_option('iiifitems_mirador_path', rtrim($data['iiifitems_mirador_path'], '/'));
+        set_option('iiifitems_mirador_css', ltrim($data['iiifitems_mirador_css'], '/'));
+        set_option('iiifitems_mirador_js', ltrim($data['iiifitems_mirador_js'], '/'));
+        set_option('iiifitems_show_public_catalogue', $data['iiifitems_show_public_catalogue'] ? '1' : '0');
+        foreach (array('collections', 'manifests', 'items', 'files') as $category) {
+            $category = 'iiifitems_show_mirador_' . $category;
+            set_option($category, $data[$category] ? '1' : '0');
+        }
     }
 
 }

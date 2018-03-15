@@ -11,7 +11,7 @@ class IiifItems_Integration_ExhibitBuilder extends IiifItems_BaseIntegration {
     );
     
     /**
-     * Registers IIIF Items exhibit block types.
+     * Registers IIIF Toolkit exhibit block types.
      * 
      * @param array $layouts
      * @return array

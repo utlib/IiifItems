@@ -87,18 +87,24 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
             $json['collections'] = array();
             $json['manifests'] = array();
             foreach (self::findSubcollectionsFor($collection) as $subcollection) {
-                $atId = public_full_url(array('things' => 'collections', 'id' => $subcollection->id, 'typeext' => 'collection.json'), 'iiifitems_oa_uri');
+                $subAtId = public_full_url(array('things' => 'collections', 'id' => $subcollection->id, 'typeext' => 'collection.json'), 'iiifitems_oa_uri');
                 $label = metadata($subcollection, array('Dublin Core', 'Title'), array('no_escape' => true));
-                $json['collections'][] = IiifItems_Util_Collection::bareTemplate($atId, $label);
+                $json['collections'][] = IiifItems_Util_Collection::bareTemplate($subAtId, $label);
             }
             foreach (self::findSubmanifestsFor($collection) as $submanifest) {
-                $atId = public_full_url(array('things' => 'collections', 'id' => $submanifest->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
+                $subAtId = public_full_url(array('things' => 'collections', 'id' => $submanifest->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
                 $label = metadata($submanifest, array('Dublin Core', 'Title'), array('no_escape' => true));
-                $json['manifests'][] = IiifItems_Util_Manifest::bareTemplate($atId, $label);
+                $json['manifests'][] = IiifItems_Util_Manifest::bareTemplate($subAtId, $label);
             }
             // Override the IDs, titles and DC metadata
             $json['@id'] = $atId;
             parent::addDublinCoreMetadata($json, $collection);
+            // Override within
+            if ($parentCollection = IiifItems_Util_Collection::findParentFor($collection)) {
+                $json['within'] = public_full_url(array('things' => 'collections', 'id' => $parentCollection->id, 'typeext' => 'collection.json'), 'iiifitems_oa_uri');
+            } else if (isset($json['within'])) {
+                unset($json['within']);
+            }
             // Cache accordingly
             if ($cacheAs !== null) {
                 cache_iiifitems_value_for($collection, $json, $cacheAs);
@@ -194,10 +200,11 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         );
         $results = array();
         foreach ($matches as $match) {
-            $candidate = get_record_by_id($match->record_type, $match->record_id);
-            $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
-            if ($type == 'Collection') {
-                $results[] = $candidate;
+            if ($candidate = get_record_by_id($match->record_type, $match->record_id)) {
+                $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
+                if ($type == 'Collection') {
+                    $results[] = $candidate;
+                }
             }
         }
         return $results;
@@ -220,10 +227,11 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         );
         $results = array();
         foreach ($matches as $match) {
-            $candidate = get_record_by_id($match->record_type, $match->record_id);
-            $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
-            if ($type != 'Collection' && $type != 'None') {
-                $results[] = $candidate;
+            if ($candidate = get_record_by_id($match->record_type, $match->record_id)) {
+                $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
+                if ($type != 'Collection' && $type != 'None') {
+                    $results[] = $candidate;
+                }
             }
         }
         return $results;
@@ -246,8 +254,12 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         );
         $results = array();
         foreach ($matches as $match) {
-            $candidate = get_record_by_id($match->record_type, $match->record_id);
-            $results[] = $candidate;
+            if ($candidate = get_record_by_id($match->record_type, $match->record_id)) {
+                $type = raw_iiif_metadata($candidate, 'iiifitems_collection_type_element');
+                if ($type != 'None') {
+                    $results[] = $candidate;
+                }
+            }
         }
         return $results;
     }
@@ -268,6 +280,28 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         $select = $elementTextTable->getSelectForCount()
                 ->where('element_texts.element_id = ?', get_option('iiifitems_collection_parent_element'))
                 ->where('element_texts.text = ?', $myUuid);
+        return $db->fetchOne($select);
+    }
+    
+    /**
+     * Returns the number of annotations among submembers of the given collection-type collection.
+     * 
+     * @param Collection $collection
+     */
+    public static function countAnnotationsFor($collection) {
+        $db = get_db();
+        $itemTable = $db->getTable('Item');
+        $select = $itemTable->getSelectForCount();
+        $collectionIds = IiifItems_Util_CollectionOptions::getFullSubmemberIdArray($collection);
+        $collectionIds[] = $collection->id;
+        $attachedToElementId = (int) get_option('iiifitems_annotation_on_element');
+        $uuidElementId = (int) get_option('iiifitems_item_uuid_element');
+        $select->where('items.item_type_id = ?', array(get_option('iiifitems_annotation_item_type')));
+        $select->joinLeft(array('iiif_catalogue_collections' => $db->Collection), 'items.collection_id = iiif_catalogue_collections.id', array());
+        $select->joinLeft(array('iiif_anno_attachment1_metadata' => $db->ElementText), "iiif_anno_attachment1_metadata.element_id = ${attachedToElementId} AND iiif_anno_attachment1_metadata.record_type = 'Item' AND iiif_anno_attachment1_metadata.record_id = items.id", array('text'));
+        $select->joinLeft(array('iiif_anno_attachment2_metadata' => $db->ElementText), "iiif_anno_attachment2_metadata.element_id = ${uuidElementId} AND iiif_anno_attachment2_metadata.record_type = 'Item' AND iiif_anno_attachment2_metadata.text = iiif_anno_attachment1_metadata.text", array('record_id'));
+        $select->joinLeft(array('iiif_attached_items' => $db->Item), "iiif_attached_items.id = iiif_anno_attachment2_metadata.record_id", array('collection_id'));
+        $select->where('iiif_catalogue_collections.id IN (?) OR iiif_attached_items.collection_id IN (?)', array($collectionIds, $collectionIds));
         return $db->fetchOne($select);
     }
     
@@ -317,7 +351,7 @@ class IiifItems_Util_Collection extends IiifItems_IiifUtil {
         $typeElement = get_option('iiifitems_collection_type_element');
         $collectionsSelect->joinLeft(array('element_textsA' => $db->ElementText), "element_textsA.record_id = collections.id AND element_textsA.record_type = 'Collection' AND element_textsA.element_id = {$typeElement}", array('text'));
         $collectionsSelect->joinLeft(array('element_textsB' => $db->ElementText), "element_textsB.record_id = collections.id AND element_textsB.record_type = 'Collection' AND element_textsB.element_id = {$parentUuidElement}", array('text'));
-        $collectionsSelect->where("element_textsA.text != 'Collection'");
+        $collectionsSelect->where("element_textsA.text NOT IN ('Collection', 'None') OR element_textsA.text IS NULL");
         $collectionsSelect->where("element_textsB.text IS NULL OR element_textsB.text = ''");
         $collectionsTable->applySorting($collectionsSelect, 'Dublin Core,Title', 'ASC');
         return $collectionsTable->fetchObjects($collectionsSelect);

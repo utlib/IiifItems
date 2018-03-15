@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Controller for pages in the IIIF Items admin menu
+ * Controller for pages in the IIIF Toolkit admin menu
  * @package controllers
  */
 class IiifItems_ImportController extends IiifItems_BaseController {
@@ -13,8 +13,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      * @throws Omeka_Controller_Exception_404
      */
     public function formAction() {
-        // Admins only
-        if (!is_admin_theme()) {
+        // Qualified admins only
+        if (!is_admin_theme() || current_user()->role == 'researcher') {
             throw new Omeka_Controller_Exception_404;
         }
         
@@ -39,24 +39,49 @@ class IiifItems_ImportController extends IiifItems_BaseController {
     protected function processSubmission() {
         try {
             $form = $this->_getImportForm();
+            $currentUser = current_user();
             // Check CSRF token
             if (!$form->isValid($this->getRequest()->getPost())) {
                 $this->_helper->flashMessenger(__('Invalid CSRF token. Please refresh the form and retry.'), 'error');
+                return false;
+            }
+            // Check parent
+            $parentUuid = $form->getValue('items_import_to_parent');
+            $parentCollection = find_collection_by_uuid($parentUuid);
+            if ($parentUuid && !$parentCollection) {
+                $this->_helper->flashMessenger(__('Inaccessible parent.'), 'error');
+                return false;
+            }
+            if ($currentUser->role == 'contributor' && $parentUuid && $parentCollection->owner_id != $currentUser->id) {
+                $this->_helper->flashMessenger(__("You may not import into another user's collections as a contributor."), 'error');
                 return false;
             }
             // Grab and verify the submitted source
             switch ($form->getValue('items_import_type')) {
                 case 0:
                     $importType = 'Collection';
+                    if ($parentUuid && !IiifItems_Util_Collection::isCollection($parentCollection)) {
+                        $this->_helper->flashMessenger(__('Only collections can be the parent of a collection.'), 'error');
+                        return false;
+                    }
                 break;
                 case 1:
                     $importType = 'Manifest';
+                    if ($parentUuid && !IiifItems_Util_Collection::isCollection($parentCollection)) {
+                        $this->_helper->flashMessenger(__('Only collections can be the parent of a manifest.'), 'error');
+                        return false;
+                    }
                 break;
                 case 2:
                     $importType = 'Canvas';
+                    if ($parentUuid && !IiifItems_Util_Manifest::isManifest($parentCollection)) {
+                        $this->_helper->flashMessenger(__('Only manifests can be the parent of a canvas.'), 'error');
+                        return false;
+                    }
                 break;
                 default:
                     $this->_helper->flashMessenger(__('Invalid import type.'), 'error');
+                    return false;
                 break;
             }
             switch ($form->getValue('items_import_source')) {
@@ -83,13 +108,33 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             }
             switch ($form->getValue('items_preview_size')) {
                 case 0:
-                    $importPreviewSize = 96;
+                    $importPreviewSize = null;
                 break;
                 case 1:
-                    $importPreviewSize = 512;
+                    $importPreviewSize = 96;
                 break;
                 case 2:
+                    $importPreviewSize = 512;
+                break;
+                case 3:
                     $importPreviewSize = 'full';
+                break;
+                default:
+                    $this->_helper->flashMessenger(__('Invalid import source.'), 'error');
+                break;
+            }
+            switch ($form->getValue('items_annotation_size')) {
+                case 0:
+                    $annoPreviewSize = null;
+                break;
+                case 1:
+                    $annoPreviewSize = 96;
+                break;
+                case 2:
+                    $annoPreviewSize = 512;
+                break;
+                case 3:
+                    $annoPreviewSize = 'full';
                 break;
                 default:
                     $this->_helper->flashMessenger(__('Invalid import source.'), 'error');
@@ -102,8 +147,9 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 'importSource' => $importSource,
                 'importSourceBody' => $importSourceBody,
                 'importPreviewSize' => $importPreviewSize,
+                'importAnnoSize' => $annoPreviewSize,
                 'isReversed' => $form->getValue('items_are_reversed') ? 1 : 0,
-                'parent' => $form->getValue('items_import_to_parent'),
+                'parent' => $parentUuid,
             ));
             // OK
             return true;
@@ -137,14 +183,14 @@ class IiifItems_ImportController extends IiifItems_BaseController {
     }
     
     /**
-     * Renders a table of job statuses related to IIIF Items.
+     * Renders a table of job statuses related to IIIF Toolkit.
      * GET iiif-items/status
      * 
      * @throws Omeka_Controller_Exception_404
      */
     public function statusAction() {
-        // Admins only
-        if (!is_admin_theme()) {
+        // Qualified admins only
+        if (!is_admin_theme() || current_user()->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
         // Select all jobs
@@ -163,6 +209,11 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      * @throws Omeka_Controller_Exception_404
      */
     public function statusUpdateAction() {
+        // Qualified admins only
+        if (!is_admin_theme() || current_user()->role == 'researcher') {
+            throw new Omeka_Controller_Exception_404();
+        }
+        
         if (!isset($_GET['t'])) {
             throw new Omeka_Controller_Exception_404();
         }
@@ -192,8 +243,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      * @throws Omeka_Controller_Exception_404
      */
     public function repairItemAction() {
-        // Admins only via POST
-        if (!is_admin_theme()) {
+        // Qualified admins only via POST
+        if (!is_admin_theme() || current_user()->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
         $request = $this->getRequest();
@@ -215,17 +266,36 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         }
         // If no JSON Data, redirect back
         if (!($jsonStr = raw_iiif_metadata($item, 'iiifitems_item_json_element'))) {
-            $this->_helper->flashMessenger(__("This item does not seem to be imported using IIIF Items."));
+            $this->_helper->flashMessenger(__("This item does not seem to be imported using IIIF Toolkit."));
             Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($returnUrl);
             return;
         }
         // Try to repair item
         $originalFiles = $item->getFiles();
         try {
-            $jsonData = json_decode($jsonStr, true);
-            foreach ($jsonData['images'] as $image) { 
-                $downloader = new IiifItems_ImageDownloader($image);
-                $file = $downloader->downloadToItem($item, 'full');
+            // Annotation item
+            if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
+                if ($xywhBounds = IiifItems_Util_Annotation::getAnnotationXywh($item, true)) {
+                    $attachedItem = IiifItems_Util_Annotation::findAnnotatedItemFor($item);
+                    foreach ($xywhBounds as $xywhBound) {
+                        $addAnnotationThumbnailJob = new IiifItems_Job_AddAnnotationThumbnail(array(
+                            'originalItemId' => $attachedItem->id,
+                            'annotationItemId' => $item->id,
+                            'dims' => $xywhBound,
+                        ));
+                        $addAnnotationThumbnailJob->perform();
+                    }
+                } else {
+                    throw new Exception(__("No xywh bounds found on annotation."));
+                }
+            }
+            // Non-annotation item
+            else {
+                $jsonData = json_decode($jsonStr, true);
+                foreach ($jsonData['images'] as $image) { 
+                    $downloader = new IiifItems_ImageDownloader($image);
+                    $file = $downloader->downloadToItem($item, 'full');
+                }
             }
         } catch (Exception $ex) {
             $this->_helper->flashMessenger(__("Unable to repair item."));
@@ -246,10 +316,13 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      */
     public function maintenanceAction() {
         $this->__blockPublic();
+        if (current_user()->role == 'researcher') {
+            throw new Omeka_Controller_Exception_404();
+        }
     }
     
     /**
-     * Cleans cached data generated by the IIIF Items plugin.
+     * Cleans cached data generated by the IIIF Toolkit plugin.
      * Pass type=all, id=all to clear all cached data.
      * Pass record type and ID to clear cached data for that record
      * 
@@ -258,6 +331,9 @@ class IiifItems_ImportController extends IiifItems_BaseController {
     public function cleanCacheAction() {
         // Block unwanted people
         $this->__blockPublic();
+        if (current_user()->role == 'researcher') {
+            throw new Omeka_Controller_Exception_404();
+        }
         $this->__restrictVerb('POST');
         
         // Set up request
@@ -309,6 +385,6 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         }
         
         // Fail
-        $this->_helper->flashMessenger("Failed to purge JSON cache");
+        $this->_helper->flashMessenger(__("Failed to purge JSON cache"));
     }
 }

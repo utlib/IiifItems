@@ -5,6 +5,8 @@
             token:     null,
             prefix:    null,
             dfd:       null,
+            admin:     false,
+            userId:    null,
             annotationsList: [],        
             windowID: null,
             eventEmitter: null
@@ -111,14 +113,18 @@
             var _this = this;
             
             // Pull the bounds for the SVG selector
-            var div = document.createElement('div');
-            div.setAttribute('style', 'position:absolute;right:-10000px;bottom:-10000px;')
-            document.body.appendChild(div);
-            div.innerHTML = oaAnnotation.on.selector.value;
-            var svgElement = div.firstChild;
-            var bbox = svgElement.getBBox();
-            oaAnnotation._dims = [Math.round(bbox.x), Math.round(bbox.y), Math.round(bbox.width), Math.round(bbox.height)];
-            document.body.removeChild(document.body.lastChild);
+            // Mirador 2.2-: Pull from oaAnnotation.on.selector.value and add _dims
+            if (typeof oaAnnotation.on === 'object' && oaAnnotation.on.hasOwnProperty('selector') && oaAnnotation.on.selector.hasOwnProperty('value')) {
+                // Pull the bounds for the SVG selector
+                var div = document.createElement('div');
+                div.setAttribute('style', 'position:absolute;right:-10000px;bottom:-10000px;');
+                document.body.appendChild(div);
+                div.innerHTML = oaAnnotation.on.selector.value;
+                var svgElement = div.firstChild;
+                var bbox = svgElement.getBBox();
+                oaAnnotation._dims = [Math.round(bbox.x), Math.round(bbox.y), Math.round(bbox.width), Math.round(bbox.height)];
+                document.body.removeChild(document.body.lastChild);
+            }
 
             jQuery.ajax({
                 url: this.prefix,
@@ -151,7 +157,7 @@
         },
 
         userAuthorize: function(action, annotation) {
-            return true;
+            return this.admin || (annotation._iiifitems_access.owner == this.userId);
         }
     };
 }(Mirador));

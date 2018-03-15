@@ -44,15 +44,10 @@ class IiifItems_Form_Import extends Omeka_Form {
         $this->addElement('textarea', 'items_import_source_json', array(
             'label' => __('JSON Data'),
         ));
-        // Import Depth (Link Only/File Only/Full)
-//        $this->addElement('radio', 'items_import_depth', array(
-//            'label' => __('Import Depth'),
-//            'multiOptions' => array('Full', 'Link Only'),
-//        ));
         // Parent
         $this->addElement('select', 'items_import_to_parent', array(
             'label' => __('Parent'),
-            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(),
+            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(null, (current_user()->role == 'contributor') ? current_user() : null),
         ));
         // Set to Public?
         $this->addElement('checkbox', 'items_are_public', array(
@@ -79,7 +74,12 @@ class IiifItems_Form_Import extends Omeka_Form {
         // Local Preview Size 
         $this->addElement('radio', 'items_preview_size', array(
             'label' => __('Local Preview Size'),
-            'multiOptions' => array('96x96', '512x512', 'Maximum'),
+            'multiOptions' => array('None', '96x96', '512x512', 'Maximum'),
+        ));
+        // Annotation Preview Size
+        $this->addElement('radio', 'items_annotation_size', array(
+            'label' => __('Annotation Preview Size'),
+            'multiOptions' => array('None', '96x96', '512x512', 'Maximum'),
         ));
         // Submit button
         $submit = $this->createElement('submit', 'submit', array(

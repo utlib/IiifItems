@@ -35,7 +35,7 @@ class IiifItems_Job_RemoveSubannotations extends Omeka_Job_AbstractJob {
                 $annoItem->delete();
             }
         } catch (Exception $e) {
-            debug("Error in RemoveSubannotations job: " . $e->getTraceAsString());
+            debug(__("Error in RemoveSubannotations job: %s", $e->getTraceAsString()));
         }
     }
 }

@@ -1,10 +1,8 @@
-<?php
-$item_ids = array();
-foreach ($attachments as $attachment) {
-    $item_ids[] = $attachment->item_id;
-}
-?>
+<?php if (!empty($attachments)): ?>
 
 <div class="mirador-item">
-    <iframe src="<?php echo public_full_url(array(), 'iiifitems_exhibit_mirador', array('items' => join(',', $item_ids))); ?>"></iframe>
+    <iframe src="<?php echo public_full_url(array('things' => 'exhibit_page_blocks', 'id' => $attachments[0]->block_id), 'iiifitems_mirador'); ?>" allowfullscreen="allowfullscreen"></iframe>
+    <p><?php echo $text; ?></p>
 </div>
+
+<?php endif; ?>

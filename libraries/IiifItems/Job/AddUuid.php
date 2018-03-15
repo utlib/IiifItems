@@ -67,12 +67,13 @@ class IiifItems_Job_AddUuid extends Omeka_Job_AbstractJob {
         // For each batch of 100
         $page = 1;
         $table = get_db()->getTable($type);
+        debug($type);
         $element = get_db()->getTable('Element')->findByElementSetNameAndElementName('IIIF ' . $type . ' Metadata', 'UUID');
         while ($batch = $table->findBy(array(), $this->batchSize, $page++)) {
             // For each record in the batch
             foreach ($batch as $record) {
                 // If its UUID metadata field is empty
-                if (!metadata($record, array('IIIF ' . $type . ' Metadata', 'UUID'))) {
+                if (!metadata($record, array('IIIF ' . $type . ' Metadata', 'UUID'), array('no_filter' => true, 'no_escape' => true))) {
                     // Generate a UUID
                     $uuid = generate_uuid();
                     // Set its UUID metadata field to the generated UUID

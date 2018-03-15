@@ -121,7 +121,7 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
                 $currentCollection = IiifItems_Util_Collection::findParentFor($thing);
                 break;
             default:
-                throw new InvalidArgumentException('Thing must be an Item or Collection.');
+                throw new InvalidArgumentException(__('Thing must be an Item or Collection.'));
         }
         while ($currentCollection) {
             $path[] = $currentCollection;
@@ -133,16 +133,28 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
     /**
      * Convert a raw tree array to an options array used in form helpers
      * @param array $hierarchy Raw tree array of entries [collection, title, depth]
-     * @return array Form helper options array with value => label mappings
+     * @param User|null $contributor Return an option that applies to the given contributor User, if provided.
+     * @param bool $idValue (optional) Return an option that uses ID numbers instead of UUIDs for values.
+     * @return array Form helper options array
      */
-    protected static function _hierarchyToOptions($hierarchy) {
+    protected static function _hierarchyToOptions($hierarchy, $contributor=null, $idValue=false) {
         // Get flat hierarchy
-        $options = array('' => 'No Parent');
+        $options = array('' => __('No Parent'));
+        $disables = array();
         // Repeat over flat hierarchy
-        foreach ($hierarchy as $entry) {
+        foreach ($hierarchy as $i => $entry) {
             // Add option with indent
-            $options[raw_iiif_metadata($entry[0], 'iiifitems_collection_uuid_element')] = str_repeat("----", $entry[2]) . $entry[1];
+            $label = str_repeat("----", $entry[2]) . $entry[1];
+            $value = $idValue ? $entry[0]->id : raw_iiif_metadata($entry[0], 'iiifitems_collection_uuid_element');
+            $options[$value] = $label;
+            if ($contributor !== null && $entry[0]->owner_id != $contributor->id) {
+                $disables[] = $i;
+            }
         // End: Repeat over flat hierarchy
+        }
+        // Add disable options
+        if ($disables) {
+            $options[] = array('disable' => $disables);
         }
         // Return options
         return $options;
@@ -180,19 +192,31 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
     /**
      * Return form helper options array for all collections, in tree-like form.
      * @param boolean|null $isPublic
+     * @param User|null $contributor Return an option that applies to the given contributor User, if provided.
      * @return array
      */
-    public static function getCollectionOptions($isPublic=null) {
-        return self::_hierarchyToOptions(self::_collectionHierarchy($isPublic));
+    public static function getCollectionOptions($isPublic=null, $contributor=null) {
+        return self::_hierarchyToOptions(self::_collectionHierarchy($isPublic, $contributor));
     }
     
     /**
      * Return form helper options array for all collections and manifests, in tree-like form.
      * @param boolean|null $isPublic
+     * @param User|null $contributor Return an option that applies to the given contributor User, if provided.
      * @return array
      */
-    public static function getFullOptions($isPublic=null) {
-        return self::_hierarchyToOptions(self::_fullHierarchy($isPublic));
+    public static function getFullOptions($isPublic=null, $contributor=null) {
+        return self::_hierarchyToOptions(self::_fullHierarchy($isPublic, $contributor));
+    }
+    
+    /**
+     * Return form helper options array for all collections and manifests, in tree-like form. Uses ID-based values instead of UUID values.
+     * @param boolean|null $isPublic
+     * @param User|null $contributor Return an option that applies to the given contributor User, if provided.
+     * @return array
+     */
+    public static function getFullIdOptions($isPublic=null, $contributor=null) {
+        return self::_hierarchyToOptions(self::_fullHierarchy($isPublic, $contributor), $contributor, true);
     }
     
     /**
@@ -281,8 +305,23 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
             $first = false;
         }
         if ($includeTop) {
-            $breadcrumbString = '<a href="' . url(array('id' => $thing->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">Top</a> &raquo; ' . $breadcrumbString;
+            $breadcrumbString = '<a href="' . url(array('id' => $thing->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '">' . __('Top') . '</a> &raquo; ' . $breadcrumbString;
         }
         return $breadcrumbString;
+    }
+    
+    /**
+     * Return an array of IDs. For use with submember search.
+     * @param Collection $parent
+     * @param bool $isPublic
+     * @return int[]
+     */
+    public static function getFullSubmemberIdArray($parent=null, $isPublic=null) {
+        $fullHierarchy = self::_fullHierarchy($isPublic, $parent);
+        $idArray = array();
+        foreach ($fullHierarchy as $entry) {
+            $idArray[] = $entry[0]->id;
+        }
+        return $idArray;
     }
 }

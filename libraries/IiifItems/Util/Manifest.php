@@ -46,26 +46,22 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
     /**
      * Return the IIIF Presentation API manifest representation of the Omeka collection
      * @param Collection $collection
+     * @param boolean $bare Whether to exclude the annotation list references
      * @return array
      */
-    public static function buildManifest($collection) {
+    public static function buildManifest($collection, $bare=false) {
         // Set default IDs and titles
         $atId = public_full_url(array('things' => 'collections', 'id' => $collection->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
         $seqId = public_full_url(array('things' => 'collections', 'id' => $collection->id, 'typeext' => 'sequence.json'), 'iiifitems_oa_uri');
         $label = metadata($collection, array('Dublin Core', 'Title'), array('no_escape' => true));
-        // Do it only for manifests
+        // Do it only for manifests with appropriate authorization
         if (self::isManifest($collection)) {
-            // Admin-side: Try to find cached admin-side manifest for the annotator
-            if (is_admin_theme()) {
-                if ($json = get_cached_iiifitems_value_for($collection, 'admin_manifest')) {
-                    return $json;
-                }
-            }
-            // Public-side: Try to find cached public manifest for the viewer
-            else {
-                if ($json = get_cached_iiifitems_value_for($collection)) {
-                    return $json;
-                }
+            // Decide which cache entry to consider
+            $cacheEntryName = $bare ? 'private_bare_manifest' : (
+                current_user() ? 'private_manifest' : 'public_manifest'
+            );
+            if ($json = get_cached_iiifitems_value_for($collection, $cacheEntryName)) {
+                return $json;
             }
             // Try to find template; if it does not already exist, use the blank template
             if (!($json = parent::fetchJsonData($collection))) {
@@ -77,11 +73,7 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
             $json['sequences'][0]['canvases'] = self::findCanvasesFor($collection);
             parent::addDublinCoreMetadata($json, $collection);
             // Cache accordingly
-            if (is_admin_theme()) {
-                cache_iiifitems_value_for($collection, $json, 'admin_manifest');
-            } else {
-                cache_iiifitems_value_for($collection, $json);
-            }
+            cache_iiifitems_value_for($collection, $json, $cacheEntryName);
             // Done
             return $json;
         }
@@ -138,6 +130,39 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
         // Done
         return $json;
     }
+    
+    /**
+     * Return the IIIF Presentation API manifest representation of the exhibit block's attached items
+     * @param ExhibitPageBlock $block
+     * @return array
+     */
+    public static function buildExhibitPageBlockManifest($block) {
+        // Set default IDs and titles
+        $atId = public_full_url(array('things' => 'exhibit_page_blocks', 'id' => $block->id, 'typeext' => 'manifest.json'), 'iiifitems_oa_uri');
+        $seqId = public_full_url(array('things' => 'exhibit_page_blocks', 'id' => $block->id, 'typeext' => 'sequence.json'), 'iiifitems_oa_uri');
+        $label = $block->getPage()->title;
+        // Find attached items in order
+        $canvases = array();
+        foreach ($block->getAttachments() as $attachment) {
+            if ($item = $attachment->getItem()) {
+                // If it is an annotation, use the special annotation canvas utility
+                if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
+                    $canvases[] = IiifItems_Util_Canvas::buildAnnotationCanvas($item);
+                }
+                // Otherwise, use the standard item-to-canvas utility
+                else {
+                    $canvases[] = IiifItems_Util_Canvas::buildCanvas($item);
+                }
+            }
+        }
+        // Generate from template
+        $json = self::blankTemplate($atId, $seqId, $label, $canvases);
+        if ($block->text) {
+            $json['description'] = $block->text;
+        }
+        // Done
+        return $json;
+    }
 
     /**
      * Return the parent collection of this collection (Collection or Manifest type)
@@ -160,7 +185,9 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
     public static function findCanvasesFor($collection) {
         $canvases = array();
         foreach (get_db()->getTable('Item')->findBy(array('collection' => $collection)) as $item) {
-            $canvases[] = IiifItems_Util_Canvas::buildCanvas($item);
+            if (raw_iiif_metadata($item, 'iiifitems_item_display_element') != 'Never') {
+                $canvases[] = IiifItems_Util_Canvas::buildCanvas($item);
+            }
         }
         return $canvases;
     }
@@ -195,7 +222,7 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
             $iiifMetadataSlug = 'iiifitems_collection_type_element';
             $iiifTypeText = raw_iiif_metadata($collection, $iiifMetadataSlug);
             if ($iiifTypeText) {
-                return $iiifTypeText == 'Manifest';
+                return $iiifTypeText != 'Collection' && $iiifTypeText != 'Hidden';
             }
         } catch (Exception $ex) {
         }

@@ -1,6 +1,6 @@
 <?php
 echo head(array(
-    'title' => __('IIIF Items'),
+    'title' => __('IIIF Toolkit'),
 ));
 include __DIR__ . '/_nav.php';
 ?>

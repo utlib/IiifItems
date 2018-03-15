@@ -1,7 +1,8 @@
 <?php
     $mirador_path = get_option('iiifitems_mirador_path');
-    $urlJs = $mirador_path . '/mirador.js';
-    $urlCss = $mirador_path . '/css/mirador-combined.css';
+    $css_path = get_option('iiifitems_mirador_css');
+    $urlJs = $mirador_path . '/' . get_option('iiifitems_mirador_js');
+    $urlCss = (strpos($css_path, 'http://') === 0 || strpos($css_path, 'https://') === 0) ? $css_path : ($mirador_path . '/' . $css_path);
 ?>
 <!DOCTYPE html>
 <head>
@@ -9,7 +10,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="stylesheet" type="text/css" href="<?php echo html_escape($urlCss); ?>">
     <style type="text/css">
-        body { padding: 0; margin: 0; overflow: hidden; font-size: 70%; }
+        body { padding: 0; margin: 0; overflow: hidden; }
         #viewer { background: #333; width: 100%; height: 100%; position: fixed; }
     </style>
 </head>
@@ -22,6 +23,7 @@
         Mirador({
             "id": "viewer",
             "buildPath": "<?php echo html_escape($mirador_path) . '/'; ?>",
+            "language": "<?php echo str_replace('_', '-', Zend_Registry::get('bootstrap')->getResource('Locale')->toString()); ?>",
             "layout": "1",
             "data": [
                 <?php if ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) : ?>
@@ -48,6 +50,9 @@
 //                    }
 //                }
             ?>
+            <?php if ($type == 'collections' && IiifItems_Util_Collection::isCollection($thing)) : ?>
+            "openManifestsPage": true,
+            <?php else: ?>
             "windowObjects": [{
                 imageMode: "ImageView",
                 loadedManifest: "<?php echo $defaultManifest; ?>",
@@ -57,6 +62,7 @@
                 sidePanel: true,
                 annotationLayer: true
             }],
+            <?php endif; ?>
             "windowSettings": {
                 canvasControls: {
                     annotations: {
@@ -65,21 +71,17 @@
                         annotationRefresh: true
                     }
                 },
-                sidePanelVisible: false
+                bottomPanelVisible: false,
+                sidePanelVisible: false,
+                sidePanelOptions: {
+                    searchTabAvailable: true
+                }
             },
             "autoHideControls": false,
             "mainMenuSettings": {
                 show: false
             }
         });
-        <?php if ($type == 'collections' && IiifItems_Util_Collection::isCollection($thing)) : ?>
-        var interval = setInterval(function() {
-            if ($('.addItemLink:first').length > 0) {
-                $('.addItemLink:first').click();
-                clearInterval(interval);
-            }
-        }, 100);
-        <?php endif; ?>
     });
     </script>
 </body>

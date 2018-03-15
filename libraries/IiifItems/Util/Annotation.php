@@ -70,7 +70,6 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
      */
     public static function buildList($item) {
         $atId = public_full_url(array('things' => 'items', 'id' => $item->id, 'typeext' => 'annolist.json'), 'iiifitems_oa_uri');
-        $annotations = array();
         if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
             return self::blankListTemplate($atId, array(self::buildAnnotation($item)));
         } else {
@@ -81,23 +80,19 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
     /**
      * Convert an annotation item to JSON object form
      * @param Item $annoItem An annotation-type item
+     * @param string $forcedXywhMode ""=Default behaviour, "skip"=Force 0,0,0,0 if annotation has no xywh, "fill"=Force 0,0,width,height if annotation has no xywh
      * @return array
      */
-    public static function buildAnnotation($annoItem) {
+    public static function buildAnnotation($annoItem, $forcedXywhMode='') {
         $elementTextTable = get_db()->getTable('ElementText');
         $currentAnnotationJson = json_decode($elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
             get_option('iiifitems_item_json_element'),
             $annoItem->id,
-        ))[0], true);
+        ), true), true);
         $currentText = $elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
             get_option('iiifitems_annotation_text_element'),
             $annoItem->id,
-        ));
-        if ($currentText) {
-            $currentText = $currentText[0];
-        } else {
-            $currentText = "";
-        }
+        ), true);
         $currentAnnotationJson['resource'] = array(
             array(
                 '@type' => 'dctypes:Text',
@@ -111,15 +106,118 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
                 'chars' => $tag->name,
             );
         }
+        if ($attachedItem = IiifItems_Util_Annotation::findAnnotatedItemFor($annoItem)) {
+            if (!($canvasId = raw_iiif_metadata($attachedItem, 'iiifitems_item_atid_element'))) {
+                $canvasId = public_full_url(array('things' => 'items', 'id' => $attachedItem->id, 'typeext' => 'canvas.json'), 'iiifitems_oa_uri');
+            }
+            $svgSelectors = self::getAnnotationSvg($annoItem);
+            $xywhSelectors = self::getAnnotationXywh($annoItem);
+            $svgSelector = empty($svgSelectors) ? null : $svgSelectors[0];
+            $xywhSelector = empty($xywhSelectors) ? null : $xywhSelectors[0];
+            if ($svgSelector || $xywhSelector) {
+                unset($currentAnnotationJson['on']);
+                // Forced xywh-only format
+                if ($forcedXywhMode) {
+                    if ($xywhSelector) {
+                        $currentAnnotationJson['on'] = $canvasId . '#xywh=' . $xywhSelector;
+                    } else {
+                        $itemCanvas = IiifItems_Util_Canvas::buildCanvas($attachedItem, '', false);
+                        if ($forcedXywhMode == 'fill') {
+                            $currentAnnotationJson['on'] = $canvasId . '#xywh=0,0,' . $itemCanvas['width'] . ',' . $itemCanvas['height'];
+                        } else {
+                            $currentAnnotationJson['on'] = $canvasId . '#xywh=0,0,0,0';
+                        }
+                    }
+                    $currentAnnotationJson['resource'] = array(
+                        '@type' => 'cnt:ContentAsText',
+                        'chars' => $currentText->text,
+                    );
+                }
+                // Non-forced format
+                else {
+                    // Mirador 2.3+ format
+                    if ($svgSelector && $xywhSelector) {
+                        $currentAnnotationJson['on'] = array();
+                        $areas = min(count($svgSelectors), count($xywhSelectors));
+                        for ($i = 0; $i < $areas; $i++) {
+                            $currentAnnotationJson['on'][] = array(
+                                '@type' => 'oa:SpecificResource',
+                                'full' => $canvasId,
+                                'selector' => array(
+                                    '@type' => 'oa:Choice',
+                                    'default' => array(
+                                        '@type' => 'oa:FragmentSelector',
+                                        'value' => 'xywh=' . $xywhSelectors[$i],
+                                    ),
+                                    'item' => array(
+                                        '@type' => 'oa:SvgSelector',
+                                        'value' => $svgSelectors[$i],
+                                    ),
+                                ),
+                            );
+                        }
+                    }
+                    // xywh-only format
+                    elseif ($xywhSelector) {
+                        $currentAnnotationJson['on'] = $canvasId . '#xywh=' . $xywhSelector;
+                    }
+                    // Mirador 2.2- format
+                    else {
+                        $currentAnnotationJson['on'] = array(
+                            '@type' => 'oa:SpecificResource',
+                            'full' => $canvasId,
+                            'selector' => array(
+                                '@type' => 'oa:SvgSelector',
+                                'value' => $svgSelector,
+                            ),
+                        );
+                    }
+                }
+            }
+        }
         return $currentAnnotationJson;
     }
     
     /**
+     * Return the SVG selectors of the given annotation-type item.
+     * @param Item $annoItem The annotation-type item
+     * @return string[]
+     */
+    public static function getAnnotationSvg($annoItem) {
+        $svgTexts = get_db()->getTable('ElementText')->findBySql("element_texts.record_id = ? AND element_texts.record_type = 'Item' AND element_texts.element_id = ?", array($annoItem->id, get_option('iiifitems_annotation_selector_element')));
+        $svgs = array();
+        foreach ($svgTexts as $svgText) {
+            $svgs[] = $svgText->text;
+        }
+        return $svgs;
+    }
+    
+    /**
+     * Return the xywh regions of the given annotation-type item.
+     * @param Item $annoItem The annotation-type item
+     * @param boolean $arrayForm Whether to return results as an array of strings (false, default) or of 4-entry arrays (true)
+     * @return string[]|array[] 
+     */
+    public static function getAnnotationXywh($annoItem, $arrayForm=false) {
+        $xywhTexts = get_db()->getTable('ElementText')->findBySql("element_texts.record_id = ? AND element_texts.record_type = 'Item' AND element_texts.element_id = ?", array($annoItem->id, get_option('iiifitems_annotation_xywh_element')));
+        $xywhs = array();
+        foreach ($xywhTexts as $xywhText) {
+            if ($arrayForm) {
+                $xywhs[] = explode(',', $xywhText->text);
+            } else {
+                $xywhs[] = $xywhText->text;
+            }
+        }
+        return $xywhs;
+    }
+    
+    /**
      * Return an array of annotations for an item, as JSON objects.
-     * @param type $item
+     * @param Item $item
+     * @param boolean $withAccess Whether to attach access permission info
      * @return array
      */
-    public static function findAnnotationsFor($item) {
+    public static function findAnnotationsFor($item, $withAccess=false) {
         if ($item->item_type_id == get_option('iiifitems_annotation_item_type')) {
             return $item;
         }
@@ -139,14 +237,12 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
             $currentAnnotationJson = json_decode($elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
                 get_option('iiifitems_item_json_element'),
                 $onCanvasMatch->record_id,
-            ))[0], true);
+            ), true)->text, true);
             $currentText = $elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
                 get_option('iiifitems_annotation_text_element'),
                 $onCanvasMatch->record_id,
-            ));
-            if ($currentText) {
-                $currentText = $currentText[0];
-            } else {
+            ), true);
+            if (!$currentText) {
                 continue;
             }
             $currentAnnotationJson['resource'] = array(
@@ -156,13 +252,22 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
                     'chars' => $currentText->text,
                 ),
             );
-            foreach (get_record_by_id('Item', $onCanvasMatch->record_id)->getTags() as $tag) {
-                $currentAnnotationJson['resource'][] = array(
-                    '@type' => 'oa:Tag',
-                    'chars' => $tag->name,
-                );
+            if ($matchedItem = get_record_by_id('Item', $onCanvasMatch->record_id)) {
+                foreach ($matchedItem->getTags() as $tag) {
+                    $currentAnnotationJson['resource'][] = array(
+                        '@type' => 'oa:Tag',
+                        'chars' => $tag->name,
+                    );
+                }
+                if ($withAccess) {
+                    $currentAnnotationJson['_iiifitems_access'] = array(
+                        'public' => $matchedItem->public,
+                        'featured' => $matchedItem->featured,
+                        'owner' => $matchedItem->owner_id,
+                    );
+                }
+                $annoItems[] = $currentAnnotationJson;
             }
-            $annoItems[] = $currentAnnotationJson;
         }
         return $annoItems;
     }
@@ -300,7 +405,6 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
             break;
             case 'Item':
                 return $context;
-            break;
         }
         return null;
     }
@@ -315,7 +419,7 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
         $theItemCanvasIdText = get_db()->getTable('ElementText')->findBySql("element_texts.element_id = ? AND element_texts.text = ? AND element_texts.record_type = 'Item' ", array(
             get_option('iiifitems_item_uuid_element'),
             $uuid,
-        ))[0];
+        ), true);
         $theItem = get_record_by_id('Item', $theItemCanvasIdText->record_id);
         return $theItem;
     }

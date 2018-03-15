@@ -5,7 +5,7 @@
  * @package controllers
  */
 class IiifItems_MiradorController extends IiifItems_BaseController {
-    protected static $allowedThings = array('Collection', 'Item', 'File');
+    protected static $allowedThings = array('Collection', 'Item', 'File', 'ExhibitPageBlock');
     
     /**
      * Renders a Mirador viewer for the given collection, item or file.
@@ -15,7 +15,7 @@ class IiifItems_MiradorController extends IiifItems_BaseController {
      */
     public function viewerAction() {
         $type = $this->getParam('things');
-        $class = Inflector::titleize(Inflector::singularize($type));
+        $class = Inflector::camelize(Inflector::singularize($type));
         if (!in_array($class, self::$allowedThings)) {
             throw new Omeka_Controller_Exception_404;
         }
@@ -36,6 +36,15 @@ class IiifItems_MiradorController extends IiifItems_BaseController {
         $this->view->manifests = $this->getParam('u');
         $this->view->collections = $this->getParam('c');
         $this->view->popup = $this->getParam('p');
+    }
+    
+    /**
+     * Renders a minimal Mirador viewer for embedding in Neatline.
+     * 
+     * GET iiif-items/nlmirador/:id
+     */
+    public function neatlineAction() {
+        $this->view->itemId = $this->getParam('id');
     }
     
     /**

@@ -75,8 +75,8 @@ function hook_expire_cache($args) {
  * @return string
  */
 function raw_iiif_metadata($record, $optionSlug) {
-    if ($elementText = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.record_type = ? AND element_texts.record_id = ?', array(get_option($optionSlug), get_class($record), $record->id))) {
-        return $elementText[0]->text;
+    if ($elementText = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.record_type = ? AND element_texts.record_id = ?', array(get_option($optionSlug), get_class($record), $record->id), true)) {
+        return $elementText->text;
     } else {
         return '';
     }
@@ -105,7 +105,7 @@ function clear_iiifitems_cache_values_for($record, $bubble=true) {
             break;
             case 'Collection':
                 if ($parentCollectionId = raw_iiif_metadata($record, 'iiifitems_collection_parent_element')) {
-                    if ($parentCollection = $db->getTable('Collection')->find($parentCollectionId)) {
+                    if ($parentCollection = IiifItems_Util_Collection::findParentFor($record)) {
                         clear_iiifitems_cache_values_for($parentCollection, false);
                     }
                 }
@@ -122,8 +122,8 @@ function clear_iiifitems_cache_values_for($record, $bubble=true) {
  * @return array|null
  */
 function get_cached_iiifitems_value_for($record, $url='') {
-    if ($entry = (get_db()->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url)))) {
-        return json_decode($entry[0]->data, true);
+    if ($entry = (get_db()->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url), true))) {
+        return json_decode($entry->data, true);
     } else {
         return null;
     }
@@ -140,9 +140,9 @@ function get_cached_iiifitems_value_for($record, $url='') {
 function cache_iiifitems_value_for($record, $jsonData, $url='') {
     $db = get_db();
     $jsonStr = json_encode($jsonData, JSON_UNESCAPED_SLASHES);
-    if ($cacheRecord = $db->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url))) {
-        $cacheRecord[0]->data = $jsonStr;
-        $cacheRecord[0]->save();
+    if ($cacheRecord = $db->getTable('IiifItems_CachedJsonData')->findBySql('record_id = ? AND record_type = ? AND url = ?', array($record->id, get_class($record), $url), true)) {
+        $cacheRecord->data = $jsonStr;
+        $cacheRecord->save();
     } else {
         $cacheRecordId = $db->insert('IiifItems_CachedJsonData', array(
             'record_id' => $record->id,
@@ -178,8 +178,8 @@ function generate_uuid() {
  */
 function find_item_by_uuid($uuid) {
     $db = get_db();
-    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_uuid_element'), $uuid))) {
-        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_uuid_element'), $uuid), true)) {
+        return get_record_by_id($matchingTexts->record_type, $matchingTexts->record_id);
     }
     return null;
 }
@@ -192,36 +192,66 @@ function find_item_by_uuid($uuid) {
  */
 function find_collection_by_uuid($uuid) {
     $db = get_db();
-    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_collection_uuid_element'), $uuid))) {
-        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_collection_uuid_element'), $uuid), true)) {
+        return get_record_by_id($matchingTexts->record_type, $matchingTexts->record_id);
     }
     return null;
 }
 
 /**
- * Returns the first Item with the given &#064;id, null if not found.
+ * Failsafe version of insert_element_set() that ignores "name must be unique" validation exceptions.
  * 
- * @param string $atid
- * @return Item|null
+ * @param array $elementSetMetadata
+ * @param array $elements
+ * @return ElementSet
+ * @throws InvalidArgumentException
  */
-function find_item_by_atid($atid) {
+function insert_element_set_failsafe($elementSetMetadata=array(), $elements=array()) {
     $db = get_db();
-    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $atid))) {
-        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    $elementSet = null;
+    if (is_string($elementSetMetadata)) {
+        $elementSet = $db->getTable('ElementSet')->findByName($elementSetMetadata);
+    } elseif (is_array($elementSetMetadata)) {
+        $elementSet = $db->getTable('ElementSet')->findByName($elementSetMetadata['name']);
+    } else {
+        throw new InvalidArgumentException(__("Wrong argument type for elementSetMetadata parameter."));
     }
-    return null;
+    if ($elementSet) {
+        foreach ($elements as $element) {
+            try {
+                $elementSet->addElements(array($element));
+                $elementSet->save();
+            } catch (Exception $ex) {
+                debug(__("Exception passed when adding element to new element set: %s", $ex->getMessage()));
+            }
+        }
+    } else {
+        $elementSet = insert_element_set($elementSetMetadata, $elements);
+    }
+    return $elementSet;
 }
 
 /**
- * Returns the first Collection with the given &#064;id, null if not found.
+ * Failsafe version of insert_item_type() that ignores "name must be unique" validation exceptions.
  * 
- * @param string $atid
- * @return Collection|null
+ * @param array $metadata
+ * @param array $elementInfos
+ * @return ItemType
  */
-function find_collection_by_atid($atid) {
+function insert_item_type_failsafe($metadata=array(), $elementInfos=array()) {
     $db = get_db();
-    if ($matchingTexts = $db->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_collection_atid_element'), $atid))) {
-        return get_record_by_id($matchingTexts[0]->record_type, $matchingTexts[0]->record_id);
+    $itemType = $db->getTable('ItemType')->findByName($metadata['name']);
+    if ($itemType) {
+        foreach ($elementInfos as $element) {
+            try {
+                $itemType->addElements(array($element));
+                $itemType->save();
+            } catch (Exception $ex) {
+                debug(__("Exception passed when adding element to new item type: %s", $ex->getMessage()));
+            }
+        }
+    } else {
+        $itemType = insert_item_type($metadata, $elementInfos);
     }
-    return null;
+    return $itemType;
 }

@@ -57,7 +57,7 @@ class IiifItems_IiifUtil {
         ));
         if (isset($elements['Dublin Core'])) {
             if (isset($elements['Dublin Core']['Title'])) {
-                $jsonData['label'] = join($elements['Dublin Core']['Title'], '<br>');
+                $jsonData['label'] = join($elements['Dublin Core']['Title'], ' ');
                 unset($elements['Dublin Core']['Title']);
             }
             if (isset($elements['Dublin Core']['Description'])) {
@@ -106,7 +106,7 @@ class IiifItems_IiifUtil {
             } elseif (get_class($element) == 'Element') {
                 $theElements[$prefix] = $element->id;
             } else {
-                throw new InvalidArgumentException('attachMetadataToSelect only accepts string, numeric or Element for elements. Input was: ' . $element);
+                throw new InvalidArgumentException(__('attachMetadataToSelect only accepts string, numeric or Element for elements. Input was: %s', $element));
             }
         }
         // Attach left joins on $select
