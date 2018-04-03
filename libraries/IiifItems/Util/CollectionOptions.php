@@ -196,7 +196,7 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
      * @return array
      */
     public static function getCollectionOptions($isPublic=null, $contributor=null) {
-        return self::_hierarchyToOptions(self::_collectionHierarchy($isPublic, $contributor));
+        return self::_hierarchyToOptions(self::_collectionHierarchy($isPublic), $contributor);
     }
     
     /**
@@ -206,7 +206,7 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
      * @return array
      */
     public static function getFullOptions($isPublic=null, $contributor=null) {
-        return self::_hierarchyToOptions(self::_fullHierarchy($isPublic, $contributor));
+        return self::_hierarchyToOptions(self::_fullHierarchy($isPublic), $contributor);
     }
     
     /**
@@ -216,7 +216,7 @@ class IiifItems_Util_CollectionOptions extends IiifItems_IiifUtil {
      * @return array
      */
     public static function getFullIdOptions($isPublic=null, $contributor=null) {
-        return self::_hierarchyToOptions(self::_fullHierarchy($isPublic, $contributor), $contributor, true);
+        return self::_hierarchyToOptions(self::_fullHierarchy($isPublic), $contributor, true);
     }
     
     /**
