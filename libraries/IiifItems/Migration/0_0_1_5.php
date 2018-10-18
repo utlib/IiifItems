@@ -19,6 +19,7 @@ class IiifItems_Migration_0_0_1_5 extends IiifItems_BaseMigration {
             $textElementId = $textElement->id;
         } else {
             $textElementId = $this->_db->insert('Element', array(
+                'element_set_id' => $this->_db->getTable('ElementSet')->findBy(array('name' => 'Item Type Metadata'), 1)[0]->id,
                 'name' => 'Text',
                 'description' => 'Any textual data included in the document',
             ));
