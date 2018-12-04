@@ -13,7 +13,7 @@
 		body { padding: 0; margin: 0; overflow: hidden; }
 		#viewer { background: #333; width: 100%; height: 100%; position: fixed; }
 	</style>
-        <title>Mirador Viewer</title>
+        <title><?php echo __("Mirador Viewer"); ?></title>
 </head>
 <body>
 	<div id="viewer"></div>
@@ -26,6 +26,7 @@
 		Mirador({
 			"id": "viewer",
 			"buildPath": "<?php echo src('', 'js/mirador', '') . '/'; ?>",
+            "language": "<?php echo str_replace('_', '-', Zend_Registry::get('bootstrap')->getResource('Locale')->toString()); ?>",
 			"layout": "1",
 			"data": [
 				{ "manifestUri": "<?php echo absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest'); ?>" }

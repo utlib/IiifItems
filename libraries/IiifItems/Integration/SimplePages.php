@@ -142,7 +142,11 @@ class IiifItems_Integration_SimplePages extends IiifItems_BaseIntegration {
             $manifest_urls = array();
             $collection_urls = array();
             foreach ($collections as $collection) {
-                $manifest_urls[] = public_full_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_manifest');
+                if (IiifItems_Util_Collection::isCollection($collection)) {
+                    $collection_urls[] = public_full_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_collection');
+                } else {
+                    $manifest_urls[] = public_full_url(array('things' => 'collections', 'id' => $collection->id), 'iiifitems_manifest');
+                }
             }
             $popup = isset($args['popup']) || (empty($manifest_urls) && !empty($collection_urls));
             // Add iframe

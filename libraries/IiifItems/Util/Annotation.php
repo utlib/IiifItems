@@ -80,9 +80,10 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
     /**
      * Convert an annotation item to JSON object form
      * @param Item $annoItem An annotation-type item
+     * @param string $forcedXywhMode ""=Default behaviour, "skip"=Force 0,0,0,0 if annotation has no xywh, "fill"=Force 0,0,width,height if annotation has no xywh
      * @return array
      */
-    public static function buildAnnotation($annoItem) {
+    public static function buildAnnotation($annoItem, $forcedXywhMode='') {
         $elementTextTable = get_db()->getTable('ElementText');
         $currentAnnotationJson = json_decode($elementTextTable->findBySql("element_texts.element_id = ? AND element_texts.record_type = 'Item' AND element_texts.record_id = ?", array(
             get_option('iiifitems_item_json_element'),
@@ -115,42 +116,62 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
             $xywhSelector = empty($xywhSelectors) ? null : $xywhSelectors[0];
             if ($svgSelector || $xywhSelector) {
                 unset($currentAnnotationJson['on']);
-                // Mirador 2.3+ format
-                if ($svgSelector && $xywhSelector) {
-                    $currentAnnotationJson['on'] = array();
-                    $areas = min(count($svgSelectors), count($xywhSelectors));
-                    for ($i = 0; $i < $areas; $i++) {
-                        $currentAnnotationJson['on'][] = array(
+                // Forced xywh-only format
+                if ($forcedXywhMode) {
+                    if ($xywhSelector) {
+                        $currentAnnotationJson['on'] = $canvasId . '#xywh=' . $xywhSelector;
+                    } else {
+                        $itemCanvas = IiifItems_Util_Canvas::buildCanvas($attachedItem, '', false);
+                        if ($forcedXywhMode == 'fill') {
+                            $currentAnnotationJson['on'] = $canvasId . '#xywh=0,0,' . $itemCanvas['width'] . ',' . $itemCanvas['height'];
+                        } else {
+                            $currentAnnotationJson['on'] = $canvasId . '#xywh=0,0,0,0';
+                        }
+                    }
+                    $currentAnnotationJson['resource'] = array(
+                        '@type' => 'cnt:ContentAsText',
+                        'chars' => $currentText->text,
+                    );
+                }
+                // Non-forced format
+                else {
+                    // Mirador 2.3+ format
+                    if ($svgSelector && $xywhSelector) {
+                        $currentAnnotationJson['on'] = array();
+                        $areas = min(count($svgSelectors), count($xywhSelectors));
+                        for ($i = 0; $i < $areas; $i++) {
+                            $currentAnnotationJson['on'][] = array(
+                                '@type' => 'oa:SpecificResource',
+                                'full' => $canvasId,
+                                'selector' => array(
+                                    '@type' => 'oa:Choice',
+                                    'default' => array(
+                                        '@type' => 'oa:FragmentSelector',
+                                        'value' => 'xywh=' . $xywhSelectors[$i],
+                                    ),
+                                    'item' => array(
+                                        '@type' => 'oa:SvgSelector',
+                                        'value' => $svgSelectors[$i],
+                                    ),
+                                ),
+                            );
+                        }
+                    }
+                    // xywh-only format
+                    elseif ($xywhSelector) {
+                        $currentAnnotationJson['on'] = $canvasId . '#xywh=' . $xywhSelector;
+                    }
+                    // Mirador 2.2- format
+                    else {
+                        $currentAnnotationJson['on'] = array(
                             '@type' => 'oa:SpecificResource',
                             'full' => $canvasId,
                             'selector' => array(
-                                '@type' => 'oa:Choice',
-                                'default' => array(
-                                    '@type' => 'oa:FragmentSelector',
-                                    'value' => 'xywh=' . $xywhSelectors[$i],
-                                ),
-                                'item' => array(
-                                    '@type' => 'oa:SvgSelector',
-                                    'value' => $svgSelectors[$i],
-                                ),
+                                '@type' => 'oa:SvgSelector',
+                                'value' => $svgSelector,
                             ),
                         );
                     }
-                }
-                // xywh-only format
-                elseif ($xywhSelector) {
-                    $currentAnnotationJson['on'] = $canvasId . '#xywh=' . $xywhSelector;
-                }
-                // Mirador 2.2- format
-                else {
-                    $currentAnnotationJson['on'] = array(
-                        '@type' => 'oa:SpecificResource',
-                        'full' => $canvasId,
-                        'selector' => array(
-                            '@type' => 'oa:SvgSelector',
-                            'value' => $svgSelector,
-                        ),
-                    );
                 }
             }
         }

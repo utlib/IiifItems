@@ -81,6 +81,7 @@
 				<li><a href="class-IiifItems_BaseIntegration.html">IiifItems_BaseIntegration</a></li>
 				<li><a href="class-IiifItems_BaseMigration.html">IiifItems_BaseMigration</a></li>
 				<li><a href="class-IiifItems_CachedJsonData.html">IiifItems_CachedJsonData</a></li>
+				<li><a href="class-IiifItems_CollectionsController.html">IiifItems_CollectionsController</a></li>
 				<li><a href="class-IiifItems_Form_Config.html">IiifItems_Form_Config</a></li>
 				<li><a href="class-IiifItems_Form_Import.html">IiifItems_Form_Import</a></li>
 				<li><a href="class-IiifItems_IiifUtil.html">IiifItems_IiifUtil</a></li>
@@ -101,18 +102,15 @@
 				<li><a href="class-IiifItems_ManifestController.html">IiifItems_ManifestController</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1.html">IiifItems_Migration_0_0_1</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_1.html">IiifItems_Migration_0_0_1_1</a></li>
-				<li><a href="class-IiifItems_Migration_0_0_1_10.html">IiifItems_Migration_0_0_1_10</a></li>
-				<li><a href="class-IiifItems_Migration_0_0_1_11.html">IiifItems_Migration_0_0_1_11</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_3.html">IiifItems_Migration_0_0_1_3</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_4.html">IiifItems_Migration_0_0_1_4</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_5.html">IiifItems_Migration_0_0_1_5</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_6.html">IiifItems_Migration_0_0_1_6</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_7.html">IiifItems_Migration_0_0_1_7</a></li>
-				<li><a href="class-IiifItems_Migration_0_0_1_8.html">IiifItems_Migration_0_0_1_8</a></li>
-				<li><a href="class-IiifItems_Migration_0_0_1_9.html">IiifItems_Migration_0_0_1_9</a></li>
 				<li><a href="class-IiifItems_MiradorController.html">IiifItems_MiradorController</a></li>
 				<li><a href="class-IiifItems_Util_Annotation.html">IiifItems_Util_Annotation</a></li>
 				<li><a href="class-IiifItems_Util_Canvas.html">IiifItems_Util_Canvas</a></li>
+				<li><a href="class-IiifItems_Util_Collection.html">IiifItems_Util_Collection</a></li>
 				<li><a href="class-IiifItems_Util_CollectionOptions.html">IiifItems_Util_CollectionOptions</a></li>
 				<li><a href="class-IiifItems_Util_Manifest.html">IiifItems_Util_Manifest</a></li>
 				<li><a href="class-IiifItemsPlugin.html">IiifItemsPlugin</a></li>
@@ -131,7 +129,9 @@
 				<li><a href="function-filter_hide_element_display.html">filter_hide_element_display</a></li>
 				<li><a href="function-filter_minimal_input.html">filter_minimal_input</a></li>
 				<li><a href="function-filter_singular_form.html">filter_singular_form</a></li>
+				<li><a href="function-find_collection_by_atid.html">find_collection_by_atid</a></li>
 				<li><a href="function-find_collection_by_uuid.html">find_collection_by_uuid</a></li>
+				<li><a href="function-find_item_by_atid.html">find_item_by_atid</a></li>
 				<li><a href="function-find_item_by_uuid.html">find_item_by_uuid</a></li>
 				<li><a href="function-generate_uuid.html">generate_uuid</a></li>
 				<li><a href="function-get_cached_iiifitems_value_for.html">get_cached_iiifitems_value_for</a></li>
@@ -418,7 +418,7 @@
 </span></span><span id="244" class="l"><a href="#244">244: </a><span class="php-comment">     * @return boolean
 </span></span><span id="245" class="l"><a href="#245">245: </a><span class="php-comment">     */</span>
 </span><span id="246" class="l"><a href="#246">246: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">static</span> <span class="php-keyword1">function</span> isNonIiifItem(<span class="php-var">$item</span>) {
-</span><span id="247" class="l"><a href="#247">247: </a>        <span class="php-keyword1">return</span> (<span class="php-var">$item</span>-&gt;item_type_id != get_option(<span class="php-quote">'iiifitems_annotation_item_type'</span>) &amp;&amp; self::_containsNonIiifFile(<span class="php-var">$item</span>-&gt;getFiles())) || raw_iiif_metadata(<span class="php-var">$item</span>, <span class="php-quote">'iiifitems_item_display_element'</span>) == <span class="php-quote">'Never'</span>;
+</span><span id="247" class="l"><a href="#247">247: </a>        <span class="php-keyword1">return</span> <span class="php-var">$item</span>-&gt;item_type_id != get_option(<span class="php-quote">'iiifitems_annotation_item_type'</span>) &amp;&amp; self::_containsNonIiifFile(<span class="php-var">$item</span>-&gt;getFiles());
 </span><span id="248" class="l"><a href="#248">248: </a>    }
 </span><span id="249" class="l"><a href="#249">249: </a>    
 </span><span id="250" class="l"><a href="#250">250: </a>    <span class="php-comment">/**
@@ -491,6 +491,6 @@
 </div>
 </div>
 <script src="resources/combined.js?cd021bc814832c24a7cec5319ea03335bfba1caf"></script>
-<script src="elementlist.js?b1700f7b6938491109adabdb5c1bd3cba0f90bbb"></script>
+<script src="elementlist.js?5b1eeb89e7d364c5ea866af13a4b732077070c49"></script>
 </body>
 </html>

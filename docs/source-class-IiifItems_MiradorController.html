@@ -81,6 +81,7 @@
 				<li><a href="class-IiifItems_BaseIntegration.html">IiifItems_BaseIntegration</a></li>
 				<li><a href="class-IiifItems_BaseMigration.html">IiifItems_BaseMigration</a></li>
 				<li><a href="class-IiifItems_CachedJsonData.html">IiifItems_CachedJsonData</a></li>
+				<li><a href="class-IiifItems_CollectionsController.html">IiifItems_CollectionsController</a></li>
 				<li><a href="class-IiifItems_Form_Config.html">IiifItems_Form_Config</a></li>
 				<li><a href="class-IiifItems_Form_Import.html">IiifItems_Form_Import</a></li>
 				<li><a href="class-IiifItems_IiifUtil.html">IiifItems_IiifUtil</a></li>
@@ -101,18 +102,15 @@
 				<li><a href="class-IiifItems_ManifestController.html">IiifItems_ManifestController</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1.html">IiifItems_Migration_0_0_1</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_1.html">IiifItems_Migration_0_0_1_1</a></li>
-				<li><a href="class-IiifItems_Migration_0_0_1_10.html">IiifItems_Migration_0_0_1_10</a></li>
-				<li><a href="class-IiifItems_Migration_0_0_1_11.html">IiifItems_Migration_0_0_1_11</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_3.html">IiifItems_Migration_0_0_1_3</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_4.html">IiifItems_Migration_0_0_1_4</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_5.html">IiifItems_Migration_0_0_1_5</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_6.html">IiifItems_Migration_0_0_1_6</a></li>
 				<li><a href="class-IiifItems_Migration_0_0_1_7.html">IiifItems_Migration_0_0_1_7</a></li>
-				<li><a href="class-IiifItems_Migration_0_0_1_8.html">IiifItems_Migration_0_0_1_8</a></li>
-				<li><a href="class-IiifItems_Migration_0_0_1_9.html">IiifItems_Migration_0_0_1_9</a></li>
 				<li><a href="class-IiifItems_MiradorController.html">IiifItems_MiradorController</a></li>
 				<li><a href="class-IiifItems_Util_Annotation.html">IiifItems_Util_Annotation</a></li>
 				<li><a href="class-IiifItems_Util_Canvas.html">IiifItems_Util_Canvas</a></li>
+				<li><a href="class-IiifItems_Util_Collection.html">IiifItems_Util_Collection</a></li>
 				<li><a href="class-IiifItems_Util_CollectionOptions.html">IiifItems_Util_CollectionOptions</a></li>
 				<li><a href="class-IiifItems_Util_Manifest.html">IiifItems_Util_Manifest</a></li>
 				<li><a href="class-IiifItemsPlugin.html">IiifItemsPlugin</a></li>
@@ -131,7 +129,9 @@
 				<li><a href="function-filter_hide_element_display.html">filter_hide_element_display</a></li>
 				<li><a href="function-filter_minimal_input.html">filter_minimal_input</a></li>
 				<li><a href="function-filter_singular_form.html">filter_singular_form</a></li>
+				<li><a href="function-find_collection_by_atid.html">find_collection_by_atid</a></li>
 				<li><a href="function-find_collection_by_uuid.html">find_collection_by_uuid</a></li>
+				<li><a href="function-find_item_by_atid.html">find_item_by_atid</a></li>
 				<li><a href="function-find_item_by_uuid.html">find_item_by_uuid</a></li>
 				<li><a href="function-generate_uuid.html">generate_uuid</a></li>
 				<li><a href="function-get_cached_iiifitems_value_for.html">get_cached_iiifitems_value_for</a></li>
@@ -179,7 +179,7 @@
 </span></span><span id="5" class="l"><a href="#5"> 5: </a><span class="php-comment"> * @package controllers
 </span></span><span id="6" class="l"><a href="#6"> 6: </a><span class="php-comment"> */</span>
 </span><span id="7" class="l"><a href="#7"> 7: </a><span class="php-keyword1">class</span> IiifItems_MiradorController <span class="php-keyword1">extends</span> IiifItems_BaseController {
-</span><span id="8" class="l"><a href="#8"> 8: </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">static</span> <span class="php-var">$allowedThings</span> = <span class="php-keyword1">array</span>(<span class="php-quote">'Collection'</span>, <span class="php-quote">'Item'</span>, <span class="php-quote">'File'</span>, <span class="php-quote">'ExhibitPageBlock'</span>);
+</span><span id="8" class="l"><a href="#8"> 8: </a>    <span class="php-keyword1">protected</span> <span class="php-keyword1">static</span> <span class="php-var">$allowedThings</span> = <span class="php-keyword1">array</span>(<span class="php-quote">'Collection'</span>, <span class="php-quote">'Item'</span>, <span class="php-quote">'File'</span>);
 </span><span id="9" class="l"><a href="#9"> 9: </a>    
 </span><span id="10" class="l"><a href="#10">10: </a>    <span class="php-comment">/**
 </span></span><span id="11" class="l"><a href="#11">11: </a><span class="php-comment">     * Renders a Mirador viewer for the given collection, item or file.
@@ -189,7 +189,7 @@
 </span></span><span id="15" class="l"><a href="#15">15: </a><span class="php-comment">     */</span>
 </span><span id="16" class="l"><a href="#16">16: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> viewerAction() {
 </span><span id="17" class="l"><a href="#17">17: </a>        <span class="php-var">$type</span> = <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'things'</span>);
-</span><span id="18" class="l"><a href="#18">18: </a>        <span class="php-var">$class</span> = Inflector::camelize(Inflector::singularize(<span class="php-var">$type</span>));
+</span><span id="18" class="l"><a href="#18">18: </a>        <span class="php-var">$class</span> = Inflector::titleize(Inflector::singularize(<span class="php-var">$type</span>));
 </span><span id="19" class="l"><a href="#19">19: </a>        <span class="php-keyword1">if</span> (!<span class="php-keyword2">in_array</span>(<span class="php-var">$class</span>, self::<span class="php-var">$allowedThings</span>)) {
 </span><span id="20" class="l"><a href="#20">20: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> Omeka_Controller_Exception_404;
 </span><span id="21" class="l"><a href="#21">21: </a>        }
@@ -208,58 +208,47 @@
 </span><span id="34" class="l"><a href="#34">34: </a>            <span class="php-var">$this</span>-&gt;view-&gt;item_ids = <span class="php-keyword2">explode</span>(<span class="php-quote">','</span>, <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'items'</span>));
 </span><span id="35" class="l"><a href="#35">35: </a>        }
 </span><span id="36" class="l"><a href="#36">36: </a>        <span class="php-var">$this</span>-&gt;view-&gt;manifests = <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'u'</span>);
-</span><span id="37" class="l"><a href="#37">37: </a>        <span class="php-var">$this</span>-&gt;view-&gt;collections = <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'c'</span>);
-</span><span id="38" class="l"><a href="#38">38: </a>        <span class="php-var">$this</span>-&gt;view-&gt;popup = <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'p'</span>);
-</span><span id="39" class="l"><a href="#39">39: </a>    }
-</span><span id="40" class="l"><a href="#40">40: </a>    
-</span><span id="41" class="l"><a href="#41">41: </a>    <span class="php-comment">/**
-</span></span><span id="42" class="l"><a href="#42">42: </a><span class="php-comment">     * Renders a minimal Mirador viewer for embedding in Neatline.
-</span></span><span id="43" class="l"><a href="#43">43: </a><span class="php-comment">     * 
-</span></span><span id="44" class="l"><a href="#44">44: </a><span class="php-comment">     * GET iiif-items/nlmirador/:id
-</span></span><span id="45" class="l"><a href="#45">45: </a><span class="php-comment">     */</span>
-</span><span id="46" class="l"><a href="#46">46: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> neatlineAction() {
-</span><span id="47" class="l"><a href="#47">47: </a>        <span class="php-var">$this</span>-&gt;view-&gt;itemId = <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'id'</span>);
-</span><span id="48" class="l"><a href="#48">48: </a>    }
-</span><span id="49" class="l"><a href="#49">49: </a>    
-</span><span id="50" class="l"><a href="#50">50: </a>    <span class="php-comment">/**
-</span></span><span id="51" class="l"><a href="#51">51: </a><span class="php-comment">     * Renders an annotation-enabled Mirador viewer for the given manifest-type collection or non-annotation item.
-</span></span><span id="52" class="l"><a href="#52">52: </a><span class="php-comment">     * GET: :things/:id/annotator
-</span></span><span id="53" class="l"><a href="#53">53: </a><span class="php-comment">     * 
-</span></span><span id="54" class="l"><a href="#54">54: </a><span class="php-comment">     * @throws Omeka_Controller_Exception_404
-</span></span><span id="55" class="l"><a href="#55">55: </a><span class="php-comment">     */</span>
-</span><span id="56" class="l"><a href="#56">56: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> annotatorAction() {
-</span><span id="57" class="l"><a href="#57">57: </a>        <span class="php-comment">// Check existence</span>
-</span><span id="58" class="l"><a href="#58">58: </a>        <span class="php-var">$id</span> = <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'id'</span>);
-</span><span id="59" class="l"><a href="#59">59: </a>        <span class="php-var">$type</span> = <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'things'</span>);
-</span><span id="60" class="l"><a href="#60">60: </a>        <span class="php-var">$class</span> = Inflector::titleize(Inflector::singularize(<span class="php-var">$type</span>));
-</span><span id="61" class="l"><a href="#61">61: </a>        <span class="php-var">$thing</span> = get_record_by_id(<span class="php-var">$class</span>, <span class="php-var">$id</span>);
-</span><span id="62" class="l"><a href="#62">62: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword1">empty</span>(<span class="php-var">$thing</span>) || !<span class="php-keyword2">in_array</span>(<span class="php-var">$class</span>, self::<span class="php-var">$allowedThings</span>)) {
-</span><span id="63" class="l"><a href="#63">63: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> Omeka_Controller_Exception_404;
-</span><span id="64" class="l"><a href="#64">64: </a>        }
-</span><span id="65" class="l"><a href="#65">65: </a>        <span class="php-comment">// Collection</span>
-</span><span id="66" class="l"><a href="#66">66: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$class</span> == <span class="php-quote">'Collection'</span>) {
-</span><span id="67" class="l"><a href="#67">67: </a>            <span class="php-comment">// Reject Collection-type items</span>
-</span><span id="68" class="l"><a href="#68">68: </a>            <span class="php-keyword1">if</span> (raw_iiif_metadata(<span class="php-var">$thing</span>, <span class="php-quote">'iiifitems_collection_type_element'</span>) == <span class="php-quote">'Collection'</span>) {
-</span><span id="69" class="l"><a href="#69">69: </a>                <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> Omeka_Controller_Exception_404;
-</span><span id="70" class="l"><a href="#70">70: </a>            }
-</span><span id="71" class="l"><a href="#71">71: </a>            <span class="php-var">$this</span>-&gt;__passModelToView();
-</span><span id="72" class="l"><a href="#72">72: </a>            <span class="php-keyword1">return</span>;
-</span><span id="73" class="l"><a href="#73">73: </a>        }
-</span><span id="74" class="l"><a href="#74">74: </a>        <span class="php-comment">// Item</span>
-</span><span id="75" class="l"><a href="#75">75: </a>        <span class="php-keyword1">elseif</span> (<span class="php-var">$class</span> == <span class="php-quote">'Item'</span>) {
-</span><span id="76" class="l"><a href="#76">76: </a>            <span class="php-comment">// Reject Annotation-type items</span>
-</span><span id="77" class="l"><a href="#77">77: </a>            <span class="php-keyword1">if</span> (<span class="php-var">$thing</span>-&gt;item_type_id == get_option(<span class="php-quote">'iiifitems_annotation_item_type'</span>)) {
-</span><span id="78" class="l"><a href="#78">78: </a>                <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> Omeka_Controller_Exception_404;
-</span><span id="79" class="l"><a href="#79">79: </a>            }
-</span><span id="80" class="l"><a href="#80">80: </a>            <span class="php-var">$this</span>-&gt;__passModelToView();
-</span><span id="81" class="l"><a href="#81">81: </a>            <span class="php-keyword1">return</span>;
-</span><span id="82" class="l"><a href="#82">82: </a>        }
-</span><span id="83" class="l"><a href="#83">83: </a>        <span class="php-comment">// Reject all others</span>
-</span><span id="84" class="l"><a href="#84">84: </a>        <span class="php-var">$this</span>-&gt;__respondWithJson(<span class="php-keyword1">null</span>, <span class="php-num">400</span>);
-</span><span id="85" class="l"><a href="#85">85: </a>    }
-</span><span id="86" class="l"><a href="#86">86: </a>}
-</span><span id="87" class="l"><a href="#87">87: </a><span class="xlang">?&gt;</span>
-</span><span id="88" class="l"><a href="#88">88: </a></span></code></pre>
+</span><span id="37" class="l"><a href="#37">37: </a>    }
+</span><span id="38" class="l"><a href="#38">38: </a>    
+</span><span id="39" class="l"><a href="#39">39: </a>    <span class="php-comment">/**
+</span></span><span id="40" class="l"><a href="#40">40: </a><span class="php-comment">     * Renders an annotation-enabled Mirador viewer for the given manifest-type collection or non-annotation item.
+</span></span><span id="41" class="l"><a href="#41">41: </a><span class="php-comment">     * GET: :things/:id/annotator
+</span></span><span id="42" class="l"><a href="#42">42: </a><span class="php-comment">     * 
+</span></span><span id="43" class="l"><a href="#43">43: </a><span class="php-comment">     * @throws Omeka_Controller_Exception_404
+</span></span><span id="44" class="l"><a href="#44">44: </a><span class="php-comment">     */</span>
+</span><span id="45" class="l"><a href="#45">45: </a>    <span class="php-keyword1">public</span> <span class="php-keyword1">function</span> annotatorAction() {
+</span><span id="46" class="l"><a href="#46">46: </a>        <span class="php-comment">// Check existence</span>
+</span><span id="47" class="l"><a href="#47">47: </a>        <span class="php-var">$id</span> = <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'id'</span>);
+</span><span id="48" class="l"><a href="#48">48: </a>        <span class="php-var">$type</span> = <span class="php-var">$this</span>-&gt;getParam(<span class="php-quote">'things'</span>);
+</span><span id="49" class="l"><a href="#49">49: </a>        <span class="php-var">$class</span> = Inflector::titleize(Inflector::singularize(<span class="php-var">$type</span>));
+</span><span id="50" class="l"><a href="#50">50: </a>        <span class="php-var">$thing</span> = get_record_by_id(<span class="php-var">$class</span>, <span class="php-var">$id</span>);
+</span><span id="51" class="l"><a href="#51">51: </a>        <span class="php-keyword1">if</span> (<span class="php-keyword1">empty</span>(<span class="php-var">$thing</span>) || !<span class="php-keyword2">in_array</span>(<span class="php-var">$class</span>, self::<span class="php-var">$allowedThings</span>)) {
+</span><span id="52" class="l"><a href="#52">52: </a>            <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> Omeka_Controller_Exception_404;
+</span><span id="53" class="l"><a href="#53">53: </a>        }
+</span><span id="54" class="l"><a href="#54">54: </a>        <span class="php-comment">// Collection</span>
+</span><span id="55" class="l"><a href="#55">55: </a>        <span class="php-keyword1">if</span> (<span class="php-var">$class</span> == <span class="php-quote">'Collection'</span>) {
+</span><span id="56" class="l"><a href="#56">56: </a>            <span class="php-comment">// Reject Collection-type items</span>
+</span><span id="57" class="l"><a href="#57">57: </a>            <span class="php-keyword1">if</span> (raw_iiif_metadata(<span class="php-var">$thing</span>, <span class="php-quote">'iiifitems_collection_type_element'</span>) == <span class="php-quote">'Collection'</span>) {
+</span><span id="58" class="l"><a href="#58">58: </a>                <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> Omeka_Controller_Exception_404;
+</span><span id="59" class="l"><a href="#59">59: </a>            }
+</span><span id="60" class="l"><a href="#60">60: </a>            <span class="php-var">$this</span>-&gt;__passModelToView();
+</span><span id="61" class="l"><a href="#61">61: </a>            <span class="php-keyword1">return</span>;
+</span><span id="62" class="l"><a href="#62">62: </a>        }
+</span><span id="63" class="l"><a href="#63">63: </a>        <span class="php-comment">// Item</span>
+</span><span id="64" class="l"><a href="#64">64: </a>        <span class="php-keyword1">elseif</span> (<span class="php-var">$class</span> == <span class="php-quote">'Item'</span>) {
+</span><span id="65" class="l"><a href="#65">65: </a>            <span class="php-comment">// Reject Annotation-type items</span>
+</span><span id="66" class="l"><a href="#66">66: </a>            <span class="php-keyword1">if</span> (<span class="php-var">$thing</span>-&gt;item_type_id == get_option(<span class="php-quote">'iiifitems_annotation_item_type'</span>)) {
+</span><span id="67" class="l"><a href="#67">67: </a>                <span class="php-keyword1">throw</span> <span class="php-keyword1">new</span> Omeka_Controller_Exception_404;
+</span><span id="68" class="l"><a href="#68">68: </a>            }
+</span><span id="69" class="l"><a href="#69">69: </a>            <span class="php-var">$this</span>-&gt;__passModelToView();
+</span><span id="70" class="l"><a href="#70">70: </a>            <span class="php-keyword1">return</span>;
+</span><span id="71" class="l"><a href="#71">71: </a>        }
+</span><span id="72" class="l"><a href="#72">72: </a>        <span class="php-comment">// Reject all others</span>
+</span><span id="73" class="l"><a href="#73">73: </a>        <span class="php-var">$this</span>-&gt;__respondWithJson(<span class="php-keyword1">null</span>, <span class="php-num">400</span>);
+</span><span id="74" class="l"><a href="#74">74: </a>    }
+</span><span id="75" class="l"><a href="#75">75: </a>}
+</span><span id="76" class="l"><a href="#76">76: </a><span class="xlang">?&gt;</span>
+</span><span id="77" class="l"><a href="#77">77: </a></span></code></pre>
 
 	<div id="footer">
 		IiifItems API documentation generated by <a href="http://apigen.org">ApiGen</a>
@@ -267,6 +256,6 @@
 </div>
 </div>
 <script src="resources/combined.js?cd021bc814832c24a7cec5319ea03335bfba1caf"></script>
-<script src="elementlist.js?b1700f7b6938491109adabdb5c1bd3cba0f90bbb"></script>
+<script src="elementlist.js?5b1eeb89e7d364c5ea866af13a4b732077070c49"></script>
 </body>
 </html>

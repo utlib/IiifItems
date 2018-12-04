@@ -76,6 +76,7 @@
 			<ul>
 				<li><a href="class-IiifItems_Util_Annotation.html">IiifItems_Util_Annotation</a></li>
 				<li><a href="class-IiifItems_Util_Canvas.html">IiifItems_Util_Canvas</a></li>
+				<li><a href="class-IiifItems_Util_Collection.html">IiifItems_Util_Collection</a></li>
 				<li><a href="class-IiifItems_Util_CollectionOptions.html">IiifItems_Util_CollectionOptions</a></li>
 				<li class="active"><a href="class-IiifItems_Util_Manifest.html">IiifItems_Util_Manifest</a></li>
 			</ul>
@@ -153,7 +154,7 @@
 		
 		<b>Package:</b> <a href="package-IiifItems.html">IiifItems</a>\<a href="package-IiifItems.Util.html">Util</a><br>
 
-			<b>Located at</b> <a href="source-class-IiifItems_Util_Manifest.html#3-231" title="Go to source code">libraries/IiifItems/Util/Manifest.php</a>
+			<b>Located at</b> <a href="source-class-IiifItems_Util_Manifest.html#3-184" title="Go to source code">libraries/IiifItems/Util/Manifest.php</a>
 		<br>
 	</div>
 
@@ -259,7 +260,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_buildManifest">#</a>
-		<code><a href="source-class-IiifItems_Util_Manifest.html#46-81" title="Go to source code">buildManifest</a>( <span>Collection <var>$collection</var></span>, <span>boolean <var>$bare</var> = <span class="php-keyword1">false</span></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Manifest.html#46-89" title="Go to source code">buildManifest</a>( <span>Collection <var>$collection</var></span> )</code>
 
 		<div class="description short">
 			<p>Return the IIIF Presentation API manifest representation of the Omeka collection</p>
@@ -273,8 +274,6 @@
 				<div class="list"><dl>
 					<dt><var>$collection</var></dt>
 					<dd></dd>
-					<dt><var>$bare</var></dt>
-					<dd>Whether to exclude the annotation list references</dd>
 				</dl></div>
 
 				<h4>Returns</h4>
@@ -300,7 +299,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_buildItemManifest">#</a>
-		<code><a href="source-class-IiifItems_Util_Manifest.html#83-112" title="Go to source code">buildItemManifest</a>( <span>Item <var>$item</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Manifest.html#91-120" title="Go to source code">buildItemManifest</a>( <span>Item <var>$item</var></span> )</code>
 
 		<div class="description short">
 			<p>Return the IIIF Presentation API manifest representation of the Omeka Item</p>
@@ -339,7 +338,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_buildFileManifest">#</a>
-		<code><a href="source-class-IiifItems_Util_Manifest.html#114-132" title="Go to source code">buildFileManifest</a>( <span>File <var>$file</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Manifest.html#122-140" title="Go to source code">buildFileManifest</a>( <span>File <var>$file</var></span> )</code>
 
 		<div class="description short">
 			<p>Return the IIIF Presentation API manifest representation of the Omeka File</p>
@@ -366,45 +365,6 @@
 		</div>
 		</div></td>
 	</tr>
-	<tr data-order="buildExhibitPageBlockManifest" id="_buildExhibitPageBlockManifest">
-
-		<td class="attributes"><code>
-			 public static
-
-			array
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_buildExhibitPageBlockManifest">#</a>
-		<code><a href="source-class-IiifItems_Util_Manifest.html#134-165" title="Go to source code">buildExhibitPageBlockManifest</a>( <span>ExhibitPageBlock <var>$block</var></span> )</code>
-
-		<div class="description short">
-			<p>Return the IIIF Presentation API manifest representation of the exhibit block's attached items</p>
-		</div>
-
-		<div class="description detailed hidden">
-			<p>Return the IIIF Presentation API manifest representation of the exhibit block's attached items</p>
-
-
-				<h4>Parameters</h4>
-				<div class="list"><dl>
-					<dt><var>$block</var></dt>
-					<dd></dd>
-				</dl></div>
-
-				<h4>Returns</h4>
-				<div class="list">
-					array
-				</div>
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
 	<tr data-order="findParentFor" id="_findParentFor">
 
 		<td class="attributes"><code>
@@ -417,7 +377,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_findParentFor">#</a>
-		<code><a href="source-class-IiifItems_Util_Manifest.html#167-178" title="Go to source code">findParentFor</a>( <span>Collection <var>$collection</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Manifest.html#142-153" title="Go to source code">findParentFor</a>( <span>Collection <var>$collection</var></span> )</code>
 
 		<div class="description short">
 			<p>Return the parent collection of this collection (Collection or Manifest type)</p>
@@ -456,7 +416,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_findCanvasesFor">#</a>
-		<code><a href="source-class-IiifItems_Util_Manifest.html#180-193" title="Go to source code">findCanvasesFor</a>( <span>Collection <var>$collection</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Manifest.html#155-166" title="Go to source code">findCanvasesFor</a>( <span>Collection <var>$collection</var></span> )</code>
 
 		<div class="description short">
 			<p>Return a list of canvases for this collection</p>
@@ -483,45 +443,6 @@
 		</div>
 		</div></td>
 	</tr>
-	<tr data-order="countAnnotationsFor" id="_countAnnotationsFor">
-
-		<td class="attributes"><code>
-			 public static
-
-			integer
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_countAnnotationsFor">#</a>
-		<code><a href="source-class-IiifItems_Util_Manifest.html#195-213" title="Go to source code">countAnnotationsFor</a>( <span>Collection <var>$manifest</var></span> )</code>
-
-		<div class="description short">
-			<p>Return the number of annotations among items within this manifest.</p>
-		</div>
-
-		<div class="description detailed hidden">
-			<p>Return the number of annotations among items within this manifest.</p>
-
-
-				<h4>Parameters</h4>
-				<div class="list"><dl>
-					<dt><var>$manifest</var></dt>
-					<dd></dd>
-				</dl></div>
-
-				<h4>Returns</h4>
-				<div class="list">
-					integer
-				</div>
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
 	<tr data-order="isManifest" id="_isManifest">
 
 		<td class="attributes"><code>
@@ -534,7 +455,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_isManifest">#</a>
-		<code><a href="source-class-IiifItems_Util_Manifest.html#215-230" title="Go to source code">isManifest</a>( <span>Collection <var>$collection</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Manifest.html#168-183" title="Go to source code">isManifest</a>( <span>Collection <var>$collection</var></span> )</code>
 
 		<div class="description short">
 			<p>Return whether this collection is set to the Manifest type</p>

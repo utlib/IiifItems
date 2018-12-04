@@ -106,7 +106,7 @@ class IiifItems_IiifUtil {
             } elseif (get_class($element) == 'Element') {
                 $theElements[$prefix] = $element->id;
             } else {
-                throw new InvalidArgumentException('attachMetadataToSelect only accepts string, numeric or Element for elements. Input was: ' . $element);
+                throw new InvalidArgumentException(__('attachMetadataToSelect only accepts string, numeric or Element for elements. Input was: %s', $element));
             }
         }
         // Attach left joins on $select

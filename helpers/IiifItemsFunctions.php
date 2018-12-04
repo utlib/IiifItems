@@ -104,6 +104,11 @@ function clear_iiifitems_cache_values_for($record, $bubble=true) {
                 }
             break;
             case 'Collection':
+                if ($parentCollectionId = raw_iiif_metadata($record, 'iiifitems_collection_parent_element')) {
+                    if ($parentCollection = IiifItems_Util_Collection::findParentFor($record)) {
+                        clear_iiifitems_cache_values_for($parentCollection, false);
+                    }
+                }
             break;
         }
     }
@@ -209,7 +214,7 @@ function insert_element_set_failsafe($elementSetMetadata=array(), $elements=arra
     } elseif (is_array($elementSetMetadata)) {
         $elementSet = $db->getTable('ElementSet')->findByName($elementSetMetadata['name']);
     } else {
-        throw new InvalidArgumentException("Wrong argument type for elementSetMetadata parameter.");
+        throw new InvalidArgumentException(__("Wrong argument type for elementSetMetadata parameter."));
     }
     if ($elementSet) {
         foreach ($elements as $element) {
@@ -217,7 +222,7 @@ function insert_element_set_failsafe($elementSetMetadata=array(), $elements=arra
                 $elementSet->addElements(array($element));
                 $elementSet->save();
             } catch (Exception $ex) {
-                debug("Exception passed when adding element to new element set: {$ex->getMessage()}");
+                debug(__("Exception passed when adding element to new element set: %s", $ex->getMessage()));
             }
         }
     } else {
@@ -242,7 +247,7 @@ function insert_item_type_failsafe($metadata=array(), $elementInfos=array()) {
                 $itemType->addElements(array($element));
                 $itemType->save();
             } catch (Exception $ex) {
-                debug("Exception passed when adding element to new item type: {$ex->getMessage()}");
+                debug(__("Exception passed when adding element to new item type: %s", $ex->getMessage()));
             }
         }
     } else {

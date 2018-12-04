@@ -8,6 +8,7 @@
 class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     protected $_filters = array(
         'admin_navigation_main',
+        'public_navigation_main',
         'display_elements',
     );
     
@@ -20,6 +21,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         $this->__addMediaPlaceholders();
         $this->__addUuids();
         $this->__addConfigOptions();
+        $this->__addViewOptions();
     }
 
     /**
@@ -54,8 +56,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
      */
     private function __addIiif() {
         set_option('iiifitems_bridge_prefix', '');
-        $serverUrlHelper = new Zend_View_Helper_ServerUrl;
-        set_option('iiifitems_mirador_path', $serverUrlHelper->serverUrl() . public_url('plugins') . '/IiifItems/views/shared/js/mirador');
+        set_option('iiifitems_mirador_path', WEB_PLUGIN . '/IiifItems/views/shared/js/mirador');
         $addCssAndJsMigration = new IiifItems_Migration_0_0_1_9();
         $addCssAndJsMigration->up();
     }
@@ -77,12 +78,24 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     }
     
     /**
+     * Add viewing options.
+     */
+    private function __addViewOptions() {
+        set_option('iiifitems_show_public_catalogue', 1);
+        set_option('iiifitems_show_mirador_collections', 1);
+        set_option('iiifitems_show_mirador_manifests', 1);
+        set_option('iiifitems_show_mirador_items', 1);
+        set_option('iiifitems_show_mirador_files', 1);
+    }
+    
+    /**
      * Removes IIIF Toolkit-specific elements.
      */
     public function uninstall() {
         $this->__removeIiif();
         $this->__removeTables();
         $this->__removeMediaPlaceholders();
+        $this->__removeViewOptions();
     }
     
     /**
@@ -129,19 +142,62 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     }
     
     /**
+     * Remove viewing options.
+     */
+    private function __removeViewOptions() {
+        delete_option('iiifitems_show_public_catalogue');
+        delete_option('iiifitems_show_mirador_collections');
+        delete_option('iiifitems_show_mirador_manifests');
+        delete_option('iiifitems_show_mirador_items');
+        delete_option('iiifitems_show_mirador_files');
+    }
+    
+    /**
      * Filter for the main admin navigation.
      * Adds navigation link to the IIIF Toolkit import form, status screen and maintenance options.
+     * Also add IIIF Catalogue Tree
      * 
      * @param array $nav
      * @return array
      */
     public function filterAdminNavigationMain($nav) {
+        // Add link to import form, status screen, etc. to qualified users
         if (current_user()->role != 'researcher') {
             $nav[] = array(
                 'label' => __('IIIF Toolkit'),
                 'uri' => url('iiif-items/import'),
             );
         }
+        // Add link to tree navigator
+        foreach ($nav as $i => $navEntry) {
+            if ($navEntry['label'] === __('Collections')) {
+                array_splice($nav, $i+1, 0, array(array(
+                    'label' => __('IIIF Catalogue Tree'),
+                    'uri' => url('iiif-items/tree'),
+                )));
+                break;
+            }
+        }
+        // Return navigation
+        return $nav;
+    }
+    
+    /**
+     * Filter for the public navigation menu.
+     * Add the catalogue tree link.
+     * 
+     * @param array $nav
+     * @return array
+     */
+    public function filterPublicNavigationMain($nav) {
+        // Add link to navigator in third position, after collections
+        if (get_option('iiifitems_show_public_catalogue')) {
+            array_splice($nav, 2, 0, array(array(
+                'label' => __('Browse Catalogue'),
+                'uri' => url('iiif-items/tree'),
+            )));
+        }
+        // Return navigation
         return $nav;
     }
 
@@ -157,7 +213,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         // The standard Item view has a non-empty action context (i.e. list of exports)
         if ($item = get_current_record('item', false)) {
             if (empty(get_current_action_contexts()) && !IiifItems_Util_Canvas::isNonIiifItem($item)) {
-                $elementsBySet = array_merge(array('IIIF Preview' => array('' => $elementsBySet['IIIF Item Metadata']['UUID'])), $elementsBySet);
+                $elementsBySet = array_merge(array(__('IIIF Preview') => array('' => $elementsBySet['IIIF Item Metadata']['UUID'])), $elementsBySet);
             }
         }
         // Hide all IIIF-specific metadata for manual rendering later

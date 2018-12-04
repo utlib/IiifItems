@@ -26,6 +26,12 @@ include __DIR__ . '/_nav.php';
     <input type="hidden" value="<?php echo $t; ?>" id="status-last-updated" />
     <script>
         jQuery(function() {
+            var translations = {
+                'Queued': <?php echo js_escape(__('Queued')); ?>,
+                'In Progress': <?php echo js_escape(__('In Progress')); ?>,
+                'Completed': <?php echo js_escape(__('Completed')); ?>,
+                'Failed': <?php echo js_escape(__('Failed')); ?>
+            };
             setInterval(function() {
                 jQuery.ajax({
                     url: '<?php echo url('iiif-items/status-update'); ?>',
@@ -43,7 +49,7 @@ include __DIR__ . '/_nav.php';
                             row.find('.column-dones').html(u.dones);
                             row.find('.column-skips').html(u.skips);
                             row.find('.column-fails').html(u.fails);
-                            row.find('.column-status .status-label').html(u.status);
+                            row.find('.column-status .status-label').html(translations[u.status]);
                             if (u.status === 'Queued') {
                                 row.find('.column-status progress').attr({
                                     value: null,
@@ -80,7 +86,16 @@ include __DIR__ . '/_nav.php';
                     <td class="column-skips"><?php echo html_escape($status->skips); ?></td>
                     <td class="column-fails"><?php echo html_escape($status->fails); ?></td>
                     <td class="column-created"><?php echo html_escape($status->added); ?></td>
-                    <td class="column-status"><span class="status-label"><?php echo html_escape($status->status); ?></span><progress value="<?php echo $status->progress; ?>" max="<?php echo $status->total ?>"></progress></td>
+                    <td class="column-status">
+                        <span class="status-label">
+                            <?php echo html_escape(__($status->status)); ?>
+                        </span>
+                        <?php if ($status->status == 'Queued') : ?>
+                            <progress></progress>
+                        <?php else : ?>
+                            <progress value="<?php echo $status->progress; ?>" max="<?php echo $status->total ?>"></progress>
+                        <?php endif; ?>
+                    </td>
                 </tr>
             <?php } ?>
         </tbody>

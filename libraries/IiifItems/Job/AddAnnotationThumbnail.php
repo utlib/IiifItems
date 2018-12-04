@@ -73,12 +73,12 @@ class IiifItems_Job_AddAnnotationThumbnail extends Omeka_Job_AbstractJob {
                     $theSize = ($dims[2] >= $dims[3]) ? (','.$trySize) : ($trySize.',');
                 }
                 $imageUrl = $prefix . '/' . join(',', $dims) . '/' . $theSize . '/0/' . $suffix;
-                debug("Downloading image " . $imageUrl);
+                debug(__("Downloading image %s", $imageUrl));
                 $downloadedFile = insert_files_for_item($item, 'Url', $imageUrl)[0];
-                debug("Download OK: " . $imageUrl);
+                debug(__("Download OK: %s", $imageUrl));
                 return;
             } catch (Exception $e) {
-                debug("Download with size " . $trySize . " failed, trying next...");
+                debug(__("Download with size %s failed, trying next...", $trySize));
             }
         }
     }

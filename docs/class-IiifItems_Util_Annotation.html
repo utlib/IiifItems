@@ -76,6 +76,7 @@
 			<ul>
 				<li class="active"><a href="class-IiifItems_Util_Annotation.html">IiifItems_Util_Annotation</a></li>
 				<li><a href="class-IiifItems_Util_Canvas.html">IiifItems_Util_Canvas</a></li>
+				<li><a href="class-IiifItems_Util_Collection.html">IiifItems_Util_Collection</a></li>
 				<li><a href="class-IiifItems_Util_CollectionOptions.html">IiifItems_Util_CollectionOptions</a></li>
 				<li><a href="class-IiifItems_Util_Manifest.html">IiifItems_Util_Manifest</a></li>
 			</ul>
@@ -153,7 +154,7 @@
 		
 		<b>Package:</b> <a href="package-IiifItems.html">IiifItems</a>\<a href="package-IiifItems.Util.html">Util</a><br>
 
-			<b>Located at</b> <a href="source-class-IiifItems_Util_Annotation.html#3-405" title="Go to source code">libraries/IiifItems/Util/Annotation.php</a>
+			<b>Located at</b> <a href="source-class-IiifItems_Util_Annotation.html#3-322" title="Go to source code">libraries/IiifItems/Util/Annotation.php</a>
 		<br>
 	</div>
 
@@ -263,7 +264,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_buildList">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#66-78" title="Go to source code">buildList</a>( <span>Item <var>$item</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Annotation.html#66-79" title="Go to source code">buildList</a>( <span>Item <var>$item</var></span> )</code>
 
 		<div class="description short">
 			<p>Return the annotation list for an item (regular or annotation)</p>
@@ -302,7 +303,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_buildAnnotation">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#80-158" title="Go to source code">buildAnnotation</a>( <span>Item <var>$annoItem</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Annotation.html#81-115" title="Go to source code">buildAnnotation</a>( <span>Item <var>$annoItem</var></span> )</code>
 
 		<div class="description short">
 			<p>Convert an annotation item to JSON object form</p>
@@ -329,86 +330,6 @@
 		</div>
 		</div></td>
 	</tr>
-	<tr data-order="getAnnotationSvg" id="_getAnnotationSvg">
-
-		<td class="attributes"><code>
-			 public static
-
-			string[]
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_getAnnotationSvg">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#160-172" title="Go to source code">getAnnotationSvg</a>( <span>Item <var>$annoItem</var></span> )</code>
-
-		<div class="description short">
-			<p>Return the SVG selectors of the given annotation-type item.</p>
-		</div>
-
-		<div class="description detailed hidden">
-			<p>Return the SVG selectors of the given annotation-type item.</p>
-
-
-				<h4>Parameters</h4>
-				<div class="list"><dl>
-					<dt><var>$annoItem</var></dt>
-					<dd>The annotation-type item</dd>
-				</dl></div>
-
-				<h4>Returns</h4>
-				<div class="list">
-					string[]
-				</div>
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
-	<tr data-order="getAnnotationXywh" id="_getAnnotationXywh">
-
-		<td class="attributes"><code>
-			 public static
-
-			string[]|array[]
-			
-			</code>
-		</td>
-
-		<td class="name"><div>
-		<a class="anchor" href="#_getAnnotationXywh">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#174-191" title="Go to source code">getAnnotationXywh</a>( <span>Item <var>$annoItem</var></span>, <span>boolean <var>$arrayForm</var> = <span class="php-keyword1">false</span></span> )</code>
-
-		<div class="description short">
-			<p>Return the xywh regions of the given annotation-type item.</p>
-		</div>
-
-		<div class="description detailed hidden">
-			<p>Return the xywh regions of the given annotation-type item.</p>
-
-
-				<h4>Parameters</h4>
-				<div class="list"><dl>
-					<dt><var>$annoItem</var></dt>
-					<dd>The annotation-type item</dd>
-					<dt><var>$arrayForm</var></dt>
-					<dd>Whether to return results as an array of strings (false, default) or of 4-entry arrays (true)</dd>
-				</dl></div>
-
-				<h4>Returns</h4>
-				<div class="list">
-					string[]|array[]
-				</div>
-
-
-
-
-		</div>
-		</div></td>
-	</tr>
 	<tr data-order="findAnnotationsFor" id="_findAnnotationsFor">
 
 		<td class="attributes"><code>
@@ -421,7 +342,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_findAnnotationsFor">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#193-252" title="Go to source code">findAnnotationsFor</a>( <span>Item <var>$item</var></span>, <span>boolean <var>$withAccess</var> = <span class="php-keyword1">false</span></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Annotation.html#117-168" title="Go to source code">findAnnotationsFor</a>( <span>type <var>$item</var></span> )</code>
 
 		<div class="description short">
 			<p>Return an array of annotations for an item, as JSON objects.</p>
@@ -435,8 +356,6 @@
 				<div class="list"><dl>
 					<dt><var>$item</var></dt>
 					<dd></dd>
-					<dt><var>$withAccess</var></dt>
-					<dd>Whether to attach access permission info</dd>
 				</dl></div>
 
 				<h4>Returns</h4>
@@ -462,7 +381,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_findAnnotationsForNonIiif">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#254-283" title="Go to source code">findAnnotationsForNonIiif</a>( <span>Item <var>$item</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Annotation.html#170-199" title="Go to source code">findAnnotationsForNonIiif</a>( <span>Item <var>$item</var></span> )</code>
 
 		<div class="description short">
 			<p>Return an array of annotations for a non-IIIF item, as JSON objects.</p>
@@ -501,7 +420,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_findAnnotationItemsUnder">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#285-303" title="Go to source code">findAnnotationItemsUnder</a>( <span>type <var>$item</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Annotation.html#201-219" title="Go to source code">findAnnotationItemsUnder</a>( <span>type <var>$item</var></span> )</code>
 
 		<div class="description short">
 			<p>Return an array of annotations for a non-annotation item, as Item records.</p>
@@ -540,7 +459,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_findAnnotationInContextByUri">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#305-353" title="Go to source code">findAnnotationInContextByUri</a>( <span>mixed <var>$context</var></span>, <span>string <var>$uri</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Annotation.html#221-269" title="Go to source code">findAnnotationInContextByUri</a>( <span>mixed <var>$context</var></span>, <span>string <var>$uri</var></span> )</code>
 
 		<div class="description short">
 			<p>Return the correct annotation Item corresponding to $uri for the context being annotated</p>
@@ -581,7 +500,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_findAttachmentInContextByUri">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#355-389" title="Go to source code">findAttachmentInContextByUri</a>( <span>mixed <var>$context</var></span>, <span>string <var>$uri</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Annotation.html#271-306" title="Go to source code">findAttachmentInContextByUri</a>( <span>mixed <var>$context</var></span>, <span>string <var>$uri</var></span> )</code>
 
 		<div class="description short">
 			<p>Return the correct attachment Item corresponding to $uri for the context being annotated.</p>
@@ -622,7 +541,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_findAnnotatedItemFor">#</a>
-		<code><a href="source-class-IiifItems_Util_Annotation.html#391-404" title="Go to source code">findAnnotatedItemFor</a>( <span>Item <var>$annotation</var></span> )</code>
+		<code><a href="source-class-IiifItems_Util_Annotation.html#308-321" title="Go to source code">findAnnotatedItemFor</a>( <span>Item <var>$annotation</var></span> )</code>
 
 		<div class="description short">
 			<p>Return the item to which this annotation is attached.</p>

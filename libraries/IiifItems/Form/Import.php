@@ -28,7 +28,7 @@ class IiifItems_Form_Import extends Omeka_Form {
         // Type (Collection/Manifest/Image-Canvas)
         $this->addElement('radio', 'items_import_type', array(
             'label' => __('Type'),
-            'multiOptions' => array(1 => 'Manifest', 2 => 'Canvas'),
+            'multiOptions' => array('Collection', 'Manifest', 'Canvas'),
         ));
         // Source
         $this->addElement('radio', 'items_import_source', array(
@@ -47,32 +47,22 @@ class IiifItems_Form_Import extends Omeka_Form {
         // Parent
         $this->addElement('select', 'items_import_to_parent', array(
             'label' => __('Parent'),
-            'multiOptions' => $this->__getParentOptions(),
+            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(null, (current_user()->role == 'contributor') ? current_user() : null),
         ));
         // Set to Public?
-        if (array_search(current_user()->role, array('super', 'admin')) === FALSE) {
-            $setPublicElem = $this->createElement('hidden', 'items_are_public', array('value' => '0'));
-            $setPublicElem->setDecorators(array('ViewHelper'));
-        } else {
-            $this->addElement('checkbox', 'items_are_public', array(
-                'label' => __('Set as Public?'),
-                'options' => array(
-                    'use_hidden_element' => false,
-                ),
-            ));
-        }
+        $this->addElement('checkbox', 'items_are_public', array(
+            'label' => __('Set as Public?'),
+            'options' => array(
+                'use_hidden_element' => false,
+            ),
+        ));
         // Set as Featured?
-        if (array_search(current_user()->role, array('super', 'admin')) === FALSE) {
-            $setFeaturedElem = $this->createElement('hidden', 'items_are_featured', array('value' => '0', 'disableLoadDefaultDecorators' => true));
-            $setFeaturedElem->setDecorators(array('ViewHelper'));
-        } else {
-            $this->addElement('checkbox', 'items_are_featured', array(
-                'label' => __('Set as Featured?'),
-                'options' => array(
-                    'use_hidden_element' => false,
-                ),
-            ));
-        }
+        $this->addElement('checkbox', 'items_are_featured', array(
+            'label' => __('Set as Featured?'),
+            'options' => array(
+                'use_hidden_element' => false,
+            ),
+        ));
         // Import backwards?
         $this->addElement('checkbox', 'items_are_reversed', array(
             'label' => __('Import in Reverse?'),
@@ -84,7 +74,7 @@ class IiifItems_Form_Import extends Omeka_Form {
         // Local Preview Size 
         $this->addElement('radio', 'items_preview_size', array(
             'label' => __('Local Preview Size'),
-            'multiOptions' => array('96x96', '512x512', 'Maximum'),
+            'multiOptions' => array('None', '96x96', '512x512', 'Maximum'),
         ));
         // Annotation Preview Size
         $this->addElement('radio', 'items_annotation_size', array(
@@ -105,20 +95,5 @@ class IiifItems_Form_Import extends Omeka_Form {
             )
         ));
         $this->addElement($submit);
-    }
-    
-    private function __getParentOptions() {
-        $db = get_db();
-        $collectionTable = $db->getTable('Collection');
-        $select = $collectionTable->getSelect();
-        if (current_user()->role == 'contributor') {
-            $select->where('owner_id = ?', array(current_user()->id));
-        }
-        $collections = $collectionTable->fetchObjects($select);
-        $options = array('' => 'None');
-        foreach ($collections as $collection) {
-            $options[raw_iiif_metadata($collection, 'iiifitems_collection_uuid_element')] = metadata($collection, array('Dublin Core', 'Title'));
-        }
-        return $options;
     }
 }

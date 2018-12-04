@@ -23,22 +23,46 @@
         Mirador({
             "id": "viewer",
             "buildPath": "<?php echo html_escape($mirador_path) . '/'; ?>",
+            "language": "<?php echo str_replace('_', '-', Zend_Registry::get('bootstrap')->getResource('Locale')->toString()); ?>",
             "layout": "1",
             "data": [
+                <?php if ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) : ?>
                 { "manifestUri": "<?php echo absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest'); ?>" }
+                <?php else : ?>
+                <?php foreach (IiifItems_Util_Collection::findSubcollectionsFor($thing) as $subcollection) : ?>
+                { "collectionUri": "<?php echo absolute_url(array('id' => $subcollection->id), 'iiifitems_collection'); ?>" },
+                <?php endforeach; ?>
+                <?php foreach (IiifItems_Util_Collection::findSubmanifestsFor($thing) as $submanifest) : ?>
+                { "manifestUri": "<?php echo absolute_url(array('things' => $type, 'id' => $submanifest->id), 'iiifitems_manifest'); ?>" },
+                <?php endforeach; ?>
+                {}
+                <?php endif; ?>
             ],
             <?php 
-                $defaultManifest = absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest');
+                $defaultManifest = '';
+                if ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) {
+                    $defaultManifest = absolute_url(array('things' => $type, 'id' => $thing->id), 'iiifitems_manifest');
+                }
+//                else {
+//                    $submanifests = IiifItems_Util_Collection::findSubmanifestsFor($thing);
+//                    if (count($submanifests) > 0) {
+//                        $defaultManifest = absolute_url(array('things' => $type, 'id' => $submanifests[0]->id), 'iiifitems_manifest');
+//                    }
+//                }
             ?>
+            <?php if ($type == 'collections' && IiifItems_Util_Collection::isCollection($thing)) : ?>
+            "openManifestsPage": true,
+            <?php else: ?>
             "windowObjects": [{
                 imageMode: "ImageView",
                 loadedManifest: "<?php echo $defaultManifest; ?>",
                 slotAddress: "row1.column1",
                 viewType: "ImageView",
-                displayLayout: false,
+                displayLayout: <?php echo ($type != 'collections' || !IiifItems_Util_Collection::isCollection($thing)) ? 'false' : 'true'; ?>,
                 sidePanel: true,
                 annotationLayer: true
             }],
+            <?php endif; ?>
             "windowSettings": {
                 canvasControls: {
                     annotations: {
@@ -48,7 +72,10 @@
                     }
                 },
                 bottomPanelVisible: false,
-                sidePanelVisible: false
+                sidePanelVisible: false,
+                sidePanelOptions: {
+                    searchTabAvailable: true
+                }
             },
             "autoHideControls": false,
             "mainMenuSettings": {

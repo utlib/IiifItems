@@ -25,7 +25,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         // Process the form instead if POSTed
         if ($this->getRequest()->isPost()) {
             if ($this->processSubmission()) {
-                $this->_helper->redirector->goto(array(), 'status');
+                $this->_helper->redirector->gotoRoute(array(), 'iiifItemsStatus');
             }
         }
     }
@@ -58,9 +58,19 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             }
             // Grab and verify the submitted source
             switch ($form->getValue('items_import_type')) {
+                case 0:
+                    $importType = 'Collection';
+                    if ($parentUuid && !IiifItems_Util_Collection::isCollection($parentCollection)) {
+                        $this->_helper->flashMessenger(__('Only collections can be the parent of a collection.'), 'error');
+                        return false;
+                    }
+                break;
                 case 1:
                     $importType = 'Manifest';
-                    $parentUuid = '';
+                    if ($parentUuid && !IiifItems_Util_Collection::isCollection($parentCollection)) {
+                        $this->_helper->flashMessenger(__('Only collections can be the parent of a manifest.'), 'error');
+                        return false;
+                    }
                 break;
                 case 2:
                     $importType = 'Canvas';
@@ -98,12 +108,15 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             }
             switch ($form->getValue('items_preview_size')) {
                 case 0:
-                    $importPreviewSize = 96;
+                    $importPreviewSize = null;
                 break;
                 case 1:
-                    $importPreviewSize = 512;
+                    $importPreviewSize = 96;
                 break;
                 case 2:
+                    $importPreviewSize = 512;
+                break;
+                case 3:
                     $importPreviewSize = 'full';
                 break;
                 default:
@@ -273,7 +286,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                         $addAnnotationThumbnailJob->perform();
                     }
                 } else {
-                    throw new Exception("No xywh bounds found on annotation.");
+                    throw new Exception(__("No xywh bounds found on annotation."));
                 }
             }
             // Non-annotation item
@@ -372,6 +385,6 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         }
         
         // Fail
-        $this->_helper->flashMessenger("Failed to purge JSON cache");
+        $this->_helper->flashMessenger(__("Failed to purge JSON cache"));
     }
 }

@@ -156,7 +156,7 @@
 		
 		<b>Package:</b> <a href="package-IiifItems.html">IiifItems</a>\<a href="package-IiifItems.Integration.html">Integration</a><br>
 
-			<b>Located at</b> <a href="source-class-IiifItems_Integration_Collections.html#3-280" title="Go to source code">libraries/IiifItems/Integration/Collections.php</a>
+			<b>Located at</b> <a href="source-class-IiifItems_Integration_Collections.html#3-424" title="Go to source code">libraries/IiifItems/Integration/Collections.php</a>
 		<br>
 	</div>
 
@@ -176,7 +176,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#__isntIiifDisplayableCollection">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#18-26" title="Go to source code">_isntIiifDisplayableCollection</a>( <span>Collection <var>$collection</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#23-31" title="Go to source code">_isntIiifDisplayableCollection</a>( <span>Collection <var>$collection</var></span> )</code>
 
 		<div class="description short">
 			<p>Returns whether a collection can't be displayed in IIIF.</p>
@@ -215,7 +215,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_install">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#28-47" title="Go to source code">install</a>( )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#33-54" title="Go to source code">install</a>( )</code>
 
 		<div class="description short">
 			<p>Install metadata elements for collections.</p>
@@ -247,7 +247,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_uninstall">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#49-60" title="Go to source code">uninstall</a>( )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#56-68" title="Go to source code">uninstall</a>( )</code>
 
 		<div class="description short">
 			<p>Remove metadata elements for collections.</p>
@@ -279,7 +279,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_initialize">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#62-77" title="Go to source code">initialize</a>( )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#70-88" title="Go to source code">initialize</a>( )</code>
 
 		<div class="description short">
 			<p>Add cache expiration hooks and element filters.</p>
@@ -299,6 +299,43 @@
 		</div>
 		</div></td>
 	</tr>
+	<tr data-order="hookCollectionsBrowseSql" id="_hookCollectionsBrowseSql">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_hookCollectionsBrowseSql">#</a>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#90-103" title="Go to source code">hookCollectionsBrowseSql</a>( <span>array <var>$args</var></span> )</code>
+
+		<div class="description short">
+			<p>Hook for setting up the browsing SQL for collections.
+Removes non-top collections from the "Browse all collections" view.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Hook for setting up the browsing SQL for collections.
+Removes non-top collections from the "Browse all collections" view.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$args</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
 	<tr data-order="hookBeforeSaveCollection" id="_hookBeforeSaveCollection">
 
 		<td class="attributes"><code>
@@ -311,7 +348,7 @@
 
 		<td class="name"><div>
 		<a class="anchor" href="#_hookBeforeSaveCollection">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#79-97" title="Go to source code">hookBeforeSaveCollection</a>( <span>array <var>$args</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#105-148" title="Go to source code">hookBeforeSaveCollection</a>( <span>array <var>$args</var></span> )</code>
 
 		<div class="description short">
 			<p>Hook for when a collection is saved.
@@ -321,6 +358,80 @@ Prepares newly saved collections for IIIF presentation.</p>
 		<div class="description detailed hidden">
 			<p>Hook for when a collection is saved.
 Prepares newly saved collections for IIIF presentation.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$args</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="hookBeforeDeleteCollection" id="_hookBeforeDeleteCollection">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_hookBeforeDeleteCollection">#</a>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#150-162" title="Go to source code">hookBeforeDeleteCollection</a>( <span>array <var>$args</var></span> )</code>
+
+		<div class="description short">
+			<p>Hook for when a collection is deleted.
+Unlink children collections when the parent is deleted.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Hook for when a collection is deleted.
+Unlink children collections when the parent is deleted.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$args</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="hookDefineAcl" id="_hookDefineAcl">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_hookDefineAcl">#</a>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#164-175" title="Go to source code">hookDefineAcl</a>( <span>array <var>$args</var></span> )</code>
+
+		<div class="description short">
+			<p>Hook for adding ACL entries.
+Allow public users to traverse the collection tree and the top-level collection.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Hook for adding ACL entries.
+Allow public users to traverse the collection tree and the top-level collection.</p>
 
 
 				<h4>Parameters</h4>
@@ -348,7 +459,7 @@ Prepares newly saved collections for IIIF presentation.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_hookAdminCollectionsBrowse">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#99-126" title="Go to source code">hookAdminCollectionsBrowse</a>( <span>array <var>$args</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#177-203" title="Go to source code">hookAdminCollectionsBrowse</a>( <span>array <var>$args</var></span> )</code>
 
 		<div class="description short">
 			<p>Hook for the admin-side collection listings.
@@ -385,7 +496,7 @@ Use client-side JS to rewrite the "items in a collection" reminder.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_hookAdminCollectionsBrowseEach">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#128-145" title="Go to source code">hookAdminCollectionsBrowseEach</a>( <span>array <var>$args</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#205-224" title="Go to source code">hookAdminCollectionsBrowseEach</a>( <span>array <var>$args</var></span> )</code>
 
 		<div class="description short">
 			<p>Hook for entries in the admin-side collection listings.
@@ -422,7 +533,7 @@ Adds the appropriate action links.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_hookAdminCollectionsShow">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#147-178" title="Go to source code">hookAdminCollectionsShow</a>( <span>array <var>$args</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#226-262" title="Go to source code">hookAdminCollectionsShow</a>( <span>array <var>$args</var></span> )</code>
 
 		<div class="description short">
 			<p>Hook for viewing a single collection on the admin side.
@@ -459,7 +570,7 @@ Adds Mirador viewer and other IIIF info.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_hookAdminCollectionsShowSidebar">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#180-210" title="Go to source code">hookAdminCollectionsShowSidebar</a>( <span>array <var>$args</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#264-283" title="Go to source code">hookAdminCollectionsShowSidebar</a>( <span>array <var>$args</var></span> )</code>
 
 		<div class="description short">
 			<p>Hook for the sidebar while viewing a single collection on the admin side.
@@ -469,6 +580,80 @@ Adds the "Clean" button for refreshing the cache's entry on the collection.</p>
 		<div class="description detailed hidden">
 			<p>Hook for the sidebar while viewing a single collection on the admin side.
 Adds the "Clean" button for refreshing the cache's entry on the collection.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$args</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="hookPublicCollectionsBrowseEach" id="_hookPublicCollectionsBrowseEach">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_hookPublicCollectionsBrowseEach">#</a>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#285-299" title="Go to source code">hookPublicCollectionsBrowseEach</a>( <span>array <var>$args</var></span> )</code>
+
+		<div class="description short">
+			<p>Hook for each entry of the public collection browsing view.
+Add folder icon and submember viewing link for collection-type collections.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Hook for each entry of the public collection browsing view.
+Add folder icon and submember viewing link for collection-type collections.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$args</var></dt>
+					<dd></dd>
+				</dl></div>
+
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="hookPublicCollectionsBrowse" id="_hookPublicCollectionsBrowse">
+
+		<td class="attributes"><code>
+			 public 
+
+			
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_hookPublicCollectionsBrowse">#</a>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#301-309" title="Go to source code">hookPublicCollectionsBrowse</a>( <span>array <var>$args</var></span> )</code>
+
+		<div class="description short">
+			<p>Hook for the public collection browsing view.
+Adds a script that hides the "view items" link in collection-type collections.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Hook for the public collection browsing view.
+Adds a script that hides the "view items" link in collection-type collections.</p>
 
 
 				<h4>Parameters</h4>
@@ -496,7 +681,7 @@ Adds the "Clean" button for refreshing the cache's entry on the collection.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_hookPublicCollectionsShow">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#212-240" title="Go to source code">hookPublicCollectionsShow</a>( <span>array <var>$args</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#311-350" title="Go to source code">hookPublicCollectionsShow</a>( <span>array <var>$args</var></span> )</code>
 
 		<div class="description short">
 			<p>Hook for the public view of single collections.
@@ -533,7 +718,7 @@ Adds Mirador viewer and other IIIF info.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_inputForCollectionOriginalId">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#242-253" title="Go to source code">inputForCollectionOriginalId</a>( <span>array <var>$comps</var></span>, <span>array <var>$args</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#352-363" title="Go to source code">inputForCollectionOriginalId</a>( <span>array <var>$comps</var></span>, <span>array <var>$args</var></span> )</code>
 
 		<div class="description short">
 			<p>Element input filter for collection's original ID.
@@ -576,7 +761,7 @@ Replace it with a single static value.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_inputForCollectionIiifType">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#255-266" title="Go to source code">inputForCollectionIiifType</a>( <span>array <var>$comps</var></span>, <span>array <var>$args</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#365-376" title="Go to source code">inputForCollectionIiifType</a>( <span>array <var>$comps</var></span>, <span>array <var>$args</var></span> )</code>
 
 		<div class="description short">
 			<p>Element input filter for collection's IIIF type.
@@ -586,6 +771,92 @@ Replace it with a single dropdown.</p>
 		<div class="description detailed hidden">
 			<p>Element input filter for collection's IIIF type.
 Replace it with a single dropdown.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$comps</var></dt>
+					<dd></dd>
+					<dt><var>$args</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="displayForCollectionParent" id="_displayForCollectionParent">
+
+		<td class="attributes"><code>
+			 public 
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_displayForCollectionParent">#</a>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#378-393" title="Go to source code">displayForCollectionParent</a>( <span>string <var>$text</var></span>, <span>array <var>$args</var></span> )</code>
+
+		<div class="description short">
+			<p>Display filter for collection's parent.
+Replace it with a link to the parent.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Display filter for collection's parent.
+Replace it with a link to the parent.</p>
+
+
+				<h4>Parameters</h4>
+				<div class="list"><dl>
+					<dt><var>$text</var></dt>
+					<dd></dd>
+					<dt><var>$args</var></dt>
+					<dd></dd>
+				</dl></div>
+
+				<h4>Returns</h4>
+				<div class="list">
+					string
+				</div>
+
+
+
+
+		</div>
+		</div></td>
+	</tr>
+	<tr data-order="inputForCollectionParent" id="_inputForCollectionParent">
+
+		<td class="attributes"><code>
+			 public 
+
+			string
+			
+			</code>
+		</td>
+
+		<td class="name"><div>
+		<a class="anchor" href="#_inputForCollectionParent">#</a>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#395-410" title="Go to source code">inputForCollectionParent</a>( <span>array <var>$comps</var></span>, <span>array <var>$args</var></span> )</code>
+
+		<div class="description short">
+			<p>Element input filter for collection parent.
+Replace it with a single dropdown for possible parents.</p>
+		</div>
+
+		<div class="description detailed hidden">
+			<p>Element input filter for collection parent.
+Replace it with a single dropdown for possible parents.</p>
 
 
 				<h4>Parameters</h4>
@@ -619,7 +890,7 @@ Replace it with a single dropdown.</p>
 
 		<td class="name"><div>
 		<a class="anchor" href="#_inputForCollectionUuid">#</a>
-		<code><a href="source-class-IiifItems_Integration_Collections.html#268-279" title="Go to source code">inputForCollectionUuid</a>( <span>array <var>$comps</var></span>, <span>array <var>$args</var></span> )</code>
+		<code><a href="source-class-IiifItems_Integration_Collections.html#412-423" title="Go to source code">inputForCollectionUuid</a>( <span>array <var>$comps</var></span>, <span>array <var>$args</var></span> )</code>
 
 		<div class="description short">
 			<p>Element input filter for UUID.
@@ -683,7 +954,7 @@ Replace it with a single, read-only display.</p>
 		</code></td>
 
 		<td class="name">
-				<a href="source-class-IiifItems_Integration_Collections.html#9-16" title="Go to source code"><var>$_hooks</var></a>
+				<a href="source-class-IiifItems_Integration_Collections.html#9-21" title="Go to source code"><var>$_hooks</var></a>
 
 			<div class="description short">
 				
@@ -698,11 +969,16 @@ Replace it with a single, read-only display.</p>
 			<div>
 				<a href="#$_hooks" class="anchor">#</a>
 				<code><span class="php-keyword1">array</span>(
+    <span class="php-quote">'collections_browse_sql'</span>,
     <span class="php-quote">'before_save_collection'</span>,
+    <span class="php-quote">'before_delete_collection'</span>,
+    <span class="php-quote">'define_acl'</span>,
     <span class="php-quote">'admin_collections_browse'</span>,
     <span class="php-quote">'admin_collections_browse_each'</span>,
     <span class="php-quote">'admin_collections_show'</span>,
     <span class="php-quote">'admin_collections_show_sidebar'</span>,
+    <span class="php-quote">'public_collections_browse'</span>,
+    <span class="php-quote">'public_collections_browse_each'</span>,
     <span class="php-quote">'public_collections_show'</span>,
 )</code>
 			</div>

@@ -1,0 +1,975 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Translation for the IIIF Toolkit plugin for Omeka "
+"Classic 2.x\n"
+"POT-Creation-Date: 2018-01-04 11:21-0500\n"
+"PO-Revision-Date: 2018-01-04 11:35-0500\n"
+"Last-Translator: Dickson Law <dickson.law@utoronto.ca>\n"
+"Language-Team: University of Toronto <exhibits@library.utoronto.ca>\n"
+"Language: zh-TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"X-Poedit-KeywordsList: __;gettext;gettext_noop;plural:1,2\n"
+"X-Poedit-Basepath: /home/developer/IiifItems\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: IiifItemsPlugin.php:124
+msgid "Invalid CSRF token."
+msgstr "反跨站请求校验值无效。"
+
+#: helpers/IiifItemsFunctions.php:217
+msgid "Wrong argument type for elementSetMetadata parameter."
+msgstr "elementSetMetadata参数类别错误。"
+
+#: helpers/IiifItemsFunctions.php:225
+#, php-format
+msgid "Exception passed when adding element to new element set: %s"
+msgstr "元素集增添元素时发生错误：%s"
+
+#: helpers/IiifItemsFunctions.php:250
+#, php-format
+msgid "Exception passed when adding element to new item type: %s"
+msgstr "单件型式元素增添元素时发生错误：%s"
+
+#: views/admin/mirador/annotator.php:16
+msgid "Mirador Viewer"
+msgstr "Mirador检阅器"
+
+#: views/admin/annotator/annotate.php:4
+#, php-format
+msgid "Annotating: \"%s\""
+msgstr "正在注释：%s"
+
+#: views/admin/annotator/annotate.php:11
+msgid "Return to Previous Page"
+msgstr "回到上页"
+
+#: views/admin/import/maintenance.php:3 views/admin/import/status.php:3
+#: views/admin/import/form.php:3
+#: libraries/IiifItems/Integration/System.php:150
+msgid "IIIF Toolkit"
+msgstr "IIIF工具箱"
+
+#: views/admin/import/maintenance.php:10 views/admin/import/_nav.php:13
+msgid "Maintenance"
+msgstr "例行保养"
+
+#: views/admin/import/maintenance.php:13
+msgid "Purge JSON cache"
+msgstr "清理JSON缓存"
+
+#: views/admin/import/maintenance.php:16
+msgid ""
+"Cleans all cached manifest data. It is recommended to this after upgrading, "
+"changing the IIIF prefix or making any other major configuration change."
+msgstr ""
+"清除所有缓存的IIIF配置资料，建议升级后或改变IIIF地址前缀或其他基本设定后清理"
+"一次。"
+
+#: views/admin/import/maintenance.php:20
+#: libraries/IiifItems/Integration/Collections.php:298
+msgid "Clean"
+msgstr "清理"
+
+#: views/admin/import/_nav.php:5 views/admin/import/form.php:10
+msgid "Import Items"
+msgstr "汇入物件"
+
+#: views/admin/import/_nav.php:9 views/admin/import/status.php:78
+msgid "Status"
+msgstr "状态"
+
+#: views/admin/import/status.php:25
+msgid "Status Panel"
+msgstr "状态面板"
+
+#: views/admin/import/status.php:30
+msgid "Queued"
+msgstr "待机"
+
+#: views/admin/import/status.php:31
+msgid "In Progress"
+msgstr "进行中"
+
+#: views/admin/import/status.php:32
+msgid "Completed"
+msgstr "完成"
+
+#: views/admin/import/status.php:33
+msgid "Failed"
+msgstr "失败"
+
+#: views/admin/import/status.php:73 libraries/IiifItems/Form/Import.php:35
+msgid "Source"
+msgstr "来源"
+
+#: views/admin/import/status.php:74
+msgid "Imported Items"
+msgstr "已汇入物件"
+
+#: views/admin/import/status.php:75
+msgid "Skipped Items"
+msgstr "略过物件"
+
+#: views/admin/import/status.php:76
+msgid "Failed Items"
+msgstr "无效物件"
+
+#: views/admin/import/status.php:77
+msgid "Date"
+msgstr "日期"
+
+#: views/admin/collections/members.php:2 views/admin/collections/tree.php:2
+msgid "Browse Collections"
+msgstr "浏览合集"
+
+#: views/admin/collections/members.php:2 views/admin/collections/tree.php:2
+#: views/public/collections/tree.php:6
+#, php-format
+msgid "(%s total)"
+msgstr "(总计%s)"
+
+#: views/admin/collections/members.php:14
+#: views/admin/collections/members.php:69
+#: views/admin/collections/members.php:77
+msgid "Add New Sub-Collection"
+msgstr "增加子合集"
+
+#: views/admin/collections/members.php:23 views/admin/collections/tree.php:210
+#: views/public/collections/tree.php:12
+msgid "Title"
+msgstr "标题"
+
+#: views/admin/collections/members.php:24
+#: views/public/collections/tree.php:151
+msgid "Contributors"
+msgstr "贡献者"
+
+#: views/admin/collections/members.php:25 views/admin/collections/tree.php:211
+#: views/public/collections/tree.php:13
+msgid "Date Added"
+msgstr "增加日期"
+
+#: views/admin/collections/members.php:26
+msgid "Total Number of Items"
+msgstr "总件数"
+
+#: views/admin/collections/members.php:41
+msgid "(Private)"
+msgstr "(未公开)"
+
+#: views/admin/collections/members.php:44
+msgid "Edit"
+msgstr "编辑"
+
+#: views/admin/collections/members.php:53
+msgid "No contributors"
+msgstr "无贡献者"
+
+#: views/admin/collections/members.php:72
+msgid "There are no collections on this page."
+msgstr "本页面无合集。"
+
+#: views/admin/collections/members.php:72
+msgid "View All Collections"
+msgstr "浏览所有合集"
+
+#: views/admin/collections/members.php:75
+msgid "This collection has no submembers."
+msgstr "本合集无附属目录。"
+
+#: views/admin/collections/tree.php:153 views/admin/collections/tree.php:234
+msgid "Submembers: "
+msgstr "附属件数："
+
+#: views/admin/collections/tree.php:166 views/admin/collections/tree.php:240
+#: views/admin/collections/tree.php:244
+msgid "Items: "
+msgstr "件数："
+
+#: views/admin/collections/tree.php:205 views/admin/collections/tree.php:254
+msgid "Add a Collection"
+msgstr "增加合集"
+
+#: views/admin/collections/tree.php:216
+msgid "Sort by:"
+msgstr "以此排序："
+
+#: views/admin/collections/explorer.php:17
+msgid "Loading..."
+msgstr "载入中..."
+
+#: views/shared/exhibit_layouts/iiifitem/form.php:6
+msgid "Items"
+msgstr "物件"
+
+#: views/shared/exhibit_layouts/iiifitem/form.php:8
+msgid "Description"
+msgstr "描述"
+
+#: views/public/collections/tree.php:2
+#: libraries/IiifItems/Integration/System.php:179
+msgid "Browse Catalogue"
+msgstr "浏览总目录"
+
+#: views/public/collections/tree.php:17
+msgid "Sort by: "
+msgstr "以此排序："
+
+#: views/public/collections/tree.php:158
+#: controllers/CollectionsController.php:197
+#, php-format
+msgid "Expand submembers in %s"
+msgstr "扩展%s的附属件"
+
+#: views/public/collections/tree.php:160
+#: controllers/CollectionsController.php:197
+#, php-format
+msgid "View the items in %s"
+msgstr "查看%s的单件"
+
+#: libraries/IiifItems/ImageDownloader.php:43
+#: libraries/IiifItems/ImageDownloader.php:73
+#: libraries/IiifItems/Job/AddAnnotationThumbnail.php:81
+#, php-format
+msgid "Download with size %s failed, trying next..."
+msgstr "下载%s像素版本失败，正在重试..."
+
+#: libraries/IiifItems/ImageDownloader.php:61
+#: libraries/IiifItems/Job/AddAnnotationThumbnail.php:76
+#, php-format
+msgid "Downloading image %s"
+msgstr "正在下载映像%s"
+
+#: libraries/IiifItems/ImageDownloader.php:63
+#: libraries/IiifItems/Job/AddAnnotationThumbnail.php:78
+#, php-format
+msgid "Download OK: %s"
+msgstr "下载成功：%s"
+
+#: libraries/IiifItems/IiifUtil.php:109
+#, php-format
+msgid ""
+"attachMetadataToSelect only accepts string, numeric or Element for elements. "
+"Input was: %s"
+msgstr "attachMetadataToSelect参数只接受输入字符串、数字或元素。输入值：%s"
+
+#: libraries/IiifItems/Integration/ExhibitBuilder.php:21
+msgid "IIIF Items"
+msgstr "IIIF物件"
+
+#: libraries/IiifItems/Integration/ExhibitBuilder.php:22
+msgid "Embed a Mirador viewer for one or more items"
+msgstr "嵌入显示单件的Mirador检阅器"
+
+#: libraries/IiifItems/Integration/ExhibitBuilder.php:25
+msgid "IIIF Manifests"
+msgstr "IIIF配置集"
+
+#: libraries/IiifItems/Integration/ExhibitBuilder.php:26
+msgid "Embed a Mirador viewer for one or more manifests"
+msgstr "嵌入显示IIIF配置集的Mirador检阅器"
+
+#: libraries/IiifItems/Integration/Files.php:72
+msgid "IIIF File Information"
+msgstr "IIIF档案详目"
+
+#: libraries/IiifItems/Integration/Files.php:72
+#, php-format
+msgid "Manifest URL: %s"
+msgstr "配置集地址：%s"
+
+#: libraries/IiifItems/Integration/Items.php:206
+#: libraries/IiifItems/Integration/Items.php:275
+#: libraries/IiifItems/Integration/Annotations.php:114
+#: libraries/IiifItems/Integration/Collections.php:206
+#: libraries/IiifItems/Integration/Collections.php:280
+msgid "Annotate"
+msgstr "注释"
+
+#: libraries/IiifItems/Integration/Items.php:209
+#, php-format
+msgid "List annotations (%d)"
+msgstr "注释列表（%d）"
+
+#: libraries/IiifItems/Integration/Items.php:236
+msgid "IIIF Annotation Information"
+msgstr "IIIF注释详目"
+
+#: libraries/IiifItems/Integration/Items.php:238
+msgid "IIIF Item Information"
+msgstr "IIIF单件详目"
+
+#: libraries/IiifItems/Integration/Items.php:246
+#: libraries/IiifItems/Integration/Items.php:311
+#: libraries/IiifItems/Integration/Collections.php:240
+#: libraries/IiifItems/Integration/Collections.php:407
+msgid "Manifest URL"
+msgstr "配置集地址"
+
+#: libraries/IiifItems/Integration/Items.php:247
+msgid "Original ID"
+msgstr "原装ID"
+
+#: libraries/IiifItems/Integration/Items.php:248
+#: languages/special_strings.php:25
+msgid "UUID"
+msgstr "UUID"
+
+#: libraries/IiifItems/Integration/Items.php:271
+#: libraries/IiifItems/Integration/Annotations.php:104
+#: libraries/IiifItems/Integration/Collections.php:284
+#: libraries/IiifItems/Integration/Collections.php:291
+msgid "Annotations"
+msgstr "注释"
+
+#: libraries/IiifItems/Integration/Items.php:272
+#, php-format
+msgid "This item has %s%d%s annotation."
+msgid_plural "This item has %s%d%s annotations."
+msgstr[0] "此物件含有%s%d%s项注释。"
+msgstr[1] "此物件含有%s%d%s项注释。"
+
+#: libraries/IiifItems/Integration/Items.php:276
+#: libraries/IiifItems/Integration/Items.php:281
+#: libraries/IiifItems/Integration/Annotations.php:115
+#: libraries/IiifItems/Integration/Annotations.php:120
+msgid "Repair"
+msgstr "修復"
+
+#: libraries/IiifItems/Integration/Items.php:278
+msgid ""
+"If this item is imported via IIIF Toolkit and the files are missing/"
+"corrupted, you can repair it below. All files belonging to this item will be "
+"deleted and then reloaded."
+msgstr ""
+"若使用IIIF工具箱进行汇入时有档案损毁，可以按「修復」重新下载，并清除旧有的档"
+"案。"
+
+#: libraries/IiifItems/Integration/Items.php:307
+#: libraries/IiifItems/Integration/Collections.php:406
+msgid "IIIF Manifest"
+msgstr "IIIF配置集"
+
+#: libraries/IiifItems/Integration/Items.php:324
+#: libraries/IiifItems/Integration/Collections.php:450
+msgid "Default"
+msgstr "预置"
+
+#: libraries/IiifItems/Integration/Items.php:324
+msgid "Always"
+msgstr "永远"
+
+#: libraries/IiifItems/Integration/Items.php:324
+msgid "Never"
+msgstr "永不"
+
+#: libraries/IiifItems/Integration/Items.php:350
+#: libraries/IiifItems/Integration/Collections.php:503
+msgid "<TBD>"
+msgstr "待定"
+
+#: libraries/IiifItems/Integration/Annotations.php:79
+#, php-format
+msgid "Attached to: %s"
+msgstr "源自%s"
+
+#: libraries/IiifItems/Integration/Annotations.php:117
+msgid ""
+"If this annotation is missing its preview thumbnail, you can repair it "
+"below. All preview files attached to this item will be deleted and then "
+"reloaded."
+msgstr "若此注释的预览图有损毁，可以按「修復」重新载入，并清除旧有的预览图。"
+
+#: libraries/IiifItems/Integration/Annotations.php:147
+#, php-format
+msgid "From collection %s"
+msgstr "属于合集%s"
+
+#: libraries/IiifItems/Integration/Collections.php:120
+msgid "A collection can only have collection-type collections as its parent."
+msgstr "IIIF合集只能以其他IIIF合集作为母目录。"
+
+#: libraries/IiifItems/Integration/Collections.php:125
+msgid "You do not have the permission reassign this parent as a contributor."
+msgstr "您的贡献者使用权限不能重设此IIIF合集母目录。"
+
+#: libraries/IiifItems/Integration/Collections.php:133
+msgid "A collection cannot have itself or a descendent as its parent."
+msgstr "IIIF合集不能以自己或其他子合集作为母目录。"
+
+# Special string
+#: libraries/IiifItems/Integration/Collections.php:169
+#: controllers/CollectionsController.php:143
+#, fuzzy, php-format
+msgid "%s%d item%s has no collection."
+msgid_plural "%s%d items%s aren't in a collection."
+msgstr[0] "%s%d个单件%s尚未安放在合集里。"
+msgstr[1] "%s%d个单件%s尚未安放在合集里。"
+
+#: libraries/IiifItems/Integration/Collections.php:171
+#: controllers/CollectionsController.php:146
+msgid "All items are in a collection."
+msgstr "所有单件都已安放在合集里。"
+
+#: libraries/IiifItems/Integration/Collections.php:202
+msgid "List Members"
+msgstr "附属目录列表"
+
+#: libraries/IiifItems/Integration/Collections.php:229
+msgid "IIIF Collection Information"
+msgstr "IIIF合集详目"
+
+#: libraries/IiifItems/Integration/Collections.php:230
+#: libraries/IiifItems/Integration/Collections.php:399
+msgid "Collection URL"
+msgstr "合集地址"
+
+#: libraries/IiifItems/Integration/Collections.php:239
+msgid "IIIF Manifest Information"
+msgstr "IIIF配置集详目"
+
+#: libraries/IiifItems/Integration/Collections.php:285
+#, php-format
+msgid "This manifest contains %s%d%s annotation."
+msgid_plural "This manifest contains %s%d%s annotations."
+msgstr[0] "此配置集含有%s%d%s项注释。"
+msgstr[1] "此配置集含有%s%d%s项注释。"
+
+#: libraries/IiifItems/Integration/Collections.php:292
+#, php-format
+msgid "This collection contains %s%d%s annotation."
+msgid_plural "This collection contains %s%d%s annotations."
+msgstr[0] "此合集含有%s%d%s项注释。"
+msgstr[1] "此合集含有%s%d%s项注释。"
+
+#: libraries/IiifItems/Integration/Collections.php:296
+msgid "Cache Management"
+msgstr "缓存管理"
+
+#: libraries/IiifItems/Integration/Collections.php:297
+msgid ""
+"If the content shown in the viewer looks out of date, you can clear the "
+"cache to regenerate the manifest."
+msgstr "如果检阅器的内容没有如期更新，按「清理」重设配置集。"
+
+#: libraries/IiifItems/Integration/Collections.php:328
+msgid "Include IIIF Submembers"
+msgstr "包括IIIF附属目录"
+
+#: libraries/IiifItems/Integration/Collections.php:345
+#, php-format
+msgid "View submembers in %s"
+msgstr "查看%s的附属目录"
+
+#: libraries/IiifItems/Integration/Collections.php:398
+msgid "IIIF Collection"
+msgstr "IIIF合集"
+
+#: libraries/IiifItems/Integration/Collections.php:450
+msgid "Manifest"
+msgstr "配置集"
+
+#: libraries/IiifItems/Integration/Collections.php:450
+msgid "Collection"
+msgstr "合集"
+
+#: libraries/IiifItems/Integration/Collections.php:450
+msgid "Hidden"
+msgstr "隐藏"
+
+#: libraries/IiifItems/Integration/System.php:156
+msgid "Collections"
+msgstr "合集"
+
+#: libraries/IiifItems/Integration/System.php:158
+msgid "IIIF Catalogue Tree"
+msgstr "IIIF总目录"
+
+#: libraries/IiifItems/Integration/System.php:199
+msgid "IIIF Preview"
+msgstr "IIIF预览"
+
+#: libraries/IiifItems/Form/Config.php:19
+msgid "IIIF Prefix"
+msgstr "IIIF地址前缀"
+
+#: libraries/IiifItems/Form/Config.php:20
+msgid ""
+"The URL root of the HTTP-resolved IIIF server referencing this Omeka "
+"installation. Use {FILENAME} for a file name without the extension, "
+"{EXTENSION} for the file extension alone and {FULLNAME} for a file name with "
+"the extension."
+msgstr ""
+"指定引用Omeka档案内容的IIIF映像伺服器所在的地址，用{FILENAME}代表档案名（不包"
+"含后缀），{EXTENSION}代表档案后缀，{FULLNAME}代表档案全名（包含后缀）。"
+
+#: libraries/IiifItems/Form/Config.php:25
+msgid "Mirador Path"
+msgstr "Mirador地址路径"
+
+#: libraries/IiifItems/Form/Config.php:26
+msgid "URL to the directory holding the main mirador.js and supporting files."
+msgstr "包含mirador.js和相应档案的地址路径"
+
+#: libraries/IiifItems/Form/Config.php:30
+msgid "Mirador JS file"
+msgstr "Mirador的JS档案路径"
+
+#: libraries/IiifItems/Form/Config.php:31
+msgid ""
+"Path to the main Mirador JS file, relative to the specified Mirador Path."
+msgstr "指定Mirador的JS档案的相对路径(以上述Mirador地址路径为基点)"
+
+#: libraries/IiifItems/Form/Config.php:35
+msgid "Mirador CSS file"
+msgstr "Mirador的CSS样式档案路径"
+
+#: libraries/IiifItems/Form/Config.php:36
+msgid ""
+"Path to the main Mirador CSS file. Can be absolute (starting with http:// or "
+"https://) or relative to the specified Mirador Path."
+msgstr ""
+"指定Mirador的CSS样式档案的路径，可以是绝对路径(必需以http://或https://开头)或"
+"以上述Mirador地址路径为基点的相对路径"
+
+#: libraries/IiifItems/Form/Config.php:41
+msgid "Show Mirador on IIIF Collections?"
+msgstr "在IIIF合集页面显示Mirador"
+
+#: libraries/IiifItems/Form/Config.php:42
+msgid "Whether to embed Mirador on IIIF Collections."
+msgstr "切换是否在IIIF合集页面上嵌入Mirador检阅器"
+
+#: libraries/IiifItems/Form/Config.php:46
+msgid "Show Mirador on IIIF Manifests?"
+msgstr "在IIIF配置集页面显示Mirador集显示Mirador"
+
+#: libraries/IiifItems/Form/Config.php:47
+msgid "Whether to embed Mirador on IIIF Manifests."
+msgstr "切换是否在IIIF配置集页面上嵌入Mirador检阅器"
+
+#: libraries/IiifItems/Form/Config.php:51
+msgid "Show Mirador on items?"
+msgstr "在单件页面显示Mirador集显示Mirador"
+
+#: libraries/IiifItems/Form/Config.php:52
+msgid "Whether to embed Mirador on items."
+msgstr "切换是否在单件页面上嵌入Mirador检阅器"
+
+#: libraries/IiifItems/Form/Config.php:56
+msgid "Show Mirador on files?"
+msgstr "在档案页面显示Mirador集显示Mirador"
+
+#: libraries/IiifItems/Form/Config.php:57
+msgid "Whether to embed Mirador on files. (Admin-side only)"
+msgstr "切换是否在档案页面上嵌入Mirador检阅器（只限管理员）"
+
+#: libraries/IiifItems/Form/Config.php:61
+msgid "Display public catalogue?"
+msgstr "显示公开目录"
+
+#: libraries/IiifItems/Form/Config.php:62
+msgid ""
+"Whether to display the \"Browse Catalogue\" link in the public navigation "
+"menu."
+msgstr "切换是否在公衆浏览选单上显示IIIF目录连结"
+
+#: libraries/IiifItems/Form/Import.php:30
+msgid "Type"
+msgstr "型式"
+
+#: libraries/IiifItems/Form/Import.php:39
+msgid "File"
+msgstr "档案"
+
+#: libraries/IiifItems/Form/Import.php:42
+msgid "URL"
+msgstr "地址"
+
+#: libraries/IiifItems/Form/Import.php:45 languages/special_strings.php:22
+msgid "JSON Data"
+msgstr "JSON资料"
+
+#: libraries/IiifItems/Form/Import.php:49
+msgid "Parent"
+msgstr "母目录"
+
+#: libraries/IiifItems/Form/Import.php:54
+msgid "Set as Public?"
+msgstr "是否公开？"
+
+#: libraries/IiifItems/Form/Import.php:61
+msgid "Set as Featured?"
+msgstr "是否特色？"
+
+#: libraries/IiifItems/Form/Import.php:68
+msgid "Import in Reverse?"
+msgstr "是否以倒序汇入？"
+
+#: libraries/IiifItems/Form/Import.php:69
+msgid ""
+"Select this if you have enabled any plugins or configurations that cause "
+"items to be listed latest-first."
+msgstr "如果有挂件或设定令单件由新至旧排列，建议勾选此选项"
+
+#: libraries/IiifItems/Form/Import.php:76
+msgid "Local Preview Size"
+msgstr "单件预览图大小"
+
+#: libraries/IiifItems/Form/Import.php:81
+msgid "Annotation Preview Size"
+msgstr "注释预览图大小"
+
+#: libraries/IiifItems/Form/Import.php:86
+msgid "Import"
+msgstr "汇入"
+
+#: libraries/IiifItems/Util/CollectionOptions.php:124
+msgid "Thing must be an Item or Collection."
+msgstr "目标必须是单件或合集。"
+
+#: libraries/IiifItems/Util/CollectionOptions.php:142
+msgid "No Parent"
+msgstr "没有母目录"
+
+#: libraries/IiifItems/Util/CollectionOptions.php:308
+msgid "Top"
+msgstr "主层"
+
+#: libraries/IiifItems/Job/Import.php:36
+#, php-format
+msgid "Upload: %s"
+msgstr "上载档案：%s"
+
+#: libraries/IiifItems/Job/Import.php:38
+msgid "Pasted JSON"
+msgstr "粘贴JSON"
+
+#: libraries/IiifItems/Job/Import.php:39
+msgid "Unknown"
+msgstr "未知"
+
+#: libraries/IiifItems/Job/Import.php:53
+#, php-format
+msgid "Starting Import Job %s"
+msgstr "正开始汇入工序：%s"
+
+#: libraries/IiifItems/Job/Import.php:59
+#, php-format
+msgid "Got JSON from uploaded file: %s"
+msgstr "从上载档案收到JSON：%s"
+
+#: libraries/IiifItems/Job/Import.php:63
+#, php-format
+msgid "Downloaded from %s"
+msgstr "从%s下载了资料"
+
+#: libraries/IiifItems/Job/Import.php:67
+msgid "Got JSON from submitted string"
+msgstr "从表格提供的资料收到JSON"
+
+#: libraries/IiifItems/Job/Import.php:70 libraries/IiifItems/Job/Import.php:95
+#: controllers/ImportController.php:106 controllers/ImportController.php:123
+#: controllers/ImportController.php:140
+msgid "Invalid import source."
+msgstr "汇入来源无效。"
+
+#: libraries/IiifItems/Job/Import.php:74
+#, php-format
+msgid "Top level structure parsed for Import Job %s"
+msgstr "已解析汇入工序%s的顶层结构"
+
+#: libraries/IiifItems/Job/Import.php:77
+#, php-format
+msgid "Enumerating download items for Import Job %s"
+msgstr "正在列举汇入工序%s的可下载物件"
+
+#: libraries/IiifItems/Job/Import.php:80
+#, php-format
+msgid "Found %s download items for Import Job %s"
+msgstr "找到%s个物件可供汇入工序%s下载"
+
+#: libraries/IiifItems/Job/Import.php:104
+msgid "Import done"
+msgstr "汇入工序完成"
+
+#: libraries/IiifItems/Job/Import.php:193
+msgid "Not a valid collection."
+msgstr "合集无效。"
+
+#: libraries/IiifItems/Job/Import.php:198
+#, php-format
+msgid "Creating collection for collection %s"
+msgstr "为合集%s建立合集"
+
+#: libraries/IiifItems/Job/Import.php:204
+#, php-format
+msgid "Scanning subcollections for %s"
+msgstr "扫瞄合集%s的子合集"
+
+#: libraries/IiifItems/Job/Import.php:213
+#, php-format
+msgid "Scanning submanifests for %s"
+msgstr "扫瞄合集%s的子配置集"
+
+#: libraries/IiifItems/Job/Import.php:222
+#, php-format
+msgid "Scanning submembers for %s"
+msgstr "扫瞄合集%s的子目录"
+
+#: libraries/IiifItems/Job/Import.php:238
+msgid "Setting public/featured flags for collection..."
+msgstr "正在为合集%s设定公开和特色选项..."
+
+#: libraries/IiifItems/Job/Import.php:242
+msgid "Collection OK."
+msgstr "成功建立合集。"
+
+#: libraries/IiifItems/Job/Import.php:259
+msgid "Not a valid manifest."
+msgstr "配置集无效。"
+
+#: libraries/IiifItems/Job/Import.php:268
+#, php-format
+msgid "Creating collection for manifest %s"
+msgstr "为配置集%s建立合集"
+
+#: libraries/IiifItems/Job/Import.php:278
+msgid "Setting public/featured flags for manifest..."
+msgstr "正在为配置集%s设定公开和特色选项..."
+
+#: libraries/IiifItems/Job/Import.php:286
+msgid "Manifest OK."
+msgstr "成功建立配置集。"
+
+#: libraries/IiifItems/Job/Import.php:303
+msgid "Not a valid canvas."
+msgstr "画布无效。"
+
+#: libraries/IiifItems/Job/Import.php:315
+#, php-format
+msgid "Processing canvas %s"
+msgstr "正在处理画布%s"
+
+#: libraries/IiifItems/Job/Import.php:340
+msgid "Canvas OK."
+msgstr "成功建立画布。"
+
+#: libraries/IiifItems/Job/Import.php:380
+#, php-format
+msgid "Processing annotation %s"
+msgstr "正在处理注释%s"
+
+#: libraries/IiifItems/Job/Import.php:410
+msgid "Annotation OK."
+msgstr "成功建立注释。"
+
+#: libraries/IiifItems/Job/Import.php:427
+msgid "Missing stuff?"
+msgstr "资料缺失"
+
+#: libraries/IiifItems/Job/Import.php:586
+#, php-format
+msgid "Data Set: %s"
+msgstr "资料组：%s"
+
+#: libraries/IiifItems/Job/Import.php:589
+#, php-format
+msgid "Image: %s"
+msgstr "映像：%s"
+
+#: libraries/IiifItems/Job/Import.php:592
+#, php-format
+msgid "Moving Image: %s"
+msgstr "动画：%s"
+
+#: libraries/IiifItems/Job/Import.php:595
+#, php-format
+msgid "Sound: %s"
+msgstr "声音：%s"
+
+#: libraries/IiifItems/Job/Import.php:605
+#, php-format
+msgid "Annotation: \"%s\""
+msgstr "注释：%s"
+
+#: libraries/IiifItems/Job/AddUuid.php:48
+msgid "Adding UUID to collections and items"
+msgstr "为合集和物件建立UUID"
+
+#: libraries/IiifItems/Job/RemoveSubannotations.php:38
+#, php-format
+msgid "Error in RemoveSubannotations job: %s"
+msgstr "移除注释工序发生错误:%s"
+
+#: controllers/ImportController.php:45
+msgid "Invalid CSRF token. Please refresh the form and retry."
+msgstr "反跨站请求校验值无效，请刷新表格后重试。"
+
+#: controllers/ImportController.php:52
+msgid "Inaccessible parent."
+msgstr "无法进入母目录。"
+
+#: controllers/ImportController.php:56
+msgid "You may not import into another user's collections as a contributor."
+msgstr "您的贡献者使用权限不能汇入至其他使用者的合集。"
+
+#: controllers/ImportController.php:64
+msgid "Only collections can be the parent of a collection."
+msgstr "IIIF合集只能以其他IIIF合集作母目录。"
+
+#: controllers/ImportController.php:71
+msgid "Only collections can be the parent of a manifest."
+msgstr "IIIF配置集只能以其他IIIF合集作母目录。"
+
+#: controllers/ImportController.php:78
+msgid "Only manifests can be the parent of a canvas."
+msgstr "IIIF画布单件只能以IIIF配置集作母目录。"
+
+#: controllers/ImportController.php:83
+msgid "Invalid import type."
+msgstr "汇入型式无效。"
+
+#: controllers/ImportController.php:91
+msgid "Invalid source file upload."
+msgstr "来源上载档案无效。"
+
+#: controllers/ImportController.php:159
+msgid "An unexpected error occurred during submission. Please retry later."
+msgstr "上传表格时发生错误，请稍后重试。"
+
+#: controllers/ImportController.php:263
+msgid "This item does not exist."
+msgstr "此单件不存在。"
+
+#: controllers/ImportController.php:269
+msgid "This item does not seem to be imported using IIIF Toolkit."
+msgstr "此单件好像不是用IIIF工具箱汇入的。"
+
+#: controllers/ImportController.php:289
+msgid "No xywh bounds found on annotation."
+msgstr "注释没有xywh座标值。"
+
+#: controllers/ImportController.php:301
+msgid "Unable to repair item."
+msgstr "无法修復单件。"
+
+#: controllers/ImportController.php:309
+msgid "Item successfully repaired. Please recheck contents."
+msgstr "单件已修復，请刷新并核对内容。"
+
+#: controllers/ImportController.php:348
+msgid "JSON cache purged."
+msgstr "已清理JSON缓存。"
+
+#: controllers/ImportController.php:359
+msgid "Cleaned JSON cached data."
+msgstr "已清理JSON缓存。"
+
+#: controllers/ImportController.php:388
+msgid "Failed to purge JSON cache"
+msgstr "清理JSON缓存失败。"
+
+#: languages/special_strings.php:12
+msgid "IIIF File Metadata"
+msgstr "IIIF档案元数据"
+
+#: languages/special_strings.php:13
+msgid "IIIF Item Metadata"
+msgstr "IIIF单件元数据"
+
+#: languages/special_strings.php:14
+msgid "IIIF Manifest Metadata"
+msgstr "IIIF配置集元数据"
+
+#: languages/special_strings.php:15
+msgid "IIIF Collection Metadata"
+msgstr "IIIF合集元数据"
+
+#: languages/special_strings.php:16
+msgid "Annotation"
+msgstr "注释"
+
+#: languages/special_strings.php:17
+msgid "An OA-compliant annotation"
+msgstr "符合OpenAnnotation标准的注释"
+
+#: languages/special_strings.php:20
+msgid "Display as IIIF?"
+msgstr "以IIIF形式显示？"
+
+#: languages/special_strings.php:21
+msgid "Original @id"
+msgstr "原装@id标籤"
+
+#: languages/special_strings.php:23
+msgid "IIIF Type"
+msgstr "IIIF类别"
+
+#: languages/special_strings.php:24
+msgid "Parent Collection"
+msgstr "母目录"
+
+#: languages/special_strings.php:26
+msgid "On Canvas"
+msgstr "所属画布"
+
+#: languages/special_strings.php:27
+msgid "URI of the attached canvas"
+msgstr "所属画布的URI"
+
+#: languages/special_strings.php:28
+msgid "Selector"
+msgstr "SVG范围"
+
+#: languages/special_strings.php:29
+msgid "The SVG boundary area of the annotation"
+msgstr "注释所函盖的SVG范围"
+
+#: languages/special_strings.php:30
+msgid "Annotated Region"
+msgstr "矩形范围"
+
+#: languages/special_strings.php:31
+msgid "The rectangular region of the annotation, in xywh format."
+msgstr ""
+"注释所函盖的矩形范围（[左上角的x座标值],[左上角的y座标值],[寛度],[高度]）"
+
+#: languages/special_strings.php:34
+msgid "Canvas"
+msgstr "画布"
+
+#: languages/special_strings.php:35
+msgid "From File"
+msgstr "档案"
+
+#: languages/special_strings.php:36
+msgid "From URL"
+msgstr "网址"
+
+#: languages/special_strings.php:37
+msgid "From Paste"
+msgstr "粘贴"
+
+#: languages/special_strings.php:38
+msgid "None"
+msgstr "无"
+
+#: languages/special_strings.php:39
+msgid "Maximum"
+msgstr "最大"
+
+#~ msgid "This manifest contains %s%s%s annotations."
+#~ msgstr "此配置集含有%s%s%s项注释。"
+
+#~ msgid "This collection contains %s%s%s annotations."
+#~ msgstr "此合集含有%s%s%s项注释。"
+
+#, fuzzy
+#~ msgid "%s%d items%s aren't in a collection."
+#~ msgstr "所有单件都已安放在合集里。"

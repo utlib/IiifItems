@@ -17,6 +17,10 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         'public_items_show',    
     );
     
+    protected $_filters = array(
+        'items_browse_params',
+    );
+    
     /**
      * Returns whether the given item can be displayed in IIIF.
      * 
@@ -24,7 +28,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
      * @return boolean
      */
     protected function _isntIiifDisplayableItem($item) {
-        return ($item->fileCount() == 0 && !$item->hasElementText('IIIF Item Metadata', 'JSON Data')) || IiifItems_Util_Canvas::isNonIiifItem($item);
+        return (($item->fileCount() == 0 || get_option('iiifitems_bridge_prefix') == "") && !$item->hasElementText('IIIF Item Metadata', 'JSON Data')) || IiifItems_Util_Canvas::isNonIiifItem($item);
     }
     
     /**
@@ -82,17 +86,61 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
     /**
      * Hook for setting up the browsing SQL for items.
      * Hides annotation-type items from the "browse all items" view.
+     * Include submembers and annotations in search.
      * 
      * @param array $args
      */
     public function hookItemsBrowseSql($args) {
+        // Activate only when the controller and action are detectable
         $params = $args['params'];
         if (isset($params['controller']) && isset($params['action'])) {
+            $select = $args['select'];
+            // Hide annotation-type items form the "browse all items" view
             if (($params['controller'] == 'items') && ($params['action'] == 'index' || $params['action'] == 'browse') && !isset($params['search']) && !isset($params['tag']) && !isset($params['tags'])) {
-                $select = $args['select'];
                 $select->where("item_type_id != ? OR item_type_id IS NULL", get_option('iiifitems_annotation_item_type'));
             }
+            // Include submembers and annotations in nested search
+            if ($params['controller'] == 'items' && $params['action'] == 'browse' && isset($params['search']) && !empty($params['iiif_collection_id'])) {
+                $collection = get_record_by_id('Collection', $params['iiif_collection_id']);
+                $collectionIds = (empty($params['submembers']) || $params['submembers'] == 0) ? array() : IiifItems_Util_CollectionOptions::getFullSubmemberIdArray($collection);
+                $collectionIds[] = $collection->id;
+                $db = get_db();
+                $attachedToElementId = (int) get_option('iiifitems_annotation_on_element');
+                $uuidElementId = (int) get_option('iiifitems_item_uuid_element');
+                $select->joinLeft(array('iiif_catalogue_collections' => $db->Collection), 'items.collection_id = iiif_catalogue_collections.id', array());
+                $select->joinLeft(array('iiif_anno_attachment1_metadata' => $db->ElementText), "iiif_anno_attachment1_metadata.element_id = ${attachedToElementId} AND iiif_anno_attachment1_metadata.record_type = 'Item' AND iiif_anno_attachment1_metadata.record_id = items.id", array('text'));
+                $select->joinLeft(array('iiif_anno_attachment2_metadata' => $db->ElementText), "iiif_anno_attachment2_metadata.element_id = ${uuidElementId} AND iiif_anno_attachment2_metadata.record_type = 'Item' AND iiif_anno_attachment2_metadata.text = iiif_anno_attachment1_metadata.text", array('record_id'));
+                $select->joinLeft(array('iiif_attached_items' => $db->Item), "iiif_attached_items.id = iiif_anno_attachment2_metadata.record_id", array('collection_id'));
+                $select->where('iiif_catalogue_collections.id IN (?) OR iiif_attached_items.collection_id IN (?)', array($collectionIds, $collectionIds));
+            }
         }
+    }
+    
+    /**
+     * Filter for items browse parameters.
+     * Expand search to subcollections if applicable.
+     *
+     * @param array $params
+     * @return array
+     */
+    public function filterItemsBrowseParams($params)
+    {
+        // Check if this is a direct query (not from advanced search).
+        if (isset($params['controller']) && isset($params['action'])) {
+            // Include submembers in search by virtually unsetting collection_id and collection
+            if ($params['controller'] == 'items' && $params['action'] == 'browse' && isset($params['search']) && !empty($params['collection']) && $params['collection'] > 0) {
+                $params['iiif_collection_id'] = $params['collection'];
+                if (!empty($params['collection_id'])) {
+                    $collection = $params['collection_id'];
+                    $params['collection_id'] = '';
+                }
+                if (!empty($params['collection'])) {
+                    $collection = $params['collection'];
+                    $params['collection'] = '';
+                }
+            }
+        }
+        return $params;
     }
     
     /**
@@ -155,10 +203,10 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
                 if ($allowEdit || $annotations) {
                     echo '<ul class="iiifitems-action-links">';
                     if ($allowEdit) {
-                        echo '<li><a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">Annotate</a></li>';
+                        echo '<li><a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . '">' . __("Annotate") . '</a></li>';
                     }
                     if ($annotations) {
-                        echo '<li><a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">List annotations (' . count($annotations) . ')</a></li>';
+                        echo '<li><a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">' . __("List annotations (%d)", count($annotations)) . '</a></li>';
                     }
                     echo '</ul>';
                 }
@@ -184,11 +232,20 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
         $iiifUrl = public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
         echo '<div class="element-set">';
-        echo '<h2>IIIF ' . ($item->item_type_id == get_option('iiifitems_annotation_item_type') ? 'Annotation' : 'Item') . ' Information</h2>';
-        echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
-        $this->_adminElementTextPair('Manifest URL', 'iiif-item-metadata-manifest-url', '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
-        $this->_adminElementTextPair('Original ID', 'iiif-item-metadata-original-id', metadata($item, array('IIIF Item Metadata', 'Original @id')), true);
-        $this->_adminElementTextPair('UUID', 'iiif-item-metadata-uuid', metadata($item, array('IIIF Item Metadata', 'UUID'), array('no_filter' => true)), true);
+        if (($item->item_type_id == get_option('iiifitems_annotation_item_type'))) {
+            echo '<h2>' . __("IIIF Annotation Information") . '</h2>';
+        } else {
+            echo '<h2>' . __("IIIF Item Information") . '</h2>';
+        }
+        echo '<p>';
+        echo IiifItems_Util_CollectionOptions::getPathBreadcrumb($item, true);
+        echo '</p>';
+        if (get_option('iiifitems_show_mirador_items')) {
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(public_full_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_mirador')) . '"></iframe>';
+        }
+        $this->_adminElementTextPair(__('Manifest URL'), 'iiif-item-metadata-manifest-url', '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a>', true);
+        $this->_adminElementTextPair(__('Original ID'), 'iiif-item-metadata-original-id', metadata($item, array('IIIF Item Metadata', 'Original @id')), true);
+        $this->_adminElementTextPair(__('UUID'), 'iiif-item-metadata-uuid', metadata($item, array('IIIF Item Metadata', 'UUID'), array('no_filter' => true)), true);
         echo '</div>';
     }
     
@@ -211,23 +268,19 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
                     get_option('iiifitems_annotation_on_element'),
                     $uuid,
                 ));
-                echo '<div class="panel"><h4>Annotations</h4>'
-                    . '<p>This item has '
-                    . '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">'
-                    . count($onCanvasMatches)
-                    . '</a>'
-                    . ' annotation(s).</p>'
-                    // . '<a href="' . html_escape(admin_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_annotate')) . '" class="big blue button">Annotate</a>'
-                    . '</div>';
+                if (!empty($onCanvasMatches)) {
+                    echo '<div class="panel"><h4>' . __("Annotations") . '</h4>'
+                        . '<p>' . __(plural('This item has %s%d%s annotation.', 'This item has %s%d%s annotations.', count($onCanvasMatches)), '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $uuid . '">', count($onCanvasMatches), '</a>') . '</p>'
+                        . '</div>';
+                }
                 if ($allowEdit) {
-                    echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
-                    echo '<div class="panel"><h4>Repair</h4>'
-                        . '<p>If this item is imported via IIIF Toolkit and the files are '
-                        . 'missing/corrupted, you can repair it below. All '
-                        . 'files belonging to this item will be deleted and '
-                        . 'then reloaded.</p>'
+                    echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $args['item']->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">' . __('Annotate') . '</a>");</script>';
+                    echo '<div class="panel"><h4>' . html_escape(__("Repair")) . '</h4>'
+                        . '<p>'
+                        . html_escape(__("If this item is imported via IIIF Toolkit and the files are missing/corrupted, you can repair it below. All files belonging to this item will be deleted and then reloaded."))
+                        . '</p>'
                         . '<form action="' . admin_url(array('id' => $item->id), 'iiifitems_repair_item') . '" method="POST">'
-                        . '<input type="submit" value="Repair" class="big blue button" style="width:100%"/>'
+                        . '<input type="submit" value="' . html_escape(__("Repair")) . '" class="big blue button" style="width:100%"/>'
                         . '</form>'
                         . '</div>';
                 }
@@ -253,9 +306,11 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
         }
         $iiifUrl = absolute_url(array('things' => 'items', 'id' => $item->id), 'iiifitems_manifest');
         echo '<div class="element-set">';
-        echo '<h2>IIIF Manifest</h2>';
-        echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
-        $this->_publicElementTextPair("Manifest URL", "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>', true);
+        echo '<h2>' . __("IIIF Manifest") . '</h2>';
+        if (get_option('iiifitems_show_mirador_items')) {
+            echo '<iframe style="width:100%;height:600px;" allowfullscreen="true" src="' . html_escape(absolute_url(array('things' => 'items', 'id' => $args['view']->item->id), 'iiifitems_mirador')) . '"></iframe>';
+        }
+        $this->_publicElementTextPair(__("Manifest URL"), "iiifitems-metadata-manifest-url", '<a href="' . html_escape($iiifUrl). '">' . html_escape($iiifUrl) . '</a></p>', true);
         echo '</div>'; 
     }
     
@@ -294,7 +349,7 @@ class IiifItems_Integration_Items extends IiifItems_BaseIntegration {
      * @return string
      */
     public function inputForItemUuid($comps, $args) {
-        $comps['input'] = $args['value'] ? $args['value'] : '&lt;TBD&gt;';
+        $comps['input'] = $args['value'] ? (get_view()->formHidden($args['input_name_stem'] . '[text]', $args['value']) . $args['value']) : html_escape(__("<TBD>"));
         return filter_minimal_input($comps, $args);
     }
     

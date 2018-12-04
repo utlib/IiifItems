@@ -69,9 +69,7 @@ class IiifItems_Job_AddUuid extends Omeka_Job_AbstractJob {
         $table = get_db()->getTable($type);
         debug($type);
         $element = get_db()->getTable('Element')->findByElementSetNameAndElementName('IIIF ' . $type . ' Metadata', 'UUID');
-        debug("Element Found");
         while ($batch = $table->findBy(array(), $this->batchSize, $page++)) {
-            debug("Page " . $page-1);
             // For each record in the batch
             foreach ($batch as $record) {
                 // If its UUID metadata field is empty
@@ -92,7 +90,6 @@ class IiifItems_Job_AddUuid extends Omeka_Job_AbstractJob {
                 $jobStatus->progress++;
                 $jobStatus->modified = date('Y-m-d H:i:s');
                 $jobStatus->save();
-                debug("Processed record " . $record->id);
             }
         }
     }

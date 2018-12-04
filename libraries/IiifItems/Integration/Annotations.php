@@ -76,7 +76,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         $on = raw_iiif_metadata($args['item'], 'iiifitems_annotation_on_element');
         
         if ($attachedItem = IiifItems_Util_Annotation::findAnnotatedItemFor($args['item'])) {
-            $text = 'Attached to: <a href="' . url(array('id' => $attachedItem->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">' . metadata($attachedItem, array('Dublin Core', 'Title')) . '</a>';
+            $text = __('Attached to: %s', '<a href="' . url(array('id' => $attachedItem->id, 'controller' => 'items', 'action' => 'show'), 'id') . '">' . metadata($attachedItem, array('Dublin Core', 'Title')) . '</a>');
             if ($attachedItem->collection_id !== null) {
                 $collection = get_record_by_id('Collection', $attachedItem->collection_id);
                 $collectionLink = url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id');
@@ -101,7 +101,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
             ));
             $belongsTo = find_item_by_uuid($onCanvasUuid);
             $allowEdit = is_allowed($args['item'], 'edit');
-            echo '<div class="panel"><h4>Annotations</h4>'
+            echo '<div class="panel"><h4>' . __("Annotations") . '</h4>'
                 . '<p>This annotation is one of '
                 . '<a href="' . admin_url('items') . '/browse?search=&advanced%5B0%5D%5Bjoiner%5D=and&advanced%5B0%5D%5Belement_id%5D=' . get_option('iiifitems_annotation_on_element') . '&advanced%5B0%5D%5Btype%5D=is+exactly&advanced%5B0%5D%5Bterms%5D=' . $onCanvasUuid . '">'
                 . count($onCanvasMatches)
@@ -111,13 +111,13 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
                 . '</a>".</p>'
                 . '</div>';
             if ($allowEdit) {
-                echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">Annotate</a>");</script>';
-                echo '<div class="panel"><h4>Repair</h4>'
-                    . '<p>If this annotation is missing its preview thumbnail, you '
-                    . 'can repair it below. All preview files attached to this item '
-                    . 'will be deleted and then reloaded.</p>'
+                echo '<script>jQuery("#edit > a:first-child").after("<a href=\"" + ' . js_escape(admin_url(array('things' => 'items', 'id' => $belongsTo->id), 'iiifitems_annotate')) . ' + "\" class=\"big blue button\">' . __('Annotate') . '</a>");</script>';
+                echo '<div class="panel"><h4>' . __('Repair') . '</h4>'
+                    . '<p>'
+                    . __('If this annotation is missing its preview thumbnail, you can repair it below. All preview files attached to this item will be deleted and then reloaded.')
+                    . '</p>'
                     . '<form action="' . admin_url(array('id' => $args['item']->id), 'iiifitems_repair_item') . '" method="POST">'
-                    . '<input type="submit" value="Repair" class="big blue button" style="width:100%"/>'
+                    . '<input type="submit" value="' . __('Repair') . '" class="big blue button" style="width:100%"/>'
                     . '</form>'
                     . '</div>';
             }
@@ -144,7 +144,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
             $collection = get_record_by_id('Collection', $target->collection_id);
             $collectionLink = url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id');
             $collectionTitle = metadata($collection, array('Dublin Core', 'Title'));
-            $text .= "<p>From collection <a href=\"{$collectionLink}\">{$collectionTitle}</a></p>";
+            $text .= "<p>" . __("From collection %s", "<a href=\"{$collectionLink}\">{$collectionTitle}</a>") . "</p>";
         }
         return $text;
     }
