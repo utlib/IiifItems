@@ -298,7 +298,7 @@ class IiifItems_Util_Annotation extends IiifItems_IiifUtil {
             'resource' => array(
                 '@type' => 'dctypes:Text',
                 'format' => 'text/html',
-                'chars' => '<ul><li>' . join($fileLinks, '</li><li>') . '</li></ul>'
+                'chars' => '<ul><li>' . join('</li><li>', $fileLinks) . '</li></ul>'
             ),
         ));
     }
