@@ -57,19 +57,19 @@ class IiifItems_IiifUtil {
         ));
         if (isset($elements['Dublin Core'])) {
             if (isset($elements['Dublin Core']['Title'])) {
-                $jsonData['label'] = join($elements['Dublin Core']['Title'], ' ');
+                $jsonData['label'] = join(' ', $elements['Dublin Core']['Title']);
                 unset($elements['Dublin Core']['Title']);
             }
             if (isset($elements['Dublin Core']['Description'])) {
-                $jsonData['description'] = join($elements['Dublin Core']['Description'], '<br>');
+                $jsonData['description'] = join('<br>', $elements['Dublin Core']['Description']);
                 unset($elements['Dublin Core']['Description']);
             }
             if (isset($elements['Dublin Core']['Publisher'])) {
-                $jsonData['attribution'] = join($elements['Dublin Core']['Publisher'], '<br>');
+                $jsonData['attribution'] = join('<br>', $elements['Dublin Core']['Publisher']);
                 unset($elements['Dublin Core']['Publisher']);
             }
             if (isset($elements['Dublin Core']['Rights'])) {
-                $jsonData['license'] = join($elements['Dublin Core']['Rights'], '<br>');
+                $jsonData['license'] = join('<br>', $elements['Dublin Core']['Rights']);
                 unset($elements['Dublin Core']['Rights']);
             }
             if (!empty($elements['Dublin Core'])) {
@@ -79,7 +79,7 @@ class IiifItems_IiifUtil {
                 foreach ($elements['Dublin Core'] as $elementName => $elementContent) {
                     $jsonData['metadata'][] = array(
                         'label' => $elementName,
-                        'value' => join($elementContent, '<br>')
+                        'value' => join('<br>', $elementContent)
                     );
                 }
             }
