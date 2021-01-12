@@ -43433,7 +43433,7 @@ $.SearchWithinResults.prototype = {
       allowedTags: ['a', 'b', 'br', 'i', 'img', 'p', 'span', 'strong', 'em', 'u', 'ul', 'ol', 'li'],
       allowedAttributes: {
         'a': ['href', 'target'],
-        'img': ['src', 'alt'],
+        'img': ['src', 'alt', 'width', 'height'],
         'ul': ['type'],
         'ol': ['type'],
         'p': ['style', 'dir'],
