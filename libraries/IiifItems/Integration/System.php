@@ -20,9 +20,10 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         $this->__addIiif();
         $this->__addMediaPlaceholders();
         $this->__addUuids();
+        $this->__addConfigOptions();
         $this->__addViewOptions();
     }
-    
+
     /**
      * Add new tables for IIIF Toolkit-specific models.
      */
@@ -123,6 +124,22 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         $addMediaPlaceholdersMigration = new IiifItems_Migration_0_0_1_7();
         $addMediaPlaceholdersMigration->uninstall();
     }
+
+    /**
+     * Sets options using settings defined in a config file.
+     */
+    private function __addConfigOptions() {
+        $options = array('bridge_prefix', 'mirador_path', 'mirador_js', 'mirador_css');
+        $config = $this->_config('system');
+        if($config) {
+            foreach($options as $option) {
+                $value = $config->get($option, null);
+                if(isset($value)) {
+                    set_option("iiifitems_{$option}", $value);
+                }
+            }
+        }
+    }
     
     /**
      * Remove viewing options.
@@ -207,4 +224,5 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         unset($elementsBySet['IIIF Collection Metadata']);
         return $elementsBySet;
     }
+
 }
