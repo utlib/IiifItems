@@ -77,4 +77,18 @@ abstract class IiifItems_BaseIntegration {
     protected function _publicElementTextPair($label, $id, $entry, $html) {
         echo '<div id="' . $id . '" class="element"><h3>' . html_escape($label) . '</h3><div class="element-text">' . ($html ? $entry : html_escape($entry)) . '</div></div>';
     }
+
+    /**
+     * Returns options from a config file.
+     *
+     * @param string $section The section fo the config file to load (e.g. "system")
+     * @return Zend_config_ini|false
+     */
+    protected function _config($section = null) {
+        $file = IIIF_ITEMS_DIRECTORY.'/options.ini';
+        if(file_exists($file)) {
+            return new Zend_Config_ini($file, $section);
+        }
+        return false;
+    }
 }
