@@ -168,8 +168,14 @@ class IiifItems_Util_Canvas extends IiifItems_IiifUtil {
         }
         catch (Exception $e) {
         }
-        // If missing or failed, build from file data
-        list($fileWidth, $fileHeight) = getimagesize(FILES_DIR . DIRECTORY_SEPARATOR . $file->getStoragePath());
+        // If missing or failed, build from file metadata
+        $fileMetadata = $file->metadata;
+        if (isset($fileMetadata['video']['resolution_x'])) {
+            $fileWidth = $fileMetadata['video']['resolution_x'];
+            $fileHeight = $fileMetadata['video']['resolution_y'];
+        } else {
+            list($fileWidth, $fileHeight) = getimagesize(FILES_DIR . DIRECTORY_SEPARATOR . $file->getStoragePath());
+        }
         $fileJson = array(
             '@id' => public_full_url(array(
                 'things' => 'files',
