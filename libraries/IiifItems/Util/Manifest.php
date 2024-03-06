@@ -96,11 +96,13 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
                 IiifItems_Util_Canvas::buildAnnotationCanvas($item)
             ));
         }
-        // Otherwise, use the standard item-to-canvas utility
+        // Otherwise, use file-to-canvas utility on loop
         else {
-            $json = self::blankTemplate($atId, $seqId, $label, array(
-                IiifItems_Util_Canvas::buildCanvas($item)
-            ));
+            $fileCanvases = [];
+            foreach ($item->getFiles() as $file) {
+                $fileCanvases[] = IiifItems_Util_Canvas::fileCanvasJson($file);
+            }
+            $json = self::blankTemplate($atId, $seqId, $label, $fileCanvases);
         }
         // Override DC metadata
         parent::addDublinCoreMetadata($json, $item);
