@@ -5,12 +5,12 @@
  * @package controllers
  */
 class IiifItems_AnnotatorController extends IiifItems_BaseController {
-    
+
     /**
      * Renders a JSON array of annotations filed under the given manifest-type collection or non-annotation item.
      * A "uri" GET parameter must be passed to indicate the canvas ID to list annotations from.
      * GET iiif-items/annotator/:things/:id/index?uri=...
-     * 
+     *
      * [{ANNOTATION}, {ANNOTATION}, ...]
      */
     public function indexAction() {
@@ -32,20 +32,20 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             $this->__respondWithJson(null, 400);
             return;
         }
-        
+
         // Pull all annotations that belong to $thing
         // Include access permissions
         $json = IiifItems_Util_Annotation::findAnnotationsFor($thing, true);
-        
+
         // Respond [<anno1>...<annon>]
         $this->__respondWithJson($json);
         return;
     }
-    
+
     /**
      * Processes a POSTed annotation from Mirador and responds with the annotation added to the given manifest-type collection or non-annotation item.
      * POST iiif-items/annotator/:things/:id
-     * 
+     *
      * {CREATED ANNOTATION}
      */
     public function createAction() {
@@ -91,7 +91,8 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             unset($params['_dims']);
         }
         // Read and strip proprietary _iiifitems_access attribute
-        if (isset($params['_iiifitems_access']) && in_array(current_user()->role, array('super', 'admin'))) {
+        $currentUser = current_user();
+        if (isset($params['_iiifitems_access']) && $currentUser && in_array($currentUser->role, array('super', 'admin'))) {
             $isPublic = !!$params['_iiifitems_access']['public'];
             $isFeatured = !!$params['_iiifitems_access']['featured'];
         } else {
@@ -169,14 +170,14 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         );
         $this->__respondWithJson($params);
     }
-    
+
     /**
      * Deletes the submitted annotation from Mirador as filed under the given manifest-type collection or non-annotation item.
      * Responds "OK" if successful
      * DELETE iiif-items/annotator/:things/:id/delete
-     * 
+     *
      * OK
-     * 
+     *
      * @throws Omeka_Controller_Exception_404
      */
     public function deleteAction() {
@@ -193,22 +194,24 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         $paramStr = file_get_contents('php://input');
         $params = json_decode($paramStr, true);
         $id = $params['id'];
-        
+
         // Find the annotation by that ID and delete it
         if ($annoText = get_db()->getTable('ElementText')->findBySql('element_texts.element_id = ? AND element_texts.text = ?', array(get_option('iiifitems_item_atid_element'), $id), true)) {
             if ($annoItem = get_record_by_id('Item', $annoText->record_id)) {
                 // Check permissions
-                $user = current_user();
-                switch ($user->role) {
-                    case 'contributor':
-                        if ($user->id != $annoItem->owner_id) {
+                $currentUser = current_user();
+                if ($currentUser) {
+                    switch ($currentUser->role) {
+                        case 'contributor':
+                            if ($currentUser->id != $annoItem->owner_id) {
+                                $this->__respondWithJson(null, 403);
+                                return;
+                            }
+                        break;
+                        case 'researcher':
                             $this->__respondWithJson(null, 403);
                             return;
-                        }
-                    break;
-                    case 'researcher':
-                        $this->__respondWithJson(null, 403);
-                        return;
+                    }
                 }
                 // Delete the annotation
                 $annoItem->delete();
@@ -218,14 +221,14 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         }
         throw new Omeka_Controller_Exception_404;
     }
-    
+
     /**
      * Deletes the submitted annotation from Mirador as filed under the given manifest-type collection or non-annotation item.
      * Responds with the updated annotation if successful.
      * PUT iiif-items/annotator/:things/:id/update
-     * 
+     *
      * {UPDATED ANNOTATION}
-     * 
+     *
      * @throws Omeka_Controller_Exception_404
      */
     public function updateAction() {
@@ -291,23 +294,25 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                     $xywhChanged = !empty($oldXywhSet);
                 }
                 // Check permissions
-                $user = current_user();
-                switch ($user->role) {
-                    case 'super': case 'admin':
-                        $isPublic = !!$json['_iiifitems_access']['public'];
-                        $isFeatured = !!$json['_iiifitems_access']['featured'];
-                    break;
-                    case 'contributor':
-                        $isPublic = $annoItem->public;
-                        $isFeatured = $annoItem->featured;
-                        if ($user->id != $annoItem->owner_id) {
+                $currentUser = current_user();
+                if ($currentUser) {
+                    switch ($currentUser->role) {
+                        case 'super': case 'admin':
+                            $isPublic = !!$json['_iiifitems_access']['public'];
+                            $isFeatured = !!$json['_iiifitems_access']['featured'];
+                        break;
+                        case 'contributor':
+                            $isPublic = $annoItem->public;
+                            $isFeatured = $annoItem->featured;
+                            if ($currentUser->id != $annoItem->owner_id) {
+                                $this->__respondWithJson(null, 403);
+                                return;
+                            }
+                        break;
+                        case 'researcher':
                             $this->__respondWithJson(null, 403);
                             return;
-                        }
-                    break;
-                    case 'researcher':
-                        $this->__respondWithJson(null, 403);
-                        return;
+                    }
                 }
                 unset($json['_iiifitems_access']);
                 // Apply changes
@@ -360,7 +365,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         // Respond with changes
         throw new Omeka_Controller_Exception_404;
     }
-    
+
     /**
      * The annotator wrapper page for the given manifest-type collection or non-annotation item.
      * GET :things/:id/annotate
@@ -368,7 +373,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
     public function annotateAction() {
         $this->__passModelToView();
     }
-    
+
     /**
      * Quick helper for retrieving a record by name and ID
      * @param string $type The type of record to retrieve
@@ -379,7 +384,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         $class = Inflector::titleize(Inflector::singularize($type));
         return get_record_by_id($class, $id);
     }
-    
+
     /**
      * Return the canvas that the annotation is attached on.
      * @param array $params OA annotation JSON array data
@@ -394,7 +399,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         }
         return null;
     }
-    
+
     /**
      * Return xywh selectors from the annotation.
      * @param array $params OA annotation JSON array data
@@ -410,10 +415,10 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                 $xywhs[] = explode(',', substr($on['selector']['default']['value'], 5));
             }
             return $xywhs;
-        } 
+        }
         return null;
     }
-    
+
     /**
      * Return SVG selectors of the annotation.
      * @param array $params OA annotation JSON array data
@@ -429,10 +434,10 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                 $svgs[] = $on['selector']['item']['value'];
             }
             return $svgs;
-        } 
+        }
         return null;
     }
-    
+
     /**
      * Inserts the proprietary _iiifitems_access property into the given JSON data.
      * @param array $json The JSON array data

@@ -1,6 +1,6 @@
 <?php
 
-// TODO: Validation 
+// TODO: Validation
 //    - Type must be filled
 //    - If From File is checked, items_import_source_file must be filled
 //    - If From URL is filled, the URL must be correctly formatted and filled
@@ -45,9 +45,10 @@ class IiifItems_Form_Import extends Omeka_Form {
             'label' => __('JSON Data'),
         ));
         // Parent
+        $currentUser = current_user();
         $this->addElement('select', 'items_import_to_parent', array(
             'label' => __('Parent'),
-            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(null, (current_user()->role == 'contributor') ? current_user() : null),
+            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(null, ($currentUser && $currentUser->role == 'contributor') ? $currentUser : null),
         ));
         // Set to Public?
         $this->addElement('checkbox', 'items_are_public', array(
@@ -71,7 +72,7 @@ class IiifItems_Form_Import extends Omeka_Form {
                 'use_hidden_element' => false,
             ),
         ));
-        // Local Preview Size 
+        // Local Preview Size
         $this->addElement('radio', 'items_preview_size', array(
             'label' => __('Local Preview Size'),
             'multiOptions' => array('None', '96x96', '512x512', 'Maximum'),
@@ -89,7 +90,7 @@ class IiifItems_Form_Import extends Omeka_Form {
         $submit->setDecorators(array(
             'ViewHelper', array(
                 'HtmlTag', array(
-                    'tag' => 'div', 
+                    'tag' => 'div',
                     'class' => 'field'
                 )
             )

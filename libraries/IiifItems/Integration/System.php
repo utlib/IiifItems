@@ -11,7 +11,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         'public_navigation_main',
         'display_elements',
     );
-    
+
     /**
      * General installation procedures.
      */
@@ -50,7 +50,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
             `generated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;");
     }
-    
+
     /**
      * Add IIIF settings entries.
      */
@@ -60,7 +60,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         $addCssAndJsMigration = new IiifItems_Migration_0_0_1_9();
         $addCssAndJsMigration->up();
     }
-    
+
     /**
      * Copy placeholders for non-IIIF content into /files/originals.
      */
@@ -68,7 +68,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         $addMediaPlaceholdersMigration = new IiifItems_Migration_0_0_1_7();
         $addMediaPlaceholdersMigration->up();
     }
-    
+
     /**
      * Start job that adds UUIDs to existing collections, items and files.
      */
@@ -76,7 +76,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         $addUuidElementMigration = new IiifItems_Migration_0_0_1_6();
         $addUuidElementMigration->up();
     }
-    
+
     /**
      * Add viewing options.
      */
@@ -87,7 +87,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         set_option('iiifitems_show_mirador_items', 1);
         set_option('iiifitems_show_mirador_files', 1);
     }
-    
+
     /**
      * Removes IIIF Toolkit-specific elements.
      */
@@ -97,7 +97,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         $this->__removeMediaPlaceholders();
         $this->__removeViewOptions();
     }
-    
+
     /**
      * Drop tables for IIIF Toolkit-specific models.
      */
@@ -106,7 +106,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         $db->query("DROP TABLE IF EXISTS `{$db->prefix}iiif_items_job_statuses`;");
         $db->query("DROP TABLE IF EXISTS `{$db->prefix}iiif_items_cached_json_data`;");
     }
-    
+
     /**
      * Delete IIIF settings.
      */
@@ -116,7 +116,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         delete_option('iiifitems_mirador_css');
         delete_option('iiifitems_mirador_js');
     }
-    
+
     /**
      * Delete placeholder images for non-IIIF content from /files/originals.
      */
@@ -140,7 +140,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
             }
         }
     }
-    
+
     /**
      * Remove viewing options.
      */
@@ -151,18 +151,19 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         delete_option('iiifitems_show_mirador_items');
         delete_option('iiifitems_show_mirador_files');
     }
-    
+
     /**
      * Filter for the main admin navigation.
      * Adds navigation link to the IIIF Toolkit import form, status screen and maintenance options.
      * Also add IIIF Catalogue Tree
-     * 
+     *
      * @param array $nav
      * @return array
      */
     public function filterAdminNavigationMain($nav) {
         // Add link to import form, status screen, etc. to qualified users
-        if (current_user()->role != 'researcher') {
+        $currentUser = current_user();
+        if ($currentUser && $currentUser->role != 'researcher') {
             $nav[] = array(
                 'label' => __('IIIF Toolkit'),
                 'uri' => url('iiif-items/import'),
@@ -181,11 +182,11 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
         // Return navigation
         return $nav;
     }
-    
+
     /**
      * Filter for the public navigation menu.
      * Add the catalogue tree link.
-     * 
+     *
      * @param array $nav
      * @return array
      */
@@ -204,7 +205,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     /**
      * Filter for which elements to display.
      * Unset most IIIF Toolkit-specific metadata for manual handling.
-     * 
+     *
      * @param array $elementsBySet
      * @return array
      */
