@@ -20,17 +20,17 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         'public_collections_show',
         'public_items_search',
     );
-    
+
     /**
      * Returns whether a collection can't be displayed in IIIF.
-     * 
+     *
      * @param Collection $collection
      * @return boolean
      */
     protected function _isntIiifDisplayableCollection($collection) {
         return $collection->totalItems() == 0 && !$collection->hasElementText('IIIF Collection Metadata', 'JSON Data') && empty(IiifItems_Util_Collection::findSubmembersFor($collection));
     }
-    
+
     /**
      * Install metadata elements for collections.
      */
@@ -38,7 +38,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         $addCollectionsMigration = new IiifItems_Migration_1_0_1_1_Unification;
         $addCollectionsMigration->up();
     }
-    
+
     /**
      * Remove metadata elements for collections.
      */
@@ -56,14 +56,14 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         delete_option('iiifitems_collection_json_element');
         delete_option('iiifitems_collection_uuid_element');
     }
-    
+
     /**
      * Add cache expiration hooks and element filters.
      */
     public function initialize() {
         add_plugin_hook('after_save_collection', 'hook_expire_cache');
         add_plugin_hook('after_delete_collection', 'hook_expire_cache');
-        
+
         add_filter(array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'Original @id'), array($this, 'inputForCollectionOriginalId'));
         add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'Original @id'), 'filter_singular_form');
         add_filter(array('ElementInput', 'Collection', 'IIIF Collection Metadata', 'IIIF Type'), array($this, 'inputForCollectionIiifType'));
@@ -77,11 +77,11 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
         add_filter(array('ElementForm', 'Collection', 'IIIF Collection Metadata', 'UUID'), 'filter_singular_form');
         add_filter('collections_select_options', array($this, 'filterCollectionsSelectOptions'));
     }
-        
+
     /**
      * Hook for setting up the browsing SQL for collections.
      * Removes non-top collections from the "Browse all collections" view.
-     * 
+     *
      * @param array $args
      */
     public function hookCollectionsBrowseSql($args) {
@@ -92,11 +92,11 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             $select->where("element_textsA.text IS NULL OR element_textsA.text = ''");
         }
     }
-    
+
     /**
      * Hook for when a collection is saved.
      * Prepares newly saved collections for IIIF presentation.
-     * 
+     *
      * @param array $args
      */
     public function hookBeforeSaveCollection($args) {
@@ -124,7 +124,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                 }
                 // User must have permission to use a new parent
                 $currentUser = current_user();
-                if ($currentUser == 'contributor' && $parent->owner_id != $currentUser->id && $parentUuid != raw_iiif_metadata($record, 'iiifitems_collection_parent_element')) {
+                if ($currentUser && $currentUser->role == 'contributor' && $parent->owner_id != $currentUser->id && $parentUuid != raw_iiif_metadata($record, 'iiifitems_collection_parent_element')) {
                     $record->addError('Parent Collection', __('You do not have the permission reassign this parent as a contributor.'));
                 }
                 // Anti-loop check if is collection has a parent
@@ -142,11 +142,11 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             }
         }
     }
-    
+
     /**
      * Hook for when a collection is deleted.
      * Unlink children collections when the parent is deleted.
-     * 
+     *
      * @param array $args
      */
     public function hookBeforeDeleteCollection($args) {
@@ -160,7 +160,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     /**
      * Hook for the admin-side collection listings.
      * Use client-side JS to rewrite the "items in a collection" reminder.
-     * 
+     *
      * @param array $args
      */
     public function hookAdminCollectionsBrowse($args) {
@@ -189,7 +189,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     /**
      * Hook for entries in the admin-side collection listings.
      * Adds the appropriate action links.
-     * 
+     *
      * @param array $args
      */
     public function hookAdminCollectionsBrowseEach($args) {
@@ -203,18 +203,18 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                 $count = IiifItems_Util_Collection::countSubmembersFor($args['collection']);
                 echo '<span class="iiifitems-replace-items-link" data-newcount="' . $count . '" data-newurl="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '" data-showurl="' . admin_url(array('id' => $args['collection']->id, 'controller' => 'collections', 'action' => 'show'), 'id') . '"></span>'
                         . '<ul class="iiifitems-action-links"><li><a href="' . admin_url(array('id' => $args['collection']->id), 'iiifitems_collection_members') . '">' . __("List Members") . '</a></li></ul>';
-            }    
+            }
         } else if ($type != 'None') {
             if ($allowEdit && IiifItems_Util_Manifest::isManifest($args['collection'])) {
                 echo '<ul class="iiifitems-action-links"><li><a href="' . html_escape(admin_url(array('things' => 'collections', 'id' => $args['collection']->id), 'iiifitems_annotate')) . '">' . __("Annotate") . '</a></li></ul>';
             }
         }
     }
-        
+
     /**
      * Hook for viewing a single collection on the admin side.
      * Adds Mirador viewer and other IIIF info.
-     * 
+     *
      * @param array $args
      */
     public function hookAdminCollectionsShow($args) {
@@ -258,11 +258,11 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
             echo '</div>';
         }
     }
-    
+
     /**
      * Hook for the sidebar while viewing a single collection on the admin side.
      * Adds the "Clean" button for refreshing the cache's entry on the collection.
-     * 
+     *
      * @param array $args
      */
     public function hookAdminCollectionsShowSidebar($args) {
@@ -302,7 +302,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                 . '</div>';
         }
     }
-    
+
     /**
      * Hook for admin items search.
      * Add the "include submembers" checkbox.
@@ -339,7 +339,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     /**
      * Hook for each entry of the public collection browsing view.
      * Add folder icon and submember viewing link for collection-type collections.
-     * 
+     *
      * @param array $args
      */
     public function hookPublicCollectionsBrowseEach($args) {
@@ -352,14 +352,14 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
     /**
      * Hook for the public collection browsing view.
      * Adds a script that hides the "view items" link in collection-type collections.
-     * 
+     *
      * @param array $args
      */
     public function hookPublicCollectionsBrowse($args) {
         echo <<<EOF
 <style>
-    a.iiifitems-has-submembers:before { 
-        content: url("data:image/svg+xml,%3Csvg%20width%3D%221em%22%20height%3D%221em%22%20viewBox%3D%220%200%202048%201792%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M1845%20931q0-35-53-35h-1088q-40%200-85.5%2021.5t-71.5%2052.5l-294%20363q-18%2024-18%2040%200%2035%2053%2035h1088q40%200%2086-22t71-53l294-363q18-22%2018-39zm-1141-163h768v-160q0-40-28-68t-68-28h-576q-40%200-68-28t-28-68v-64q0-40-28-68t-68-28h-320q-40%200-68%2028t-28%2068v853l256-315q44-53%20116-87.5t140-34.5zm1269%20163q0%2062-46%20120l-295%20363q-43%2053-116%2087.5t-140%2034.5h-1088q-92%200-158-66t-66-158v-960q0-92%2066-158t158-66h320q92%200%20158%2066t66%20158v32h544q92%200%20158%2066t66%20158v160h192q54%200%2099%2024.5t67%2070.5q15%2032%2015%2068z%22%20fill%3D%22%23999%22%2F%3E%3C%2Fsvg%3E"); 
+    a.iiifitems-has-submembers:before {
+        content: url("data:image/svg+xml,%3Csvg%20width%3D%221em%22%20height%3D%221em%22%20viewBox%3D%220%200%202048%201792%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M1845%20931q0-35-53-35h-1088q-40%200-85.5%2021.5t-71.5%2052.5l-294%20363q-18%2024-18%2040%200%2035%2053%2035h1088q40%200%2086-22t71-53l294-363q18-22%2018-39zm-1141-163h768v-160q0-40-28-68t-68-28h-576q-40%200-68-28t-28-68v-64q0-40-28-68t-68-28h-320q-40%200-68%2028t-28%2068v853l256-315q44-53%20116-87.5t140-34.5zm1269%20163q0%2062-46%20120l-295%20363q-43%2053-116%2087.5t-140%2034.5h-1088q-92%200-158-66t-66-158v-960q0-92%2066-158t158-66h320q92%200%20158%2066t66%20158v32h544q92%200%20158%2066t66%20158v160h192q54%200%2099%2024.5t67%2070.5q15%2032%2015%2068z%22%20fill%3D%22%23999%22%2F%3E%3C%2Fsvg%3E");
         padding-right: 1em;
         mix-blend-mode: difference;
     }
@@ -367,23 +367,23 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
 <script>
     jQuery(document).ready(function() {
         jQuery("[data-hasmembers]").each(function() {
-            var jqt = jQuery(this), jqtp = jqt.parent(".view-members-link"); 
+            var jqt = jQuery(this), jqtp = jqt.parent(".view-members-link");
             jqtp.closest(".collection")
                 .find(".view-items-link a")
                 .text(jqt.text())
                 .attr("href", jqt.attr("href"))
-                .addClass("iiifitems-has-submembers"); 
+                .addClass("iiifitems-has-submembers");
             jqtp.remove();
         });
     });
 </script>
 EOF;
     }
-    
+
     /**
      * Hook for the public view of single collections.
      * Adds Mirador viewer and other IIIF info.
-     * 
+     *
      * @param array $args
      */
     public function hookPublicCollectionsShow($args) {
@@ -427,11 +427,11 @@ EOF;
             echo '</div>';
         }
     }
-    
+
     /**
      * Element input filter for collection's original ID.
      * Replace it with a single static value.
-     * 
+     *
      * @param array $comps
      * @param array $args
      * @return string
@@ -444,7 +444,7 @@ EOF;
     /**
      * Element input filter for collection's IIIF type.
      * Replace it with a single dropdown.
-     * 
+     *
      * @param array $comps
      * @param array $args
      * @return string
@@ -457,7 +457,7 @@ EOF;
     /**
      * Display filter for collection's parent.
      * Replace it with a link to the parent.
-     * 
+     *
      * @param string $text
      * @param array $args
      * @return string
@@ -474,19 +474,19 @@ EOF;
     /**
      * Element input filter for collection parent.
      * Replace it with a single dropdown for possible parents.
-     * 
+     *
      * @param array $comps
      * @param array $args
      * @return string
      */
     public function inputForCollectionParent($comps, $args) {
         $currentUser = current_user();
-        $uuidOptions = IiifItems_Util_CollectionOptions::getCollectionOptions(null, ($currentUser->role == 'contributor') ? $currentUser : null);
+        $uuidOptions = IiifItems_Util_CollectionOptions::getCollectionOptions(null, ($currentUser && $currentUser->role == 'contributor') ? $currentUser : null);
         if (isset($_GET['parent']) && find_collection_by_uuid($_GET['parent'])) {
             $args['value'] = $_GET['parent'];
         }
         $parent = find_collection_by_uuid($args['value']);
-        if ($currentUser->role == 'contributor' && $args['value'] && $parent && $parent->owner_id != $currentUser->owner_id) {
+        if ($currentUser && $currentUser->role == 'contributor' && $args['value'] && $parent && $parent->owner_id != $currentUser->owner_id) {
             $comps['input'] = metadata($parent, array('Dublin Core', 'Title'));
         } else {
             $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), $uuidOptions);
@@ -497,7 +497,7 @@ EOF;
     /**
      * Element input filter for UUID.
      * Replace it with a single, read-only display.
-     * 
+     *
      * @param array $comps
      * @param array $args
      * @return string
@@ -506,7 +506,7 @@ EOF;
         $comps['input'] = $args['value'] ? (get_view()->formHidden($args['input_name_stem'] . '[text]', $args['value']) . $args['value']) : html_escape(__('<TBD>'));
         return filter_minimal_input($comps, $args);
     }
-    
+
     /**
      * Manage search options for collections.
      *
@@ -516,7 +516,7 @@ EOF;
     public function filterCollectionsSelectOptions($options)
     {
         $currentUser = current_user();
-        $treeOptions = IiifItems_Util_CollectionOptions::getFullIdOptions(null, ($currentUser->role == 'contributor') ? $currentUser : null);
+        $treeOptions = IiifItems_Util_CollectionOptions::getFullIdOptions(null, ($currentUser && $currentUser->role == 'contributor') ? $currentUser : null);
         return array_intersect_key($treeOptions, $options);
     }
 }

@@ -5,11 +5,11 @@
  * @package controllers
  */
 class IiifItems_ImportController extends IiifItems_BaseController {
-    
+
     /**
      * Renders the IIIF import form if on GET, receives submission if on POST.
      * GET/POST iiif-items/import
-     * 
+     *
      * @throws Omeka_Controller_Exception_404
      */
     public function formAction() {
@@ -17,11 +17,11 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         if (!is_admin_theme() || current_user()->role == 'researcher') {
             throw new Omeka_Controller_Exception_404;
         }
-        
+
         // Render the form
         $form = $this->_getImportForm();
         $this->view->form = $form;
-        
+
         // Process the form instead if POSTed
         if ($this->getRequest()->isPost()) {
             if ($this->processSubmission()) {
@@ -29,11 +29,11 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             }
         }
     }
-    
+
     /**
      * Processes the submission of the IIIF import form.
      * POST iiif-items/import
-     * 
+     *
      * @return boolean
      */
     protected function processSubmission() {
@@ -52,7 +52,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 $this->_helper->flashMessenger(__('Inaccessible parent.'), 'error');
                 return false;
             }
-            if ($currentUser->role == 'contributor' && $parentUuid && $parentCollection->owner_id != $currentUser->id) {
+            if ($currentUser && $currentUser->role == 'contributor' && $parentUuid && $parentCollection->owner_id != $currentUser->id) {
                 $this->_helper->flashMessenger(__("You may not import into another user's collections as a contributor."), 'error');
                 return false;
             }
@@ -96,7 +96,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 case 1:
                     $importSource = 'Url';
                     $importSourceBody = $this->_extractResourceUrl($form->getValue('items_import_source_url'));
-                    
+
                 break;
                 case 2:
                     $importSource = 'Paste';
@@ -160,7 +160,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             return false;
         }
     }
-    
+
     /**
      * Attempts to return the manifest URL from IIIF drag-and-drop URLs
      * @param string $url
@@ -181,11 +181,11 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         // Still nothing, just give back the URL
         return $url;
     }
-    
+
     /**
      * Renders a table of job statuses related to IIIF Toolkit.
      * GET iiif-items/status
-     * 
+     *
      * @throws Omeka_Controller_Exception_404
      */
     public function statusAction() {
@@ -198,14 +198,14 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         $this->view->statuses = $table->fetchObjects('SELECT * FROM ' . $table->getTableName() . ' ORDER BY added DESC');
         $this->view->t = date_timestamp_get(new DateTime());
     }
-    
+
     /**
      * Renders JSON with current server timestamp and list of import tasks updated since the specified last-updated timestamp
      * AJAX call for the auto-update in the status page
      * GET iiif-items/status-update?t=...
-     * 
+     *
      * { "t": ..., "updates": [{TASK}, {TASK}, ...] }
-     * 
+     *
      * @throws Omeka_Controller_Exception_404
      */
     public function statusUpdateAction() {
@@ -213,7 +213,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         if (!is_admin_theme() || current_user()->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
-        
+
         if (!isset($_GET['t'])) {
             throw new Omeka_Controller_Exception_404();
         }
@@ -226,7 +226,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         $jsonData['updates'] = $table->fetchAll($updatesSelect, array(date('Y-m-d H:i:s', $_GET['t'])));
         $this->__respondWithJson($jsonData);
     }
-    
+
     /**
      * Helper for returning the import form
      * @return IiifItems_Form_Import
@@ -235,11 +235,11 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         $form = new IiifItems_Form_Import();
         return $form;
     }
-    
+
     /**
      * Repair the preview images of the given item.
      * POST iiif-items/items/:id/repair
-     * 
+     *
      * @throws Omeka_Controller_Exception_404
      */
     public function repairItemAction() {
@@ -292,7 +292,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             // Non-annotation item
             else {
                 $jsonData = json_decode($jsonStr, true);
-                foreach ($jsonData['images'] as $image) { 
+                foreach ($jsonData['images'] as $image) {
                     $downloader = new IiifItems_ImageDownloader($image);
                     $file = $downloader->downloadToItem($item, 'full');
                 }
@@ -309,7 +309,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
         $this->_helper->flashMessenger(__("Item successfully repaired. Please recheck contents."));
         Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($returnUrl);
     }
-    
+
     /**
      * Renders the maintenance actions menu.
      * GET iiif-items/maintenance
@@ -320,12 +320,12 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             throw new Omeka_Controller_Exception_404();
         }
     }
-    
+
     /**
      * Cleans cached data generated by the IIIF Toolkit plugin.
      * Pass type=all, id=all to clear all cached data.
      * Pass record type and ID to clear cached data for that record
-     * 
+     *
      * POST iiif-items/clean-cache
      */
     public function cleanCacheAction() {
@@ -335,13 +335,13 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             throw new Omeka_Controller_Exception_404();
         }
         $this->__restrictVerb('POST');
-        
+
         // Set up request
         $request = $this->getRequest();
         $targetType = $this->getParam('type');
         $targetId = $this->getParam('id');
         $db = get_db();
-        
+
         // Clear all
         if ($targetType == 'all' && $targetId == 'all') {
             $db->query("TRUNCATE `{$db->prefix}iiif_items_cached_json_data`;");
@@ -358,7 +358,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                     $db->query("DELETE FROM `{$db->prefix}iiif_items_cached_json_data` WHERE record_id = ? AND record_type = ?;", array($targetId, $targetType));
                     $this->_helper->flashMessenger(__("Cleaned JSON cached data."));
                     switch (get_class($target)) {
-                        case 'Collection': 
+                        case 'Collection':
                             $targetUrl = $request->getServer('HTTP_REFERER', WEB_ROOT . admin_url(array(
                                 'controller' => 'collections',
                                 'action' => 'show',
@@ -372,8 +372,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                                 'id' => $targetId,
                             ), 'id'));
                         break;
-                        default: 
-                            $targetUrl = $request->getServer('HTTP_REFERER', WEB_ROOT . admin_url()); 
+                        default:
+                            $targetUrl = $request->getServer('HTTP_REFERER', WEB_ROOT . admin_url());
                         break;
                     }
                     Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($targetUrl);
@@ -383,7 +383,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
             catch (Exception $e) {
             }
         }
-        
+
         // Fail
         $this->_helper->flashMessenger(__("Failed to purge JSON cache"));
     }
