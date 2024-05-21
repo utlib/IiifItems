@@ -144,8 +144,7 @@ class IiifItems_Integration_Annotations extends IiifItems_BaseIntegration {
         $link = url(array('id' => $target->id, 'controller' => 'items', 'action' => 'show'), 'id');
         $title = metadata($target, array('Dublin Core', 'Title'));
         $text = "<a href=\"{$link}\">{$title}</a> ({$on})";
-        if ($target->collection_id !== null) {
-            $collection = get_record_by_id('Collection', $target->collection_id);
+        if ($target->collection_id !== null && !empty($collection = get_record_by_id('Collection', $target->collection_id))) {
             $collectionLink = url(array('id' => $collection->id, 'controller' => 'collections', 'action' => 'show'), 'id');
             $collectionTitle = metadata($collection, array('Dublin Core', 'Title'));
             $text .= "<p>" . __("From collection %s", "<a href=\"{$collectionLink}\">{$collectionTitle}</a>") . "</p>";

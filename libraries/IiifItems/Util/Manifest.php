@@ -106,8 +106,8 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
         }
         // Override DC metadata
         parent::addDublinCoreMetadata($json, $item);
-        if ($item->collection_id !== null) {
-            $json['label'] = metadata(get_record_by_id('Collection', $item->collection_id), array('Dublin Core', 'Title'), array('no_escape' => true));
+        if ($item->collection_id !== null && !empty($collection = get_record_by_id('Collection', $item->collection_id))) {
+            $json['label'] = metadata($collection, array('Dublin Core', 'Title'), array('no_escape' => true));
         }
         // Done
         return $json;
