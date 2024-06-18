@@ -102,6 +102,9 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
             foreach ($item->getFiles() as $file) {
                 $fileCanvases[] = IiifItems_Util_Canvas::fileCanvasJson($file);
             }
+            if (empty($fileCanvases)) {
+                $fileCanvases[] = IiifItems_Util_Canvas::buildCanvas($item);
+            }
             $json = self::blankTemplate($atId, $seqId, $label, $fileCanvases);
         }
         // Override DC metadata
