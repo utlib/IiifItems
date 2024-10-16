@@ -513,10 +513,16 @@ EOF;
      * @param array Search options for collections.
      * @return array Filtered search options for collections.
      */
-    public function filterCollectionsSelectOptions($options)
-    {
-        $currentUser = current_user();
-        $treeOptions = IiifItems_Util_CollectionOptions::getFullIdOptions(null, ($currentUser && $currentUser->role == 'contributor') ? $currentUser : null);
-        return array_intersect_key($treeOptions, $options);
+public function filterCollectionsSelectOptions($options){
+    $currentUser = current_user();
+    // Check if the user is logged in
+    if ($currentUser) {
+        $treeOptions = IiifItems_Util_CollectionOptions::getFullIdOptions(null, ($currentUser->role == 'contributor') ? $currentUser : null);
+    } else { // if not logged in, only show public collections
+        $treeOptions = IiifItems_Util_CollectionOptions::getFullIdOptions(true, null);
     }
+
+    return array_intersect_key($treeOptions, $options);
+    }
+
 }
