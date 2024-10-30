@@ -92,7 +92,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
         }
         // Read and strip proprietary _iiifitems_access attribute
         $currentUser = current_user();
-        if (isset($params['_iiifitems_access']) && $currentUser && in_array($currentUser->role, array('super', 'admin'))) {
+        if (isset($params['_iiifitems_access']) && !empty($currentUser) && in_array($currentUser->role, array('super', 'admin'))) {
             $isPublic = !!$params['_iiifitems_access']['public'];
             $isFeatured = !!$params['_iiifitems_access']['featured'];
         } else {
@@ -200,7 +200,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
             if ($annoItem = get_record_by_id('Item', $annoText->record_id)) {
                 // Check permissions
                 $currentUser = current_user();
-                if ($currentUser) {
+                if (!empty($currentUser)) {
                     switch ($currentUser->role) {
                         case 'contributor':
                             if ($currentUser->id != $annoItem->owner_id) {
@@ -295,7 +295,7 @@ class IiifItems_AnnotatorController extends IiifItems_BaseController {
                 }
                 // Check permissions
                 $currentUser = current_user();
-                if ($currentUser) {
+                if (!empty($currentUser)) {
                     switch ($currentUser->role) {
                         case 'super': case 'admin':
                             $isPublic = !!$json['_iiifitems_access']['public'];

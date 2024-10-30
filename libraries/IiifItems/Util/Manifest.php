@@ -58,7 +58,7 @@ class IiifItems_Util_Manifest extends IiifItems_IiifUtil {
         if (self::isManifest($collection)) {
             // Decide which cache entry to consider
             $cacheEntryName = $bare ? 'private_bare_manifest' : (
-                current_user() ? 'private_manifest' : 'public_manifest'
+                (!empty(current_user())) ? 'private_manifest' : 'public_manifest'
             );
             if ($json = get_cached_iiifitems_value_for($collection, $cacheEntryName)) {
                 return $json;

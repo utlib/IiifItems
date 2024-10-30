@@ -48,7 +48,7 @@ class IiifItems_Form_Import extends Omeka_Form {
         $currentUser = current_user();
         $this->addElement('select', 'items_import_to_parent', array(
             'label' => __('Parent'),
-            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(null, ($currentUser && $currentUser->role == 'contributor') ? $currentUser : null),
+            'multiOptions' => IiifItems_Util_CollectionOptions::getFullOptions(null, (!empty($currentUser) && $currentUser->role == 'contributor') ? $currentUser : null),
         ));
         // Set to Public?
         $this->addElement('checkbox', 'items_are_public', array(

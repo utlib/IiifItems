@@ -14,7 +14,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      */
     public function formAction() {
         // Qualified admins only
-        if (!is_admin_theme() || current_user()->role == 'researcher') {
+        $currentUser = current_user();
+        if (!is_admin_theme() || empty($currentUser) || $currentUser->role == 'researcher') {
             throw new Omeka_Controller_Exception_404;
         }
 
@@ -52,7 +53,7 @@ class IiifItems_ImportController extends IiifItems_BaseController {
                 $this->_helper->flashMessenger(__('Inaccessible parent.'), 'error');
                 return false;
             }
-            if ($currentUser && $currentUser->role == 'contributor' && $parentUuid && $parentCollection->owner_id != $currentUser->id) {
+            if (!empty($currentUser) && $currentUser->role == 'contributor' && $parentUuid && $parentCollection->owner_id != $currentUser->id) {
                 $this->_helper->flashMessenger(__("You may not import into another user's collections as a contributor."), 'error');
                 return false;
             }
@@ -190,7 +191,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      */
     public function statusAction() {
         // Qualified admins only
-        if (!is_admin_theme() || current_user()->role == 'researcher') {
+        $currentUser = current_user();
+        if (!is_admin_theme() || empty($currentUser) || $currentUser->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
         // Select all jobs
@@ -210,7 +212,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      */
     public function statusUpdateAction() {
         // Qualified admins only
-        if (!is_admin_theme() || current_user()->role == 'researcher') {
+        $currentUser = current_user();
+        if (!is_admin_theme() || empty($currentUser) || $currentUser->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
 
@@ -244,7 +247,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      */
     public function repairItemAction() {
         // Qualified admins only via POST
-        if (!is_admin_theme() || current_user()->role == 'researcher') {
+        $currentUser = current_user();
+        if (!is_admin_theme() || empty($currentUser) || $currentUser->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
         $request = $this->getRequest();
@@ -316,7 +320,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
      */
     public function maintenanceAction() {
         $this->__blockPublic();
-        if (current_user()->role == 'researcher') {
+        $currentUser = current_user();
+        if (empty($currentUser) || $currentUser->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
     }
@@ -331,7 +336,8 @@ class IiifItems_ImportController extends IiifItems_BaseController {
     public function cleanCacheAction() {
         // Block unwanted people
         $this->__blockPublic();
-        if (current_user()->role == 'researcher') {
+        $currentUser = current_user();
+        if (empty($currentUser) || $currentUser->role == 'researcher') {
             throw new Omeka_Controller_Exception_404();
         }
         $this->__restrictVerb('POST');

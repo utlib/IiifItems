@@ -163,7 +163,7 @@ class IiifItems_Integration_System extends IiifItems_BaseIntegration {
     public function filterAdminNavigationMain($nav) {
         // Add link to import form, status screen, etc. to qualified users
         $currentUser = current_user();
-        if ($currentUser && $currentUser->role != 'researcher') {
+        if (!empty($currentUser) && $currentUser->role != 'researcher') {
             $nav[] = array(
                 'label' => __('IIIF Toolkit'),
                 'uri' => url('iiif-items/import'),

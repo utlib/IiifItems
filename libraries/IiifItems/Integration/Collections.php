@@ -124,7 +124,7 @@ class IiifItems_Integration_Collections extends IiifItems_BaseIntegration {
                 }
                 // User must have permission to use a new parent
                 $currentUser = current_user();
-                if ($currentUser && $currentUser->role == 'contributor' && $parent->owner_id != $currentUser->id && $parentUuid != raw_iiif_metadata($record, 'iiifitems_collection_parent_element')) {
+                if (!empty($currentUser) && $currentUser->role == 'contributor' && $parent->owner_id != $currentUser->id && $parentUuid != raw_iiif_metadata($record, 'iiifitems_collection_parent_element')) {
                     $record->addError('Parent Collection', __('You do not have the permission reassign this parent as a contributor.'));
                 }
                 // Anti-loop check if is collection has a parent
@@ -481,12 +481,12 @@ EOF;
      */
     public function inputForCollectionParent($comps, $args) {
         $currentUser = current_user();
-        $uuidOptions = IiifItems_Util_CollectionOptions::getCollectionOptions(null, ($currentUser && $currentUser->role == 'contributor') ? $currentUser : null);
+        $uuidOptions = IiifItems_Util_CollectionOptions::getCollectionOptions(null, (!empty($currentUser) && $currentUser->role == 'contributor') ? $currentUser : null);
         if (isset($_GET['parent']) && find_collection_by_uuid($_GET['parent'])) {
             $args['value'] = $_GET['parent'];
         }
         $parent = find_collection_by_uuid($args['value']);
-        if ($currentUser && $currentUser->role == 'contributor' && $args['value'] && $parent && $parent->owner_id != $currentUser->owner_id) {
+        if (!empty($currentUser) && $currentUser->role == 'contributor' && $args['value'] && $parent && $parent->owner_id != $currentUser->owner_id) {
             $comps['input'] = metadata($parent, array('Dublin Core', 'Title'));
         } else {
             $comps['input'] = get_view()->formSelect($args['input_name_stem'] . '[text]', $args['value'], array(), $uuidOptions);
@@ -516,7 +516,7 @@ EOF;
 public function filterCollectionsSelectOptions($options){
     $currentUser = current_user();
     // Check if the user is logged in
-    if ($currentUser) {
+    if (!empty($currentUser)) {
         $treeOptions = IiifItems_Util_CollectionOptions::getFullIdOptions(null, ($currentUser->role == 'contributor') ? $currentUser : null);
     } else { // if not logged in, only show public collections
         $treeOptions = IiifItems_Util_CollectionOptions::getFullIdOptions(true, null);
